@@ -2,6 +2,7 @@ import { Button, FormControl, TextField } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import type { NextPage } from "next";
 import { useState } from "react";
+import { SendSlackMessage } from "../components/SendSlackMessage";
 import { SlackUser } from "../utils/slack/slack-user";
 import { SlackService } from "../utils/slack/slack.service";
 
@@ -11,7 +12,6 @@ const Home: NextPage = () => {
   function getUsersFromSlack() {
     const slackService = new SlackService(oauthToken);
     slackService.findAllValidSlackUsers().then((users) => {
-      alert(users);
       setUsers(users);
     });
   }
@@ -43,7 +43,7 @@ const Home: NextPage = () => {
       <div className="datagrid-container">
         <DataGrid rows={users} columns={columns} />
       </div>
-
+      <SendSlackMessage oauthToken={oauthToken} />
       <style jsx>{`
         .form-root {
           display: flex;

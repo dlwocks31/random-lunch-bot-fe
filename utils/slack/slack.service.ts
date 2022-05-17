@@ -6,6 +6,52 @@ const excludedName = ["Slackbot", "맘시터개발팀"];
 
 export class SlackService {
   constructor(private slackToken: string) {}
+  async send(
+    message: string,
+    channel: string,
+  ): Promise<{ ok: boolean; error?: string }> {
+    const formData = `token=${this.slackToken}&channel=${encodeURIComponent(
+      channel,
+    )}&text=${encodeURIComponent(message)}`;
+    const result = (
+      await axios.post("https://slack.com/api/chat.postMessage", formData)
+    ).data;
+    return { ok: result.ok, error: result.error };
+  }
+
+  async joinConversation(channel: string): Promise<{ ok: boolean }> {
+    const formData = `token=${this.slackToken}&channel=${channel}`;
+    const result = (
+      await axios.post("https://slack.com/api/conversations.join", formData)
+    ).data;
+    return { ok: result.ok };
+  }
+
+  async listConversation(): Promise<{ id: string; name: string }[]> {
+    // https://api.slack.com/methods/conversations.list
+    const channels = [];
+    let cursor = undefined;
+    while (true) {
+      const formData =
+        `token=${this.slackToken}&limit=200` +
+        (cursor ? `&cursor=${cursor}` : "");
+      const onePageChannels: any = (
+        await axios.post("https://slack.com/api/conversations.list", formData)
+      ).data;
+      console.log(onePageChannels);
+      if (!onePageChannels.channels) break;
+      channels.push(...onePageChannels.channels);
+      cursor = onePageChannels.response_metadata?.next_cursor;
+      if (!cursor) break;
+    }
+
+    const ret = [];
+    for (let channel of channels) {
+      if (channel.is_archived) continue;
+      ret.push({ id: channel.id, name: channel.name });
+    }
+    return ret;
+  }
   async findAllValidSlackUsers(): Promise<SlackUser[]> {
     // https://api.slack.com/methods/users.list
     const members = [];
