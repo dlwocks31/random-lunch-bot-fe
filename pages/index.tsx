@@ -3,6 +3,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import type { NextPage } from "next";
 import { useState } from "react";
 import { SendSlackMessage } from "../components/SendSlackMessage";
+import { UnselectedUserViewer } from "../components/UnselectedUserViewer";
 import { UserGrouper } from "../components/UserGrouper";
 import { SlackUser } from "../utils/slack/slack-user";
 import { SlackService } from "../utils/slack/slack.service";
@@ -17,6 +18,12 @@ const Home: NextPage = () => {
       setUsers(users);
       setSelectedUsers(users);
     });
+  }
+  function getUnselectedUser() {
+    return users.filter((u) => !selectedUsers.includes(u));
+  }
+  function unselectUser(id: string) {
+    setSelectedUsers(selectedUsers.filter((u) => u.id !== id));
   }
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 90 },
@@ -46,7 +53,8 @@ const Home: NextPage = () => {
       <div className="datagrid-container">
         <DataGrid rows={users} columns={columns} />
       </div>
-      <UserGrouper users={selectedUsers} />
+      <UserGrouper users={selectedUsers} unselectUserFn={unselectUser} />
+      <UnselectedUserViewer users={getUnselectedUser()} />
       <SendSlackMessage oauthToken={oauthToken} />
       <style jsx>{`
         .form-root {

@@ -2,7 +2,13 @@ import { Chip } from "@mui/material";
 import { generateRandomPartition } from "../utils/group/GenerateRandomPartition";
 import { SlackUser } from "../utils/slack/slack-user";
 
-export function UserGrouper({ users }: { users: SlackUser[] }) {
+export function UserGrouper({
+  users,
+  unselectUserFn,
+}: {
+  users: SlackUser[];
+  unselectUserFn: (id: string) => void;
+}) {
   const grouped = generateRandomPartition(users, 4, 4);
   return (
     <div className="root">
@@ -13,7 +19,12 @@ export function UserGrouper({ users }: { users: SlackUser[] }) {
             <div>Group {i + 1}</div>
           </div>
           {users.map((u) => (
-            <Chip label={u.displayName} />
+            <div>
+              <Chip
+                label={u.displayName}
+                onDelete={() => unselectUserFn(u.id)}
+              />
+            </div>
           ))}
         </div>
       ))}
