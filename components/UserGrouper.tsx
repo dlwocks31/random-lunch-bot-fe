@@ -1,4 +1,4 @@
-import { Chip, TextField } from "@mui/material";
+import { Button, Chip, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { createRandomGroup } from "../utils/group/CreateRandomGroup";
 import { SlackUser } from "../utils/slack/slack-user";
@@ -30,17 +30,22 @@ export function UserGrouper({
           }}
         />
       </div>
-      <div>
-        총 {users.length}명의 유저가{" "}
-        <TextField
-          label="조 개수"
-          type="number"
-          value={groupCount}
-          onChange={(e) => {
-            if (e.target.value) setGroupCount(Number(e.target.value));
-          }}
-        />
-        개의 조로 추첨됩니다!
+      <div className="group-count-container">
+        <div>
+          총 {users.length}명의 유저가 {groupCount}개의 조로 추첨됩니다!{" "}
+        </div>
+        <Button
+          variant="contained"
+          onClick={() => setGroupCount((gc) => gc + 1)}
+        >
+          조 개수 +1
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => setGroupCount((gc) => (gc > 1 ? gc - 1 : gc))}
+        >
+          조 개수 -1
+        </Button>
       </div>
       {partition.map((users, i) => (
         <div className="group-container">
@@ -69,6 +74,9 @@ export function UserGrouper({
           display: flex;
           flex-direction: column;
           gap: 10px;
+        }
+        .group-count-container {
+          display: flex;
         }
       `}</style>
     </div>

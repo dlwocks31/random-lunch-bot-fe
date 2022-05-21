@@ -1,13 +1,25 @@
-import { Chip } from "@mui/material";
+import Select from "react-select";
 import { SlackUser } from "../utils/slack/slack-user";
 
-export function UnselectedUserViewer({ users }: { users: SlackUser[] }) {
+export function UnselectedUserViewer({
+  allUsers,
+  onChange,
+}: {
+  allUsers: SlackUser[];
+  onChange: (ids: string[]) => void;
+}) {
   return (
     <div>
       <div> Unselected User: </div>
-      {users.map((u) => (
-        <Chip label={u.displayName} />
-      ))}
+      <Select
+        placeholder="유저 이름을 검색하세요"
+        options={allUsers.map(({ id, displayName }) => ({
+          value: id,
+          label: displayName,
+        }))}
+        isMulti
+        onChange={(e) => onChange(e.map((e) => e.value))}
+      />
     </div>
   );
 }

@@ -25,6 +25,10 @@ const Home: NextPage = () => {
   function unselectUser(id: string) {
     setSelectedUsers(selectedUsers.filter((u) => u.id !== id));
   }
+
+  function onUnselectUserChange(unselectedUserIds: string[]) {
+    setSelectedUsers(users.filter((u) => !unselectedUserIds.includes(u.id)));
+  }
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 90 },
     {
@@ -54,7 +58,7 @@ const Home: NextPage = () => {
         <DataGrid rows={users} columns={columns} />
       </div>
       <UserGrouper users={selectedUsers} unselectUserFn={unselectUser} />
-      <UnselectedUserViewer users={getUnselectedUser()} />
+      <UnselectedUserViewer allUsers={users} onChange={onUnselectUserChange} />
       <SendSlackMessage oauthToken={oauthToken} />
       <style jsx>{`
         .form-root {
