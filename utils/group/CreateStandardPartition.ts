@@ -1,4 +1,7 @@
-export function createRandomGroup<T>(users: T[], groupCount: number) {
+export function createStandardPartition<T>(
+  users: T[],
+  groupCount: number,
+): T[][] {
   if (groupCount <= 0) return [];
   const result: T[][] = Array(groupCount);
   for (let i = 0; i < groupCount; i++) {

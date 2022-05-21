@@ -2,6 +2,7 @@ import { Button, FormControl, TextField } from "@mui/material";
 import type { NextPage } from "next";
 import { useState } from "react";
 import { SendSlackMessage } from "../components/SendSlackMessage";
+import { TagEditor } from "../components/TagEditor";
 import { UnselectedUserViewer } from "../components/UnselectedUserViewer";
 import { UserGrouper } from "../components/UserGrouper";
 import { SlackUser } from "../utils/slack/slack-user";
@@ -11,6 +12,9 @@ const Home: NextPage = () => {
   const [users, setUsers] = useState<{ user: SlackUser; selected: boolean }[]>(
     [],
   );
+  // tag name -> user ids map
+  const [tagMap, setTagMap] = useState<Map<string, string[]>>(new Map());
+
   function getUsersFromSlack() {
     const slackService = new SlackService(oauthToken);
     slackService.findAllValidSlackUsers().then((users) => {
@@ -20,7 +24,7 @@ const Home: NextPage = () => {
   function unselectUser(id: string) {
     setUsers((users) =>
       users.map((u) => ({
-        user: u.user,
+        ...u,
         selected: u.user.id === id ? false : u.selected,
       })),
     );
@@ -28,7 +32,7 @@ const Home: NextPage = () => {
 
   function onUnselectUserChange(unselectedUserIds: string[]) {
     const result = users.map((u) => ({
-      user: u.user,
+      ...u,
       selected: !unselectedUserIds.includes(u.user.id),
     }));
     setUsers(result);
@@ -50,11 +54,20 @@ const Home: NextPage = () => {
         />
         <Button onClick={getUsersFromSlack}>Submit</Button>
       </FormControl>
-      <UserGrouper users={getSelectedUsers()} unselectUserFn={unselectUser} />
+      <UserGrouper
+        users={getSelectedUsers()}
+        unselectUserFn={unselectUser}
+        tagMap={tagMap}
+      />
       <UnselectedUserViewer
         allUsers={users.map((u) => u.user)}
         unselectedUsers={users.filter((u) => !u.selected).map((u) => u.user)}
         onChange={onUnselectUserChange}
+      />
+      <TagEditor
+        users={users.map((u) => u.user)}
+        tagMap={tagMap}
+        onTagMapChange={setTagMap}
       />
       <SendSlackMessage oauthToken={oauthToken} />
       <style jsx>{`

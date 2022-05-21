@@ -1,23 +1,64 @@
 import { Button, Chip, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import { createRandomGroup } from "../utils/group/CreateRandomGroup";
+import { createStandardPartition } from "../utils/group/CreateStandardPartition";
+import { optimizePartition } from "../utils/group/OptimizePartition";
 import { SlackUser } from "../utils/slack/slack-user";
 
 export function UserGrouper({
   users,
+  tagMap,
   unselectUserFn,
 }: {
   users: SlackUser[];
+  tagMap: Map<string, string[]>;
   unselectUserFn: (id: string) => void;
 }) {
   const [eachGroupSize, setEachGroupSize] = useState(4);
   const [groupCount, setGroupCount] = useState(0);
+  const [partition, setPartition] = useState<SlackUser[][]>([]);
 
   useEffect(() => {
     setGroupCount(Math.floor(users.length / eachGroupSize));
   }, [users, eachGroupSize]);
 
-  const partition = createRandomGroup(users, groupCount);
+  useEffect(() => {
+    const randomPartition = createStandardPartition(users, groupCount);
+    const tagMapReversed: Map<string, string[]> = new Map();
+    if (tagMap) {
+      for (const [tag, userIds] of tagMap.entries()) {
+        for (const userId of userIds) {
+          const tagsOfUserId = tagMapReversed.get(userId) || [];
+          tagsOfUserId.push(tag);
+          tagMapReversed.set(userId, tagsOfUserId);
+        }
+      }
+    }
+    console.log(tagMap);
+
+    const groupPenaltyFn = (team: SlackUser[]): number => {
+      let sumScore = 0;
+
+      for (let i = 0; i < team.length; i++) {
+        for (let j = i + 1; j < team.length; j++) {
+          const u1 = team[i];
+          const u2 = team[j];
+          const tagsOfU1 = tagMapReversed.get(u1.id) || [];
+          const tagsOfU2 = tagMapReversed.get(u2.id) || [];
+          for (const t1 of tagsOfU1) {
+            for (const t2 of tagsOfU2) {
+              if (t1 === t2) {
+                // todo: use function call
+                sumScore += 1;
+              }
+            }
+          }
+        }
+      }
+      return sumScore;
+    };
+    setPartition(optimizePartition(randomPartition, 1000, groupPenaltyFn));
+  }, [users, groupCount, tagMap]);
+
   return (
     <div className="root">
       <div>
