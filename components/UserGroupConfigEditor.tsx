@@ -1,4 +1,5 @@
 import { Button, TextField } from "@mui/material";
+import { useEffect } from "react";
 import { SlackUser } from "../utils/slack/slack-user";
 
 export function UserGroupConfigEditor({
@@ -14,6 +15,9 @@ export function UserGroupConfigEditor({
   setEachGroupSize: (eachGroupSize: number) => void;
   setGroupCount: (groupCount: number) => void;
 }) {
+  useEffect(() => {
+    setGroupCount(Math.floor(users.length / eachGroupSize));
+  }, [users, eachGroupSize]);
   return (
     <div>
       <div>

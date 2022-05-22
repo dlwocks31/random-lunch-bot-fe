@@ -19,10 +19,6 @@ export function UserGrouper({
   const [partition, setPartition] = useState<SlackUser[][]>([]);
 
   useEffect(() => {
-    setGroupCount(Math.floor(users.length / eachGroupSize));
-  }, [users, eachGroupSize]);
-
-  useEffect(() => {
     const randomPartition = createStandardPartition(users, groupCount);
     const tagMapReversed: Map<string, string[]> = new Map();
     if (tagMap) {
