@@ -1,4 +1,5 @@
 import { Button } from "@mui/material";
+import { useEffect } from "react";
 import { SlackUser } from "../../utils/slack/slack-user";
 import { createCommonTokens } from "../../utils/tag/CreateCommonTokens";
 import { createTagsFromSlackName } from "../../utils/tag/CreateTagsFromSlackName";
@@ -49,6 +50,8 @@ export function TagGenerator({
     }
     onTagMapChange(newTagMap);
   };
+
+  useEffect(generateTag, [users.length]);
   return (
     <div>
       <Button variant="contained" onClick={generateTag}>
