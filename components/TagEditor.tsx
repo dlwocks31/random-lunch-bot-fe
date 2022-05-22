@@ -36,10 +36,14 @@ export function TagEditor({
               })}
               onChange={(e) => {
                 const newTagMap = new Map(tagMap);
-                newTagMap.set(
-                  tag,
-                  e.map((e) => e.value),
-                );
+                if (e.length === 0) {
+                  newTagMap.delete(tag);
+                } else {
+                  newTagMap.set(
+                    tag,
+                    e.map((e) => e.value),
+                  );
+                }
                 onTagMapChange(newTagMap);
               }}
             />
