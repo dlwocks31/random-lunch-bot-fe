@@ -3,6 +3,7 @@ import Select from "react-select";
 import { useState } from "react";
 import { SlackUser } from "../utils/slack/slack-user";
 import { values } from "lodash";
+import { TagGenerator } from "./TagGenerator";
 
 export function TagEditor({
   users,
@@ -67,6 +68,7 @@ export function TagEditor({
           }}
         />
       </div>
+      <TagGenerator users={users} onTagMapChange={onTagMapChange} />
       <style jsx>{`
         .new-tag-container {
           display: flex;
