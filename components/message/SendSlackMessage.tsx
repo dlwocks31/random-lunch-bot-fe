@@ -2,13 +2,23 @@ import { Button, TextField } from "@mui/material";
 import Select from "react-select";
 import { useState } from "react";
 import { SlackService } from "../../utils/slack/slack.service";
+import { SlackUser } from "../../utils/slack/slack-user";
+import { buildSlackMessage } from "../../utils/slack/BuildSlackMessage";
 
-export function SendSlackMessage({ oauthToken }: { oauthToken: string }) {
-  const [message, setMessage] = useState("");
+export function SendSlackMessage({
+  oauthToken,
+  templateMessage,
+  partition,
+}: {
+  oauthToken: string;
+  templateMessage: string;
+  partition: SlackUser[][];
+}) {
   const [channel, setChannel] = useState("");
   const [conversations, setConversations] = useState<
     { id: string; name: string }[]
   >([]);
+  const message = buildSlackMessage(partition, templateMessage);
   const getConversations = async () => {
     const slackService = new SlackService(oauthToken);
     const conversations = await slackService.listConversation();
@@ -17,9 +27,9 @@ export function SendSlackMessage({ oauthToken }: { oauthToken: string }) {
   const sendSlackMessage = async () => {
     const slackService = new SlackService(oauthToken);
     const joinResult = await slackService.joinConversation(channel);
-    alert(JSON.stringify(joinResult));
+    console.log(JSON.stringify(joinResult));
     const result = await slackService.send(message, channel);
-    alert(JSON.stringify(result));
+    console.log(JSON.stringify(result));
   };
 
   return (
@@ -36,10 +46,11 @@ export function SendSlackMessage({ oauthToken }: { oauthToken: string }) {
       </div>
       <TextField
         label="Message"
+        disabled
         fullWidth
         multiline
+        rows={20}
         value={message}
-        onChange={(e) => setMessage(e.target.value)}
       />
 
       <Button onClick={sendSlackMessage}>Send</Button>

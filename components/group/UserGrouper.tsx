@@ -11,15 +11,18 @@ export function UserGrouper({
   officeUsers,
   remoteUsers,
   tagMap,
+  partition,
+  setPartition,
 }: {
   officeUsers: SlackUser[];
   remoteUsers: SlackUser[];
   tagMap: Map<string, string[]>;
+  partition: SlackUser[][];
+  setPartition: (partition: SlackUser[][]) => void;
 }) {
   const [eachGroupSize, setEachGroupSize] = useState(4);
   const [officeGroupCount, setOfficeGroupCount] = useState(0);
   const [remoteGroupCount, setRemoteGroupCount] = useState(0);
-  const [partition, setPartition] = useState<SlackUser[][]>([]);
 
   const tagMapReversed: Map<string, string[]> = new Map();
   for (const [tag, userIds] of tagMap.entries() || []) {
@@ -55,6 +58,7 @@ export function UserGrouper({
   function generateOptimizedPartition() {
     shuffle(officeUsers);
     shuffle(remoteUsers);
+    console.log("Generate optimized partition");
     const officePartition = optimizePartition(
       createStandardPartition(officeUsers, officeGroupCount),
       1000,

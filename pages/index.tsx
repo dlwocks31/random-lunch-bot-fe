@@ -8,13 +8,16 @@ import { UnselectedUserViewer } from "../components/group/UnselectedUserViewer";
 import { UserGrouper } from "../components/group/UserGrouper";
 import { SlackUser } from "../utils/slack/slack-user";
 import { SlackService } from "../utils/slack/slack.service";
+import { TemplateMessageEditor } from "../components/message/TemplateMessageEditor";
 const Home: NextPage = () => {
   const [oauthToken, setOauthToken] = useState("");
   const [users, setUsers] = useState<
     { user: SlackUser; selected: boolean; isRemote: boolean }[]
   >([]);
+  const [partition, setPartition] = useState<SlackUser[][]>([]);
   // tag name -> user ids map
   const [tagMap, setTagMap] = useState<Map<string, string[]>>(new Map());
+  const [templateMessage, setTemplateMessage] = useState("");
 
   function getUsersFromSlack() {
     const slackService = new SlackService(oauthToken);
@@ -63,31 +66,47 @@ const Home: NextPage = () => {
         />
         <Button onClick={getUsersFromSlack}>Submit</Button>
       </FormControl>
-      <UserGrouper
-        officeUsers={users
-          .filter((u) => u.selected && !u.isRemote)
-          .map((u) => u.user)}
-        remoteUsers={users
-          .filter((u) => u.selected && u.isRemote)
-          .map((u) => u.user)}
-        tagMap={tagMap}
-      />
-      <UnselectedUserViewer
-        allUsers={users.map((u) => u.user)}
-        unselectedUsers={users.filter((u) => !u.selected).map((u) => u.user)}
-        onChange={onUnselectUserChange}
-      />
-      <RemoteUserViewer
-        allUsers={users.map((u) => u.user)}
-        remoteUsers={users.filter((u) => u.isRemote).map((u) => u.user)}
-        onChange={onRemoteUserChange}
-      />
-      <TagEditor
-        users={users.map((u) => u.user)}
-        tagMap={tagMap}
-        onTagMapChange={setTagMap}
-      />
-      <SendSlackMessage oauthToken={oauthToken} />
+      <div>
+        <UserGrouper
+          officeUsers={users
+            .filter((u) => u.selected && !u.isRemote)
+            .map((u) => u.user)}
+          remoteUsers={users
+            .filter((u) => u.selected && u.isRemote)
+            .map((u) => u.user)}
+          tagMap={tagMap}
+          partition={partition}
+          setPartition={setPartition}
+        />
+        <UnselectedUserViewer
+          allUsers={users.map((u) => u.user)}
+          unselectedUsers={users.filter((u) => !u.selected).map((u) => u.user)}
+          onChange={onUnselectUserChange}
+        />
+        <RemoteUserViewer
+          allUsers={users.map((u) => u.user)}
+          remoteUsers={users.filter((u) => u.isRemote).map((u) => u.user)}
+          onChange={onRemoteUserChange}
+        />
+      </div>
+      <div>
+        <TagEditor
+          users={users.map((u) => u.user)}
+          tagMap={tagMap}
+          onTagMapChange={setTagMap}
+        />
+      </div>
+      <div>
+        <TemplateMessageEditor
+          templateMessage={templateMessage}
+          setTemplateMessage={setTemplateMessage}
+        />
+        <SendSlackMessage
+          oauthToken={oauthToken}
+          templateMessage={templateMessage}
+          partition={partition}
+        />
+      </div>
       <style jsx>{`
         .form-root {
           display: flex;
