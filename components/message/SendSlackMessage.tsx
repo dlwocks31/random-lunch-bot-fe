@@ -1,7 +1,7 @@
 import { Button, TextField } from "@mui/material";
 import Select from "react-select";
 import { useState } from "react";
-import { SlackService } from "../utils/slack/slack.service";
+import { SlackService } from "../../utils/slack/slack.service";
 
 export function SendSlackMessage({ oauthToken }: { oauthToken: string }) {
   const [message, setMessage] = useState("");

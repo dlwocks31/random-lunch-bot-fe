@@ -1,11 +1,11 @@
 import { Button, Chip } from "@mui/material";
 import { concat, shuffle } from "lodash";
 import { useEffect, useState } from "react";
-import { createStandardPartition } from "../utils/group/CreateStandardPartition";
-import { optimizePartition } from "../utils/group/OptimizePartition";
-import { SlackUser } from "../utils/slack/slack-user";
-import { EachGroupSizeEditor } from "./group/EachGroupSizeEditor";
-import { GroupCountEditor } from "./group/GroupCountEditor";
+import { createStandardPartition } from "../../utils/group/CreateStandardPartition";
+import { optimizePartition } from "../../utils/group/OptimizePartition";
+import { SlackUser } from "../../utils/slack/slack-user";
+import { EachGroupSizeEditor } from "./EachGroupSizeEditor";
+import { GroupCountEditor } from "./GroupCountEditor";
 
 export function UserGrouper({
   officeUsers,

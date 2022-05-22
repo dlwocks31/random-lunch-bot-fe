@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
-import { SlackUser } from "../utils/slack/slack-user";
-import { createCommonTokens } from "../utils/tag/CreateCommonTokens";
-import { createTagsFromSlackName } from "../utils/tag/CreateTagsFromSlackName";
+import { SlackUser } from "../../utils/slack/slack-user";
+import { createCommonTokens } from "../../utils/tag/CreateCommonTokens";
+import { createTagsFromSlackName } from "../../utils/tag/CreateTagsFromSlackName";
 
 export function TagGenerator({
   users,

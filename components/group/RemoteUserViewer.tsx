@@ -1,5 +1,5 @@
 import Select from "react-select";
-import { SlackUser } from "../utils/slack/slack-user";
+import { SlackUser } from "../../utils/slack/slack-user";
 
 export function RemoteUserViewer({
   allUsers,

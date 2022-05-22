@@ -1,7 +1,7 @@
 import { Chip, TextField } from "@mui/material";
 import Select from "react-select";
 import { useState } from "react";
-import { SlackUser } from "../utils/slack/slack-user";
+import { SlackUser } from "../../utils/slack/slack-user";
 import { values } from "lodash";
 import { TagGenerator } from "./TagGenerator";
 

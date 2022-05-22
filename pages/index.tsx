@@ -1,11 +1,11 @@
 import { Button, FormControl, TextField } from "@mui/material";
 import type { NextPage } from "next";
 import { useState } from "react";
-import { RemoteUserViewer } from "../components/RemoteUserViewer";
-import { SendSlackMessage } from "../components/SendSlackMessage";
-import { TagEditor } from "../components/TagEditor";
-import { UnselectedUserViewer } from "../components/UnselectedUserViewer";
-import { UserGrouper } from "../components/UserGrouper";
+import { RemoteUserViewer } from "../components/group/RemoteUserViewer";
+import { SendSlackMessage } from "../components/message/SendSlackMessage";
+import { TagEditor } from "../components/tag/TagEditor";
+import { UnselectedUserViewer } from "../components/group/UnselectedUserViewer";
+import { UserGrouper } from "../components/group/UserGrouper";
 import { SlackUser } from "../utils/slack/slack-user";
 import { SlackService } from "../utils/slack/slack.service";
 const Home: NextPage = () => {
