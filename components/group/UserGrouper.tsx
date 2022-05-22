@@ -11,12 +11,10 @@ export function UserGrouper({
   officeUsers,
   remoteUsers,
   tagMap,
-  unselectUserFn,
 }: {
   officeUsers: SlackUser[];
   remoteUsers: SlackUser[];
   tagMap: Map<string, string[]>;
-  unselectUserFn: (id: string) => void;
 }) {
   const [eachGroupSize, setEachGroupSize] = useState(4);
   const [officeGroupCount, setOfficeGroupCount] = useState(0);
@@ -120,10 +118,7 @@ export function UserGrouper({
           </div>
           {users.map((u) => (
             <div key={u.id}>
-              <Chip
-                label={u.displayName}
-                onDelete={() => unselectUserFn(u.id)}
-              />
+              <Chip label={u.displayName} />
             </div>
           ))}
         </div>

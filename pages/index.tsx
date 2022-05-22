@@ -24,14 +24,6 @@ const Home: NextPage = () => {
       );
     });
   }
-  function unselectUser(id: string) {
-    setUsers((users) =>
-      users.map((u) => ({
-        ...u,
-        selected: u.user.id === id ? false : u.selected,
-      })),
-    );
-  }
 
   function onRemoteUserChange(userIds: string[]) {
     setUsers((users) =>
@@ -59,10 +51,6 @@ const Home: NextPage = () => {
     );
   }
 
-  function getSelectedUsers() {
-    return users.filter((u) => u.selected).map((u) => u.user);
-  }
-
   return (
     <div className="form-root">
       <FormControl className="form-control">
@@ -82,7 +70,6 @@ const Home: NextPage = () => {
         remoteUsers={users
           .filter((u) => u.selected && u.isRemote)
           .map((u) => u.user)}
-        unselectUserFn={unselectUser}
         tagMap={tagMap}
       />
       <UnselectedUserViewer
