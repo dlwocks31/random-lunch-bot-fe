@@ -17,17 +17,24 @@ export function TagGenerator({
       allRawTags.push(...createTagsFromSlackName(user.displayName));
     }
     const commonTokens = createCommonTokens(allRawTags);
-    console.log(`Common tokens: ${commonTokens}`);
+    const allTags = allRawTags
+      .filter((tag) => !commonTokens.some((token) => tag.includes(token)))
+      .concat(commonTokens);
+
+    for (const tag of allTags) {
+      newTagMap.set(tag, []);
+    }
+
     for (const user of users) {
       const rawTags = createTagsFromSlackName(user.displayName);
-      const tags = rawTags.map((tag) => {
-        const token = commonTokens.find((t) => tag.includes(t));
-        return token ? token : tag;
-      });
-      for (const tag of tags) {
-        const userIds = newTagMap.get(tag) || [];
-        userIds.push(user.id);
-        newTagMap.set(tag, userIds);
+      for (const tag of rawTags) {
+        for (const addToTags of allTags) {
+          if (tag.includes(addToTags)) {
+            const userIds = newTagMap.get(addToTags) || [];
+            userIds.push(user.id);
+            newTagMap.set(addToTags, userIds);
+          }
+        }
       }
     }
     // remove tag with only one person
