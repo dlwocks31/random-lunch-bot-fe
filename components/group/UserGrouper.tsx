@@ -76,9 +76,17 @@ export function UserGrouper({
     shuffle(officeUsers);
     generateOptimizedPartition();
   }
+  /*
+  외부에서 officeUsers, remoteUsers를 `.filter`해서 내려준다. 
+  이떄 만약 officeUsers에 대해 useEffect한다면:
+  - Home이 rerender될 때 officeUser는 항상 재생성된다
+  - 따라서 여기 있는 useEffect가 작동하고 generateOptimizedPartition -> setPartition이 실행되게 됨.
+  - setPartition은 Home의 rerender를 유발함으로 무한 루프가 돌게 됨..
+  이걸 방지하기 위해 officeUsers대신 .length 에 대해 useEffect를 해준다.
+  */
   useEffect(generateOptimizedPartition, [
-    officeUsers,
-    remoteUsers,
+    officeUsers.length,
+    remoteUsers.length,
     officeGroupCount,
     remoteGroupCount,
     tagMap,
