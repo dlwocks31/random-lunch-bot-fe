@@ -1,6 +1,6 @@
 import { Button, TextField } from "@mui/material";
 import Select from "react-select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SlackService } from "../../utils/slack/slack.service";
 import { SlackUser } from "../../utils/slack/slack-user";
 import { buildSlackMessage } from "../../utils/slack/BuildSlackMessage";
@@ -32,6 +32,10 @@ export function SendSlackMessage({
     console.log(JSON.stringify(result));
   };
 
+  useEffect(() => {
+    if (oauthToken) getConversations();
+  }, [oauthToken]);
+
   return (
     <div className="root">
       <div className="select-container">
@@ -54,7 +58,6 @@ export function SendSlackMessage({
       />
 
       <Button onClick={sendSlackMessage}>Send</Button>
-      <Button onClick={getConversations}>Get Conversations</Button>
       <style jsx>
         {`
           .select-container {
