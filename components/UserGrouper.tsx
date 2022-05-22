@@ -1,4 +1,5 @@
-import { Chip } from "@mui/material";
+import { Button, Chip } from "@mui/material";
+import { shuffle } from "lodash";
 import { useEffect, useState } from "react";
 import { createStandardPartition } from "../utils/group/CreateStandardPartition";
 import { optimizePartition } from "../utils/group/OptimizePartition";
@@ -18,7 +19,7 @@ export function UserGrouper({
   const [groupCount, setGroupCount] = useState(0);
   const [partition, setPartition] = useState<SlackUser[][]>([]);
 
-  useEffect(() => {
+  function generateOptimizedPartition() {
     const randomPartition = createStandardPartition(users, groupCount);
     const tagMapReversed: Map<string, string[]> = new Map();
     if (tagMap) {
@@ -30,7 +31,6 @@ export function UserGrouper({
         }
       }
     }
-    console.log(tagMap);
 
     const groupPenaltyFn = (team: SlackUser[]): number => {
       let sumScore = 0;
@@ -54,7 +54,12 @@ export function UserGrouper({
       return sumScore;
     };
     setPartition(optimizePartition(randomPartition, 1000, groupPenaltyFn));
-  }, [users, groupCount, tagMap]);
+  }
+  function regenerateOptimizedPartition() {
+    shuffle(users);
+    generateOptimizedPartition();
+  }
+  useEffect(generateOptimizedPartition, [users, groupCount, tagMap]);
 
   return (
     <div className="root">
@@ -65,6 +70,7 @@ export function UserGrouper({
         setEachGroupSize={setEachGroupSize}
         setGroupCount={setGroupCount}
       />
+      <Button onClick={regenerateOptimizedPartition}>재추첨</Button>
       {partition.map((users, i) => (
         <div className="group-container">
           <div>
