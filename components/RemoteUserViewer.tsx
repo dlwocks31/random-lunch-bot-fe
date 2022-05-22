@@ -1,18 +1,18 @@
 import Select from "react-select";
 import { SlackUser } from "../utils/slack/slack-user";
 
-export function UnselectedUserViewer({
+export function RemoteUserViewer({
   allUsers,
-  unselectedUsers,
+  remoteUsers,
   onChange,
 }: {
   allUsers: SlackUser[];
-  unselectedUsers: SlackUser[];
+  remoteUsers: SlackUser[];
   onChange: (ids: string[]) => void;
 }) {
   return (
     <div>
-      <div>제외된 유저:</div>
+      <div>재택 중인 유저:</div>
       <Select
         placeholder="유저 이름을 검색하세요"
         hideSelectedOptions
@@ -20,7 +20,7 @@ export function UnselectedUserViewer({
           value: id,
           label: displayName,
         }))}
-        value={unselectedUsers.map(({ id, displayName }) => ({
+        value={remoteUsers.map(({ id, displayName }) => ({
           value: id,
           label: displayName,
         }))}

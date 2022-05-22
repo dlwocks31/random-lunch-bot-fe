@@ -1,6 +1,7 @@
 import { Button, FormControl, TextField } from "@mui/material";
 import type { NextPage } from "next";
 import { useState } from "react";
+import { RemoteUserViewer } from "../components/RemoteUserViewer";
 import { SendSlackMessage } from "../components/SendSlackMessage";
 import { TagEditor } from "../components/TagEditor";
 import { UnselectedUserViewer } from "../components/UnselectedUserViewer";
@@ -9,16 +10,18 @@ import { SlackUser } from "../utils/slack/slack-user";
 import { SlackService } from "../utils/slack/slack.service";
 const Home: NextPage = () => {
   const [oauthToken, setOauthToken] = useState("");
-  const [users, setUsers] = useState<{ user: SlackUser; selected: boolean }[]>(
-    [],
-  );
+  const [users, setUsers] = useState<
+    { user: SlackUser; selected: boolean; isRemote: boolean }[]
+  >([]);
   // tag name -> user ids map
   const [tagMap, setTagMap] = useState<Map<string, string[]>>(new Map());
 
   function getUsersFromSlack() {
     const slackService = new SlackService(oauthToken);
     slackService.findAllValidSlackUsers().then((users) => {
-      setUsers(users.map((u) => ({ user: u, selected: true })));
+      setUsers(
+        users.map((u) => ({ user: u, selected: true, isRemote: false })),
+      );
     });
   }
   function unselectUser(id: string) {
@@ -30,12 +33,30 @@ const Home: NextPage = () => {
     );
   }
 
+  function onRemoteUserChange(userIds: string[]) {
+    setUsers((users) =>
+      users.map((u) => {
+        const isRemote = userIds.includes(u.user.id);
+        return {
+          ...u,
+          selected: isRemote ? true : u.selected,
+          isRemote,
+        };
+      }),
+    );
+  }
+
   function onUnselectUserChange(unselectedUserIds: string[]) {
-    const result = users.map((u) => ({
-      ...u,
-      selected: !unselectedUserIds.includes(u.user.id),
-    }));
-    setUsers(result);
+    setUsers((users) =>
+      users.map((u) => {
+        const selected = !unselectedUserIds.includes(u.user.id);
+        return {
+          ...u,
+          isRemote: selected ? u.isRemote : false,
+          selected,
+        };
+      }),
+    );
   }
 
   function getSelectedUsers() {
@@ -63,6 +84,11 @@ const Home: NextPage = () => {
         allUsers={users.map((u) => u.user)}
         unselectedUsers={users.filter((u) => !u.selected).map((u) => u.user)}
         onChange={onUnselectUserChange}
+      />
+      <RemoteUserViewer
+        allUsers={users.map((u) => u.user)}
+        remoteUsers={users.filter((u) => u.isRemote).map((u) => u.user)}
+        onChange={onRemoteUserChange}
       />
       <TagEditor
         users={users.map((u) => u.user)}
