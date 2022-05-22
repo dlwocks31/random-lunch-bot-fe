@@ -1,8 +1,9 @@
-import { Button, Chip, TextField } from "@mui/material";
+import { Chip } from "@mui/material";
 import { useEffect, useState } from "react";
 import { createStandardPartition } from "../utils/group/CreateStandardPartition";
 import { optimizePartition } from "../utils/group/OptimizePartition";
 import { SlackUser } from "../utils/slack/slack-user";
+import { UserGroupConfigEditor } from "./UserGroupConfigEditor";
 
 export function UserGrouper({
   users,
@@ -61,33 +62,13 @@ export function UserGrouper({
 
   return (
     <div className="root">
-      <div>
-        <TextField
-          label="원하는 조별 인원 수"
-          type="number"
-          value={eachGroupSize}
-          onChange={(e) => {
-            if (e.target.value) setEachGroupSize(Number(e.target.value));
-          }}
-        />
-      </div>
-      <div className="group-count-container">
-        <div>
-          총 {users.length}명의 유저가 {groupCount}개의 조로 추첨됩니다!{" "}
-        </div>
-        <Button
-          variant="contained"
-          onClick={() => setGroupCount((gc) => gc + 1)}
-        >
-          조 개수 +1
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => setGroupCount((gc) => (gc > 1 ? gc - 1 : gc))}
-        >
-          조 개수 -1
-        </Button>
-      </div>
+      <UserGroupConfigEditor
+        eachGroupSize={eachGroupSize}
+        groupCount={groupCount}
+        users={users}
+        setEachGroupSize={setEachGroupSize}
+        setGroupCount={setGroupCount}
+      />
       {partition.map((users, i) => (
         <div className="group-container">
           <div>
@@ -115,9 +96,6 @@ export function UserGrouper({
           display: flex;
           flex-direction: column;
           gap: 10px;
-        }
-        .group-count-container {
-          display: flex;
         }
       `}</style>
     </div>
