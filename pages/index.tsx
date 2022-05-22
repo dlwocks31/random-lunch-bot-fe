@@ -76,7 +76,12 @@ const Home: NextPage = () => {
         <Button onClick={getUsersFromSlack}>Submit</Button>
       </FormControl>
       <UserGrouper
-        users={getSelectedUsers()}
+        officeUsers={users
+          .filter((u) => u.selected && !u.isRemote)
+          .map((u) => u.user)}
+        remoteUsers={users
+          .filter((u) => u.selected && u.isRemote)
+          .map((u) => u.user)}
         unselectUserFn={unselectUser}
         tagMap={tagMap}
       />

@@ -12,9 +12,10 @@ export function optimizePartition<T>(
     sum(partition.map((a) => groupPenalty(a)));
   let bestPartition = initialParition;
   let bestPenalty = getPartitionPenalty(bestPartition);
+  const loggedOptimizeHistory = [[-1, bestPenalty]];
   // simulated annealing technique
   for (let i = 0; i < trialCount; i++) {
-    const temperature = min([10, trialCount / (i + 1)]) || 10;
+    const temperature = bestPenalty + 1;
     const mutatedPartition = cloneDeep(bestPartition);
     for (let t = 0; t < temperature; t++) {
       let r1 = random(bestPartition.length - 1);
@@ -27,11 +28,15 @@ export function optimizePartition<T>(
     }
     const mutatedPenalty = getPartitionPenalty(mutatedPartition);
     if (mutatedPenalty < bestPenalty) {
-      console.log("At trial " + i + ": " + mutatedPenalty);
+      loggedOptimizeHistory.push([i, mutatedPenalty]);
       bestPartition = mutatedPartition;
       bestPenalty = mutatedPenalty;
     }
   }
-  console.log("Final penalty: " + bestPenalty);
+  console.log(
+    `Optimized for partition of length ${sum(
+      initialParition.map((a) => a.length),
+    )} / penalty history: ${JSON.stringify(loggedOptimizeHistory)}`,
+  );
   return bestPartition;
 }
