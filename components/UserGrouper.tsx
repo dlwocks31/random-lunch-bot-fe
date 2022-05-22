@@ -20,6 +20,7 @@ export function UserGrouper({
   const [partition, setPartition] = useState<SlackUser[][]>([]);
 
   function generateOptimizedPartition() {
+    shuffle(users);
     const randomPartition = createStandardPartition(users, groupCount);
     const tagMapReversed: Map<string, string[]> = new Map();
     if (tagMap) {
