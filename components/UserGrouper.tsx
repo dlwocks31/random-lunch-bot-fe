@@ -72,14 +72,14 @@ export function UserGrouper({
       />
       <Button onClick={regenerateOptimizedPartition}>재추첨</Button>
       {partition.map((users, i) => (
-        <div className="group-container">
+        <div className="group-container" key={users.map((u) => u.id).join("-")}>
           <div>
             <div>
               Group {i + 1} ({users.length}명)
             </div>
           </div>
           {users.map((u) => (
-            <div>
+            <div key={u.id}>
               <Chip
                 label={u.displayName}
                 onDelete={() => unselectUserFn(u.id)}

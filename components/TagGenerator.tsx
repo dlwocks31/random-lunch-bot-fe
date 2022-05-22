@@ -36,6 +36,10 @@ export function TagGenerator({
         newTagMap.delete(tag);
       }
     }
+    // uniqueize each userId list
+    for (const [tag, userIds] of newTagMap.entries()) {
+      newTagMap.set(tag, [...new Set(userIds)]);
+    }
     onTagMapChange(newTagMap);
   };
   return (
