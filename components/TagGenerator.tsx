@@ -1,5 +1,6 @@
 import { Button } from "@mui/material";
 import { SlackUser } from "../utils/slack/slack-user";
+import { createCommonTokens } from "../utils/tag/CreateCommonTokens";
 import { createTagsFromSlackName } from "../utils/tag/CreateTagsFromSlackName";
 
 export function TagGenerator({
@@ -11,8 +12,18 @@ export function TagGenerator({
 }) {
   const generateTag = () => {
     const newTagMap: Map<string, string[]> = new Map();
+    const allRawTags = [];
     for (const user of users) {
-      const tags = createTagsFromSlackName(user.displayName);
+      allRawTags.push(...createTagsFromSlackName(user.displayName));
+    }
+    const commonTokens = createCommonTokens(allRawTags);
+    console.log(`Common tokens: ${commonTokens}`);
+    for (const user of users) {
+      const rawTags = createTagsFromSlackName(user.displayName);
+      const tags = rawTags.map((tag) => {
+        const token = commonTokens.find((t) => tag.includes(t));
+        return token ? token : tag;
+      });
       for (const tag of tags) {
         const userIds = newTagMap.get(tag) || [];
         userIds.push(user.id);
