@@ -119,6 +119,7 @@ const Home: NextPage = () => {
           flex-direction: column;
           justify-content: center;
           padding: 10px;
+          gap: 15px;
         }
         .form-control {
           display: flex;
