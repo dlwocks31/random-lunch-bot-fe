@@ -3,5 +3,7 @@ export class SlackUser {
     public id: string,
     public displayName: string,
     public email: string,
+    public statusEmoji: string,
+    public statusMessage: string,
   ) {}
 }

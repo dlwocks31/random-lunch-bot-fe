@@ -30,7 +30,13 @@ const Home: NextPage = () => {
     const slackService = new SlackService(oauthToken);
     slackService.findAllValidSlackUsers().then((users) => {
       setUsers(
-        users.map((u) => ({ user: u, selected: true, isRemote: false })),
+        users.map((u) => ({
+          user: u,
+          selected:
+            u.statusEmoji !== ":house_with_garden:" &&
+            !u.statusMessage.includes("휴직"),
+          isRemote: u.statusEmoji === ":palm_tree:",
+        })),
       );
     });
   }

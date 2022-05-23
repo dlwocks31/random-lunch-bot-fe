@@ -75,10 +75,14 @@ export class SlackService {
         member.profile?.display_name || member.profile?.real_name;
       const email = member.profile?.email;
       const id = member.id;
+      const statusEmoji = member.profile?.status_emoji || "";
+      const statusMessage = member.profile?.status_text || "";
       if (!displayName || !email || !id) continue;
       if (member.is_bot || member.deleted || member.is_restricted) continue;
       if (excludedName.includes(displayName)) continue;
-      ret.push(new SlackUser(id, displayName, email));
+      ret.push(
+        new SlackUser(id, displayName, email, statusEmoji, statusMessage),
+      );
     }
     return ret;
   }
