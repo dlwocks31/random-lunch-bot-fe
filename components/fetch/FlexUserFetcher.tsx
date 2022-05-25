@@ -8,7 +8,7 @@ export function FlexUserFetcher({
   setUsers,
 }: {
   users: LunchUser[];
-  setUsers: (users: LunchUser) => void;
+  setUsers: (users: LunchUser[]) => void;
 }) {
   useEffect(() => {
     // fetch("/api/hello")
