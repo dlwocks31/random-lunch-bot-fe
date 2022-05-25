@@ -16,7 +16,7 @@ export function GroupCountEditor({
 }) {
   useEffect(() => {
     setGroupCount(ceil(users.length / eachGroupSize));
-  }, [users, eachGroupSize]);
+  }, [users.length, eachGroupSize]);
   return (
     <div>
       <div>
