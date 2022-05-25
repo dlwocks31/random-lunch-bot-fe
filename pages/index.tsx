@@ -9,6 +9,8 @@ import { UserGrouper } from "../components/group/UserGrouper";
 import { SlackUser } from "../utils/slack/slack-user";
 import { SlackService } from "../utils/slack/slack.service";
 import { TemplateMessageEditor } from "../components/message/TemplateMessageEditor";
+import { FlexUserFetcher } from "../components/fetch/FlexUserFetcher";
+import { LunchUser } from "../utils/domain/LunchUser";
 
 const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:orange_heart: 조를 발표합니다!
 > 가장 앞에 있는 분이 이 채널에 조원들을 소환해서 스레드로 함께 메뉴를 정해주세요 :simple_smile:
@@ -16,9 +18,7 @@ const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:oran
 `;
 const Home: NextPage = () => {
   const [oauthToken, setOauthToken] = useState("");
-  const [users, setUsers] = useState<
-    { user: SlackUser; selected: boolean; isRemote: boolean }[]
-  >([]);
+  const [users, setUsers] = useState<LunchUser[]>([]);
   const [partition, setPartition] = useState<SlackUser[][]>([]);
   // tag name -> user ids map
   const [tagMap, setTagMap] = useState<Map<string, string[]>>(new Map());
@@ -101,6 +101,7 @@ const Home: NextPage = () => {
           remoteUsers={users.filter((u) => u.isRemote).map((u) => u.user)}
           onChange={onRemoteUserChange}
         />
+        <FlexUserFetcher users={users} setUsers={setUsers} />
       </div>
       <div>
         <TagEditor
