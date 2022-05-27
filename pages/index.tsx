@@ -32,10 +32,10 @@ const Home: NextPage = () => {
       setUsers(
         users.map((u) => ({
           user: u,
-          selected:
-            u.statusEmoji !== ":house_with_garden:" &&
-            !u.statusMessage.includes("휴직"),
-          isRemote: u.statusEmoji === ":palm_tree:",
+          selected: !(
+            u.statusEmoji === ":palm_tree:" || u.statusMessage.includes("휴직")
+          ),
+          isRemote: u.statusEmoji === ":house_with_garden:",
         })),
       );
     });
