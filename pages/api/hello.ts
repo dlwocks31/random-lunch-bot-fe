@@ -6,7 +6,7 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<string[]>,
 ) {
-  const flexService = new FlexService();
+  const flexService = new FlexService(process.env.FLEX_AID || "");
   flexService
     .getDepartmentIds()
     .then((departmentIds) => res.status(200).json(departmentIds));
