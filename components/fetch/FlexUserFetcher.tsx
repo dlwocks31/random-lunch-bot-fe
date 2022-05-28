@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import { useEffect } from "react";
 import { LunchUser } from "../../utils/domain/LunchUser";
-import { FlexService } from "../../utils/flex/FlexService";
+import { FlexApiService } from "../../utils/flex/FlexApiService";
 
 export function FlexUserFetcher({
   users,
