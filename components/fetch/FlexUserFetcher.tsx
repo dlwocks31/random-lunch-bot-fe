@@ -13,7 +13,7 @@ export function FlexUserFetcher({
 }) {
   const [flexAid, setFlexAid] = useState("");
   function fetchApi() {
-    fetch("/api/hello")
+    fetch(`/api/flex-users?flexAid=${flexAid}`)
       .then((response) => response.json())
       .then((data) => {
         addRemoteUsersByEmail(data.remoteWork.map((d: any) => d.email));
