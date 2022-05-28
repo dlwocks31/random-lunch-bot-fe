@@ -111,7 +111,7 @@ export class FlexApiService {
   > {
     const timeStampFrom = Date.parse(date) - 9 * 60 * 60 * 1000; // 9 hours before
     const timeStampTo = timeStampFrom;
-
+    console.log("before request");
     const response = await axios.get(
       `https://flex.team/api/v2/time-tracking/users/work-schedules?timeStampFrom=${timeStampFrom}&timeStampTo=${timeStampTo}&` +
         flexIds.map((id) => `userIdHashes=${id}`).join("&"),
@@ -121,6 +121,7 @@ export class FlexApiService {
         },
       },
     );
+    console.log("after request");
     return response.data.workScheduleResults
       .map((item: any) => {
         const workFormIdToTypeMap: Map<string, string> = new Map();
@@ -159,15 +160,24 @@ export class FlexApiService {
           type: string;
           start: string;
           end: string;
-        }[] = timeOffs.map((timeOff: any) => ({
-          type: FlexTimeSlotType.TIME_OFF,
-          start: DateTime.fromMillis(timeOff.blockTimeFrom.timeStamp)
-            .setZone("Asia/Seoul")
-            .toFormat("HH:mm"),
-          end: DateTime.fromMillis(timeOff.blockTimeTo.timeStamp)
-            .setZone("Asia/Seoul")
-            .toFormat("HH:mm"),
-        }));
+        }[] = timeOffs.map((timeOff: any) => {
+          if (timeOff.timeOffRegisterUnit === "DAY") {
+            return {
+              type: FlexTimeSlotType.TIME_OFF,
+              start: "00:00",
+              end: "23:59",
+            };
+          }
+          return {
+            type: FlexTimeSlotType.TIME_OFF,
+            start: DateTime.fromMillis(timeOff.blockTimeFrom.timeStamp)
+              .setZone("Asia/Seoul")
+              .toFormat("HH:mm"),
+            end: DateTime.fromMillis(timeOff.blockTimeTo.timeStamp)
+              .setZone("Asia/Seoul")
+              .toFormat("HH:mm"),
+          };
+        });
         return {
           flexId: item.userIdHash,
           timeslots: workRecordTimeSlots.concat(timeOffTimeSlots),

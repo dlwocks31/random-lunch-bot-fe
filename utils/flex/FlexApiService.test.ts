@@ -2,7 +2,7 @@ import { FlexApiService } from "./FlexApiService";
 
 describe("FlexApiService", () => {
   it("api test", async () => {
-    const flexUid = "";
+    const flexUid = "5ee9ae0e-a8d7-46c8-99e9-3b7e1cd50e0b";
     const sut = new FlexApiService(flexUid);
     const ids = await sut.getDepartmentIds();
     console.log(`ids: ${ids}`);
