@@ -67,6 +67,32 @@ const Home: NextPage = () => {
     );
   }
 
+  function addRemoteUsersByEmail(emails: string[]) {
+    setUsers((users) =>
+      users.map((u) => {
+        const isRemote =
+          (u.isRemote || emails.includes(u.user.email)) && u.selected;
+        return {
+          ...u,
+          isRemote,
+        };
+      }),
+    );
+  }
+
+  function addUnselectedUsersByEmail(emails: string[]) {
+    setUsers((users) =>
+      users.map((u) => {
+        const selected = emails.includes(u.user.email) ? false : u.selected;
+        return {
+          ...u,
+          selected,
+          isRemote: selected ? u.isRemote : false,
+        };
+      }),
+    );
+  }
+
   return (
     <div className="form-root">
       <FormControl className="form-control">
@@ -101,7 +127,11 @@ const Home: NextPage = () => {
           remoteUsers={users.filter((u) => u.isRemote).map((u) => u.user)}
           onChange={onRemoteUserChange}
         />
-        <FlexUserFetcher users={users} setUsers={setUsers} />
+        <FlexUserFetcher
+          users={users}
+          addRemoteUsersByEmail={addRemoteUsersByEmail}
+          addUnselectedUsersByEmail={addUnselectedUsersByEmail}
+        />
       </div>
       <div>
         <TagEditor

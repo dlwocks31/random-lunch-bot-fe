@@ -1,24 +1,34 @@
-import { Button } from "@mui/material";
-import { useEffect } from "react";
+import { Button, TextField } from "@mui/material";
+import { useState } from "react";
 import { LunchUser } from "../../utils/domain/LunchUser";
-import { FlexApiService } from "../../utils/flex/FlexApiService";
 
 export function FlexUserFetcher({
   users,
-  setUsers,
+  addRemoteUsersByEmail,
+  addUnselectedUsersByEmail,
 }: {
   users: LunchUser[];
-  setUsers: (users: LunchUser[]) => void;
+  addRemoteUsersByEmail: (emails: string[]) => void;
+  addUnselectedUsersByEmail: (emails: string[]) => void;
 }) {
-  useEffect(() => {
-    // fetch("/api/hello")
-    //   .then((response) => response.json())
-    //   .then((data) => console.log(data));
-  }, []);
+  const [flexAid, setFlexAid] = useState("");
+  function fetchApi() {
+    fetch("/api/hello")
+      .then((response) => response.json())
+      .then((data) => {
+        addRemoteUsersByEmail(data.remoteWork.map((d: any) => d.email));
+        addUnselectedUsersByEmail(data.timeOff.map((d: any) => d.email));
+      });
+  }
 
   return users.length === 0 ? null : (
     <div>
-      <Button>Import setting from Flex(NOP) </Button>
+      <TextField
+        label="flex aid"
+        value={flexAid}
+        onChange={(e) => setFlexAid(e.target.value)}
+      />
+      <Button onClick={fetchApi}>Import setting from Flex</Button>
     </div>
   );
 }
