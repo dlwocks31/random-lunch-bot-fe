@@ -1,4 +1,6 @@
 import { Button, TextField } from "@mui/material";
+import dayjs from "dayjs";
+import { DateTime } from "luxon";
 import { useState } from "react";
 import { LunchUser } from "../../utils/domain/LunchUser";
 
@@ -12,8 +14,9 @@ export function FlexUserFetcher({
   addUnselectedUsersByEmail: (emails: string[]) => void;
 }) {
   const [flexAid, setFlexAid] = useState("");
+  const [date, setDate] = useState(dayjs().format("YYYY-MM-DD"));
   function fetchApi() {
-    fetch(`/api/flex-users?flexAid=${flexAid}`)
+    fetch(`/api/flex-users?flexAid=${flexAid}&date=${date}`)
       .then((response) => response.json())
       .then((data) => {
         addRemoteUsersByEmail(data.remoteWork.map((d: any) => d.email));
@@ -27,6 +30,11 @@ export function FlexUserFetcher({
         label="flex aid"
         value={flexAid}
         onChange={(e) => setFlexAid(e.target.value)}
+      />
+      <TextField
+        label="date"
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
       />
       <Button onClick={fetchApi}>Import setting from Flex</Button>
     </div>

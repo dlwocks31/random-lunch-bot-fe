@@ -7,12 +7,10 @@ export default async function handler(
   res: NextApiResponse<any>,
 ) {
   const flexAid: string = req.query.flexAid as string;
+  const date: string = req.query.date as string;
   try {
     const flexService = new FlexService(new FlexApiService(flexAid));
-    const result = await flexService.getUserByWorkingStatus(
-      "2022-05-26",
-      "13:00",
-    );
+    const result = await flexService.getUserByWorkingStatus(date, "13:00");
     res.status(200).json(result);
   } catch (e) {
     res.status(500).json({ error: e.message });
