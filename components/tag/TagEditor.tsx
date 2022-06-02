@@ -2,9 +2,7 @@ import { Button, Chip, Collapse, Modal, TextField } from "@mui/material";
 import Select from "react-select";
 import { useState } from "react";
 import { SlackUser } from "../../utils/slack/slack-user";
-import { values } from "lodash";
 import { TagGenerator } from "./TagGenerator";
-import { Box } from "@mui/system";
 
 export function TagEditor({
   users,
