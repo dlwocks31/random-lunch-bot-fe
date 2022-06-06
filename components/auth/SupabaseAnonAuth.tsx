@@ -1,7 +1,21 @@
-import { Button } from "@mui/material";
 import { useEffect, useState } from "react";
+import { URLSearchParams } from "url";
 import { v4 as uuidv4 } from "uuid";
 import { supabase } from "../../utils/supabase/supabaseClient";
+
+function encodeData(data: any) {
+  return Object.keys(data)
+    .map(function (key) {
+      return [key, data[key]].map(encodeURIComponent).join("=");
+    })
+    .join("&");
+}
+const SLACK_CALLBACK_HOST = "https://aca7-117-111-10-7.ngrok.io";
+export const SLACK_CALLBACK_BASE_QUERY = {
+  scope: "channels:join,chat:write,users:read,users:read.email,channels:read",
+  redirect_uri: `${SLACK_CALLBACK_HOST}/api/auth/callback`,
+  client_id: "724758129958.3531603815618",
+};
 
 export function SupabaseAnonAuth() {
   const [userEmail, setUserEmail] = useState("");
@@ -16,20 +30,29 @@ export function SupabaseAnonAuth() {
         .then(({ user }) => setUserEmail(user?.email || ""));
     } else {
       setUserEmail(currentUser.email || "");
+      supabase
+        .from("slack_oauth_tokens")
+        .select("*")
+        .then((queryData) =>
+          console.log(`queryData: ${JSON.stringify(queryData)}`),
+        );
     }
   });
+
+  function getCallbackUrl() {
+    return `https://slack.com/oauth/v2/authorize?${encodeData({
+      ...SLACK_CALLBACK_BASE_QUERY,
+      state: JSON.stringify({
+        supabaseAccessToken: supabase.auth.session()?.access_token,
+      }),
+    })}`;
+  }
+
   return (
     <div>
       <div>Current User: {userEmail}</div>
       {userEmail && (
-        /*
-            "align-items:center;color:#000;background-color:#fff;border:1px solid #ddd;border-radius:44px;display:inline-flex;font-family:Lato, sans-serif;font-size:14px;font-weight:600;height:44px;justify-content:center;text-decoration:none;width:204px"
-
-        */
-        <a
-          href="https://slack.com/oauth/v2/authorize?scope=channels%3Ajoin%2Cchat%3Awrite%2Cusers%3Aread%2Cusers%3Aread.email%2Cchannels%3Aread&amp;user_scope=&amp;redirect_uri=https%3A%2F%2Fmy-lunch-bot-fe.vercel.app%2Fapi%2Fauth%2Fcallback&amp;client_id=724758129958.3531603815618"
-          className="slack-a-button"
-        >
+        <a href={getCallbackUrl()} className="slack-a-button">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="slack-svg"
