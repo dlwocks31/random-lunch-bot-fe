@@ -7,7 +7,7 @@ function encodeData(data: any) {
     })
     .join("&");
 }
-const SLACK_CALLBACK_HOST = "https://aca7-117-111-10-7.ngrok.io";
+const SLACK_CALLBACK_HOST = process.env.NEXT_PUBLIC_SLACK_OAUTH_CALLBACK_HOST;
 export const SLACK_CALLBACK_BASE_QUERY = {
   scope: "channels:join,chat:write,users:read,users:read.email,channels:read",
   redirect_uri: `${SLACK_CALLBACK_HOST}/api/auth/callback`,
