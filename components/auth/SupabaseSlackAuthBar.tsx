@@ -1,9 +1,14 @@
+import { AppBar, Toolbar, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { supabase } from "../../utils/supabase/supabaseClient";
 import { AddToSlackButton } from "./AddToSlackButton";
 
-export function SupabaseSlackAuth() {
+export function SupabaseSlackAuthBar({
+  setSlackInstalled,
+}: {
+  setSlackInstalled: (slackInstalled: boolean) => void;
+}) {
   const [userId, setUserId] = useState("");
   const [oauthStatus, setOauthStatus] = useState<{ team: string } | null>(null);
 
@@ -15,8 +20,10 @@ export function SupabaseSlackAuth() {
       .single();
     if (data) {
       setOauthStatus({ team: data.raw_oauth_response.team.name });
+      setSlackInstalled(true);
     } else {
       setOauthStatus(null);
+      setSlackInstalled(false);
     }
   }
 
@@ -35,23 +42,22 @@ export function SupabaseSlackAuth() {
     }
   });
 
+  const appBarText: string = userId
+    ? oauthStatus
+      ? `슬랙 앱이 설치되었습니다. Team: ${oauthStatus.team}`
+      : "슬랙 앱을 설치해주세요"
+    : "로그인";
+  const shouldShowAddToSlackButton: boolean = !!userId && !oauthStatus;
+
   return (
-    <div>
-      <div>Current User ID: {userId}</div>
-      {userId &&
-        (!!oauthStatus ? (
-          <div>슬랙 앱이 설치되었습니다. Team: {oauthStatus.team}</div>
-        ) : (
-          <div className="flex">
-            <div>슬랙 앱이 설치되지 않았습니다.</div>
-            <AddToSlackButton />
-          </div>
-        ))}
-      <style jsx>{`
-        .flex {
-          display: flex;
-        }
-      `}</style>
-    </div>
+    <AppBar position="static">
+      <Toolbar>
+        <Typography sx={{ flexGrow: 1 }}>My Lunch Bot</Typography>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <Typography sx={{ flexGrow: 1 }}>{appBarText}</Typography>
+          {shouldShowAddToSlackButton && <AddToSlackButton />}
+        </div>
+      </Toolbar>
+    </AppBar>
   );
 }
