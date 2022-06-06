@@ -1,11 +1,11 @@
 import { NextPage } from "next/types";
-import { SupabaseSlackAuth } from "../components/auth/SupabaseSlackAuth";
+import { SupabaseAnonAuth } from "../components/auth/SupabaseAnonAuth";
 import { MainComponent } from "../components/MainComponent";
 
 const Home: NextPage = () => {
   return (
     <>
-      <SupabaseSlackAuth />
+      <SupabaseAnonAuth />
       <MainComponent />
     </>
   );
