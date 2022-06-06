@@ -10,13 +10,14 @@ import { SlackService } from "../utils/slack/slack.service";
 import { TemplateMessageEditor } from "./message/TemplateMessageEditor";
 import { FlexUserFetcher } from "./fetch/FlexUserFetcher";
 import { LunchUser } from "../utils/domain/LunchUser";
+import { supabase } from "../utils/supabase/supabaseClient";
+import { SlackServiceFactory } from "../utils/slack/SlackServiceFactory";
 
 const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:orange_heart: 조를 발표합니다!
 > 가장 앞에 있는 분이 이 채널에 조원들을 소환해서 스레드로 함께 메뉴를 정해주세요 :simple_smile:
 > 맛있게 먹고 사진 찍고 <#C01BUJFGM4G> 방에 공유하는 것 잊지 마세요 :camera_with_flash:
 `;
 export function MainComponent() {
-  const [oauthToken, setOauthToken] = useState("");
   const [users, setUsers] = useState<LunchUser[]>([]);
   const [partition, setPartition] = useState<SlackUser[][]>([]);
   // tag name -> user ids map
@@ -25,8 +26,9 @@ export function MainComponent() {
     DEFAULT_TEMPLATE_MESSAGE,
   );
 
-  function getUsersFromSlack() {
-    const slackService = new SlackService(oauthToken);
+  async function getUsersFromSlack() {
+    // TODO: API call로 대체
+    const slackService = await SlackServiceFactory();
     slackService.findAllValidSlackUsers().then((users) => {
       setUsers(
         users.map((u) => ({
@@ -138,7 +140,6 @@ export function MainComponent() {
           setTemplateMessage={setTemplateMessage}
         />
         <SendSlackMessage
-          oauthToken={oauthToken}
           templateMessage={templateMessage}
           partition={partition}
         />

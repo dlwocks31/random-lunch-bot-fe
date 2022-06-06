@@ -4,13 +4,12 @@ import { useEffect, useState } from "react";
 import { SlackService } from "../../utils/slack/slack.service";
 import { SlackUser } from "../../utils/slack/slack-user";
 import { buildSlackMessage } from "../../utils/slack/BuildSlackMessage";
+import { SlackServiceFactory } from "../../utils/slack/SlackServiceFactory";
 
 export function SendSlackMessage({
-  oauthToken,
   templateMessage,
   partition,
 }: {
-  oauthToken: string;
   templateMessage: string;
   partition: SlackUser[][];
 }) {
@@ -20,12 +19,12 @@ export function SendSlackMessage({
   >([]);
   const message = buildSlackMessage(partition, templateMessage);
   const getConversations = async () => {
-    const slackService = new SlackService(oauthToken);
+    const slackService = await SlackServiceFactory();
     const conversations = await slackService.listConversation();
     setConversations(conversations);
   };
   const sendSlackMessage = async () => {
-    const slackService = new SlackService(oauthToken);
+    const slackService = await SlackServiceFactory();
     const joinResult = await slackService.joinConversation(channel);
     console.log(JSON.stringify(joinResult));
     const result = await slackService.send(message, channel);
@@ -33,8 +32,8 @@ export function SendSlackMessage({
   };
 
   useEffect(() => {
-    if (oauthToken) getConversations();
-  }, [oauthToken]);
+    getConversations();
+  }, []);
 
   return (
     <div className="root">
