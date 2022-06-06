@@ -12,7 +12,7 @@ export default async function handler(
     const flexService = new FlexService(new FlexApiService(flexAid));
     const result = await flexService.getUserByWorkingStatus(date, "13:00");
     res.status(200).json(result);
-  } catch (e) {
+  } catch (e: any) {
     res.status(500).json({ error: e.message });
   }
 }
