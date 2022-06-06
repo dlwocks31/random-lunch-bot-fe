@@ -95,14 +95,7 @@ export function MainComponent() {
   return (
     <div className="form-root">
       <FormControl className="form-control">
-        <TextField
-          className="text-field"
-          id="bot-oauth-token"
-          label="Bot OAuth Token"
-          value={oauthToken}
-          onChange={(e) => setOauthToken(e.target.value)}
-        />
-        <Button onClick={getUsersFromSlack}>Submit</Button>
+        <Button onClick={getUsersFromSlack}>Get Users From Slack</Button>
       </FormControl>
       <div>
         <UserGrouper

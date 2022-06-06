@@ -1,6 +1,6 @@
 import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
-import { SLACK_CALLBACK_BASE_QUERY } from "../../../components/auth/SupabaseAnonAuth";
+import { SLACK_CALLBACK_BASE_QUERY } from "../../../components/auth/AddToSlackButton";
 import { supabase } from "../../../utils/supabase/supabaseClient";
 
 export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
@@ -18,9 +18,13 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
       )}`,
     )
   ).data;
+  console.log(oauthResponseData);
   const botAccessToken = oauthResponseData.access_token;
   const t = await supabase
     .from("slack_oauth_tokens")
-    .upsert({ access_token: botAccessToken }, { onConflict: "user_id" });
+    .upsert(
+      { access_token: botAccessToken, raw_oauth_response: oauthResponseData },
+      { onConflict: "user_id" },
+    );
   res.redirect("http://localhost:3000");
 };
