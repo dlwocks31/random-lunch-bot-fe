@@ -26,5 +26,5 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
       { access_token: botAccessToken, raw_oauth_response: oauthResponseData },
       { onConflict: "user_id" },
     );
-  res.redirect("http://localhost:3000");
+  res.redirect(process.env.REDIRECT_BACK_HOST || "http://localhost:3000");
 };
