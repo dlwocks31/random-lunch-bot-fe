@@ -1,5 +1,5 @@
 import { Button, FormControl, TextField } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RemoteUserViewer } from "./group/RemoteUserViewer";
 import { SendSlackMessage } from "./message/SendSlackMessage";
 import { TagEditor } from "./tag/TagEditor";
@@ -25,6 +25,9 @@ export function MainComponent() {
   const [templateMessage, setTemplateMessage] = useState(
     DEFAULT_TEMPLATE_MESSAGE,
   );
+  useEffect(() => {
+    getUsersFromSlack();
+  }, []);
 
   async function getUsersFromSlack() {
     // TODO: API call로 대체
@@ -96,9 +99,6 @@ export function MainComponent() {
 
   return (
     <div className="form-root">
-      <FormControl className="form-control">
-        <Button onClick={getUsersFromSlack}>Get Users From Slack</Button>
-      </FormControl>
       <div>
         <UserGrouper
           officeUsers={users
