@@ -18,8 +18,9 @@ export function SupabaseSlackAuthBar({
       .from("slack_oauth_tokens")
       .select()
       .single();
-    if (data) {
-      setOauthStatus({ team: data.raw_oauth_response.team.name });
+    const teamName = data?.raw_oauth_response?.team.name;
+    if (teamName) {
+      setOauthStatus({ team: teamName });
       setSlackInstalled(true);
     } else {
       setOauthStatus(null);
@@ -38,7 +39,9 @@ export function SupabaseSlackAuthBar({
       });
     } else {
       setUserId(currentUser.id || "");
-      queryOauthStatus();
+      if (oauthStatus === null) {
+        queryOauthStatus();
+      }
     }
   });
 
