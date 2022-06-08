@@ -1,7 +1,6 @@
 import { Button, TextField } from "@mui/material";
 import Select from "react-select";
 import { useEffect, useState } from "react";
-import { SlackService } from "../../utils/slack/slack.service";
 import { SlackUser } from "../../utils/slack/slack-user";
 import { buildSlackMessage } from "../../utils/slack/BuildSlackMessage";
 import { SlackServiceFactory } from "../../utils/slack/SlackServiceFactory";

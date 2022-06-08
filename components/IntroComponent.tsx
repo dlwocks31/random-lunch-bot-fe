@@ -8,6 +8,7 @@ export function IntroComponent() {
         alignItems: "center",
       }}
     >
+      <div>이 앱은 런치봇입니다. </div>
       <div>앱을 설치해주세요~</div>
     </div>
   );
