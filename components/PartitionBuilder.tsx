@@ -177,10 +177,7 @@ export function PartitionBuilder({
   return (
     <div className="config-root">
       <div className="config-container">
-        <EachGroupSizeEditor
-          eachGroupSize={eachGroupSize}
-          setEachGroupSize={setEachGroupSize}
-        />
+        <EachGroupSizeEditor setEachGroupSize={setEachGroupSize} />
         <div>
           <div>사무실 조 편성</div>
           <GroupCountEditor
