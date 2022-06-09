@@ -1,45 +1,76 @@
-import { Button } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import { ceil } from "lodash";
 import { useEffect } from "react";
 import { SlackUser } from "../../utils/slack/slack-user";
-
+import RemoveIcon from "@mui/icons-material/Remove";
+import AddIcon from "@mui/icons-material/Add";
 export function GroupCountEditor({
   eachGroupSize,
   groupCount,
   users,
+  groupTypeLabel = "",
   setGroupCount,
 }: {
   eachGroupSize: number;
   groupCount: number;
   users: SlackUser[];
+  groupTypeLabel: string;
   setGroupCount: (groupCount: number) => void;
 }) {
   useEffect(() => {
     setGroupCount(ceil(users.length / eachGroupSize));
   }, [users.length, eachGroupSize]);
+  const max = (a: number, b: number) => (a > b ? a : b);
+  const min = (a: number, b: number) => (a < b ? a : b);
+  const incrementGroupCount = () => {
+    setGroupCount(min(groupCount + 1, users.length));
+  };
+  const decrementGroupCount = () => {
+    setGroupCount(max(groupCount - 1, 1));
+  };
   return (
-    <div>
-      <div>
-        총 {users?.length}명의 유저가 {groupCount}개의 조로 추첨됩니다.
+    <div className="root">
+      <div className="label-root">
+        <div className="numbers">{groupTypeLabel}</div>
+        <div>에서 참석하는</div>
+        <div className="numbers">{users?.length}</div>
+        <div>명의 유저 조 개수:</div>
       </div>
-      <Button
-        variant="contained"
-        onClick={() =>
-          setGroupCount(
-            groupCount < users.length ? groupCount + 1 : users.length,
-          )
+      <div className="edit-root">
+        <IconButton onClick={decrementGroupCount} size="small">
+          <RemoveIcon />
+        </IconButton>
+        <div>{groupCount}</div>
+        <IconButton onClick={incrementGroupCount} size="small">
+          <AddIcon />
+        </IconButton>
+      </div>
+
+      <style jsx>{`
+        .label-root {
+          display: flex;
+          align-items: center;
+          font-size: 1rem;
         }
-      >
-        조 개수 +1
-      </Button>
-      <Button
-        variant="contained"
-        onClick={() =>
-          setGroupCount(groupCount > 1 ? groupCount - 1 : groupCount)
+        .edit-root {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          border: 1px solid #1976d2;
+          border-radius: 5px;
         }
-      >
-        조 개수 -1
-      </Button>
+        .numbers {
+          padding: 3px;
+          text-decoration: underline;
+        }
+        .button {
+          font-weight: bold;
+        }
+        .root {
+          display: flex;
+          gap: 10px;
+        }
+      `}</style>
     </div>
   );
 }

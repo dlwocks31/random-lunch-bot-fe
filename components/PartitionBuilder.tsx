@@ -179,20 +179,20 @@ export function PartitionBuilder({
       <div className="config-container">
         <EachGroupSizeEditor setEachGroupSize={setEachGroupSize} />
         <div>
-          <div>사무실 조 편성</div>
           <GroupCountEditor
             eachGroupSize={eachGroupSize}
             users={officeUsers()}
             groupCount={officeGroupCount}
+            groupTypeLabel="사무실"
             setGroupCount={setOfficeGroupCount}
           />
         </div>
         <div>
-          <div>재택 조 편성</div>
           <GroupCountEditor
             eachGroupSize={eachGroupSize}
             users={remoteUsers()}
             groupCount={remoteGroupCount}
+            groupTypeLabel="재택"
             setGroupCount={setRemoteGroupCount}
           />
         </div>
