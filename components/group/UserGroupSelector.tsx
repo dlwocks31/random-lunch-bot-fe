@@ -36,7 +36,7 @@ export function UserGroupSelector({
       </div>
       <div>
         {groupUsers.map((u) => (
-          <Chip label={u.displayName} key={u.id} />
+          <Chip sx={{ margin: "3px 1px" }} label={u.displayName} key={u.id} />
         ))}
       </div>
       <style jsx>{`

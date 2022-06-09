@@ -52,32 +52,6 @@ export function PartitionBuilder({
     return users.map((u) => u.user);
   }
 
-  function onRemoteUserChange(userIds: string[]) {
-    setUsers((users) =>
-      users.map((u) => {
-        const isRemote = userIds.includes(u.user.id);
-        return {
-          ...u,
-          selected: isRemote ? true : u.selected,
-          isRemote,
-        };
-      }),
-    );
-  }
-
-  function onUnselectUserChange(unselectedUserIds: string[]) {
-    setUsers((users) =>
-      users.map((u) => {
-        const selected = !unselectedUserIds.includes(u.user.id);
-        return {
-          ...u,
-          isRemote: selected ? u.isRemote : false,
-          selected,
-        };
-      }),
-    );
-  }
-
   function addUnselectUser(userId: string) {
     setUsers((users) =>
       users.map((u) => {
