@@ -10,6 +10,7 @@ import { EachGroupSizeEditor } from "./group/EachGroupSizeEditor";
 import { GroupCountEditor } from "./group/GroupCountEditor";
 import { RemoteUserViewer } from "./group/RemoteUserViewer";
 import { UnselectedUserViewer } from "./group/UnselectedUserViewer";
+import { UserGroupSelector } from "./group/UserGroupSelector";
 import { TagEditor } from "./tag/TagEditor";
 
 export function PartitionBuilder({
@@ -77,6 +78,53 @@ export function PartitionBuilder({
     );
   }
 
+  function addUnselectUser(userId: string) {
+    setUsers((users) =>
+      users.map((u) => {
+        const unselected = u.user.id === userId;
+        if (unselected) {
+          return {
+            ...u,
+            isRemote: false,
+            selected: false,
+          };
+        }
+        return u;
+      }),
+    );
+  }
+
+  function addRemoteUser(userId: string) {
+    setUsers((users) =>
+      users.map((u) => {
+        const remote = u.user.id === userId;
+        if (remote) {
+          return {
+            ...u,
+            isRemote: true,
+            selected: true,
+          };
+        }
+        return u;
+      }),
+    );
+  }
+
+  function addOfficeUser(userId: string) {
+    setUsers((users) =>
+      users.map((u) => {
+        const office = u.user.id === userId;
+        if (office) {
+          return {
+            ...u,
+            isRemote: false,
+            selected: true,
+          };
+        }
+        return u;
+      }),
+    );
+  }
   function addRemoteUsersByEmail(emails: string[]) {
     setUsers((users) =>
       users.map((u) => {
@@ -187,24 +235,23 @@ export function PartitionBuilder({
             setGroupCount={setOfficeGroupCount}
           />
         </div>
-        <div>
-          <GroupCountEditor
-            eachGroupSize={eachGroupSize}
-            users={remoteUsers()}
-            groupCount={remoteGroupCount}
-            groupTypeLabel="재택"
-            setGroupCount={setRemoteGroupCount}
-          />
-        </div>
-        <UnselectedUserViewer
+        <UserGroupSelector
           allUsers={allSlackUsers()}
-          unselectedUsers={unselectedUsers()}
-          onChange={onUnselectUserChange}
+          groupUsers={unselectedUsers()}
+          groupLabel="불참"
+          addGroupUser={addUnselectUser}
         />
-        <RemoteUserViewer
+        <UserGroupSelector
           allUsers={allSlackUsers()}
-          remoteUsers={remoteUsers()}
-          onChange={onRemoteUserChange}
+          groupUsers={remoteUsers()}
+          groupLabel="재택"
+          addGroupUser={addRemoteUser}
+        />
+        <UserGroupSelector
+          allUsers={allSlackUsers()}
+          groupUsers={officeUsers()}
+          groupLabel="사무실"
+          addGroupUser={addOfficeUser}
         />
         <FlexUserFetcher
           users={users}
