@@ -185,7 +185,6 @@ export function PartitionBuilder({
   }
 
   function generateOptimizedPartition() {
-    setUsers((users) => shuffle(users));
     console.log("Generate optimized partition");
     const officePartition = optimizePartition(
       createStandardPartition(officeUsers(), officeGroupCount),
@@ -203,7 +202,6 @@ export function PartitionBuilder({
     setPartition(concat(officePartition, remotePartition));
   }
   function regenerateOptimizedPartition() {
-    setUsers((users) => shuffle(users));
     generateOptimizedPartition();
   }
   /*
