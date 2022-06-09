@@ -111,7 +111,6 @@ export class FlexApiService {
   > {
     const timeStampFrom = Date.parse(date) - 9 * 60 * 60 * 1000; // 9 hours before
     const timeStampTo = timeStampFrom;
-    console.log("before request");
     const response = await axios.get(
       `https://flex.team/api/v2/time-tracking/users/work-schedules?timeStampFrom=${timeStampFrom}&timeStampTo=${timeStampTo}&` +
         flexIds.map((id) => `userIdHashes=${id}`).join("&"),
@@ -121,7 +120,6 @@ export class FlexApiService {
         },
       },
     );
-    console.log("after request");
     return response.data.workScheduleResults
       .map((item: any) => {
         const workFormIdToTypeMap: Map<string, string> = new Map();
