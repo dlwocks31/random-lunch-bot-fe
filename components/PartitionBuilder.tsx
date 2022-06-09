@@ -206,6 +206,13 @@ export function PartitionBuilder({
             groupTypeLabel="사무실"
             setGroupCount={setOfficeGroupCount}
           />
+          <GroupCountEditor
+            eachGroupSize={eachGroupSize}
+            users={remoteUsers()}
+            groupCount={remoteGroupCount}
+            groupTypeLabel="재택"
+            setGroupCount={setRemoteGroupCount}
+          />
         </div>
         <UserGroupSelector
           allUsers={allSlackUsers()}
