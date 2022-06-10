@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { SlackUser } from "../../utils/slack/slack-user";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
+import { getStandardPartitionConfig } from "../../utils/group/GetStandardPartitionConfig";
 export function GroupCountEditor({
   eachGroupSize,
   groupCount,
@@ -28,6 +29,13 @@ export function GroupCountEditor({
   const decrementGroupCount = () => {
     setGroupCount(max(groupCount - 1, 1));
   };
+  const standardPartitionConfig = getStandardPartitionConfig(
+    users.length,
+    groupCount,
+  );
+  const standardPartitionLabel = standardPartitionConfig
+    .map((c) => `${c.groupSize}인조 * ${c.groupCount}개`)
+    .join(" + ");
   return (
     <div className="root">
       <div className="label-root">
@@ -45,6 +53,7 @@ export function GroupCountEditor({
           <AddIcon />
         </IconButton>
       </div>
+      <div>({standardPartitionLabel})</div>
 
       <style jsx>{`
         .label-root {
@@ -69,6 +78,7 @@ export function GroupCountEditor({
         .root {
           display: flex;
           gap: 10px;
+          align-items: center;
         }
       `}</style>
     </div>

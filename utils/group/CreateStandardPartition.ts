@@ -3,10 +3,8 @@ export function createStandardPartition<T>(
   groupCount: number,
 ): T[][] {
   if (groupCount <= 0) return [];
-  const result: T[][] = Array(groupCount);
-  for (let i = 0; i < groupCount; i++) {
-    result[i] = [];
-  }
+  // create array of array with length groupCount
+  const result: T[][] = Array.from({ length: groupCount }, () => []);
   for (let i = 0; i < users.length; i++) {
     result[i % groupCount].push(users[i]);
   }
