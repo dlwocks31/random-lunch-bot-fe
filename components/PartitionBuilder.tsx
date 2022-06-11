@@ -1,5 +1,5 @@
-import { Button } from "@mui/material";
-import { concat, shuffle } from "lodash";
+import { Button, IconButton, Tooltip } from "@mui/material";
+import { concat } from "lodash";
 import { useEffect, useState } from "react";
 import { LunchUser } from "../utils/domain/LunchUser";
 import { createStandardPartition } from "../utils/group/CreateStandardPartition";
@@ -8,10 +8,9 @@ import { SlackUser } from "../utils/slack/slack-user";
 import { FlexUserFetcher } from "./fetch/FlexUserFetcher";
 import { EachGroupSizeEditor } from "./group/EachGroupSizeEditor";
 import { GroupCountEditor } from "./group/GroupCountEditor";
-import { RemoteUserViewer } from "./group/RemoteUserViewer";
-import { UnselectedUserViewer } from "./group/UnselectedUserViewer";
 import { UserGroupSelector } from "./group/UserGroupSelector";
 import { TagEditor } from "./tag/TagEditor";
+import HelpIcon from "@mui/icons-material/Help";
 
 export function PartitionBuilder({
   initialUsers,
@@ -243,7 +242,13 @@ export function PartitionBuilder({
           />
         </div>
         <div>
-          <h3 className="title">태그 설정</h3>
+          <div className="iconed-header">
+            <h3 className="title">태그 설정</h3>
+            <Tooltip title="같은 태그에 속해있는 유저들은 같은 조에 속하지 않게 됩니다.">
+              <HelpIcon />
+            </Tooltip>
+          </div>
+          <h3 className="title"></h3>
           <TagEditor
             users={initialUsers}
             tagMap={tagMap}
@@ -251,7 +256,13 @@ export function PartitionBuilder({
           />
         </div>
         <div>
-          <h3 className="title">플렉스 연동</h3>
+          <div className="iconed-header">
+            <h3 className="title">플렉스 연동</h3>
+            <Tooltip title="플렉스에서 휴가자, 재택자 정보를 가져올 수 있습니다.">
+              <HelpIcon />
+            </Tooltip>
+          </div>
+
           <FlexUserFetcher
             users={users}
             addRemoteUsersByEmail={addRemoteUsersByEmail}
@@ -275,6 +286,11 @@ export function PartitionBuilder({
           display: flex;
           flex-direction: column;
           gap: 10px;
+        }
+        .iconed-header {
+          display: flex;
+          align-items: center;
+          gap: 5px;
         }
         .title {
           margin: 5px 0;
