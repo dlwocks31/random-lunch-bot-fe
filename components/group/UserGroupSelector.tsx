@@ -19,7 +19,9 @@ export function UserGroupSelector({
   return (
     <div className="root">
       <div className="top-root">
-        <div>{groupLabel}</div>
+        <div>
+          {groupLabel} - 총 {groupUsers.length}명
+        </div>
         <Select
           placeholder={`${groupLabel} 그룹에 추가할 유저 이름을 검색하세요`}
           options={unselectedUsers.map(({ id, displayName }) => ({
@@ -52,6 +54,7 @@ export function UserGroupSelector({
           border: 1px solid #1976d2;
           padding: 10px;
           border-radius: 5px;
+          margin: 3px 0;
         }
       `}</style>
     </div>

@@ -1,30 +1,43 @@
-import { Button } from "@mui/material";
+import { Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 export function EachGroupSizeEditor({
+  eachGroupSize,
   setEachGroupSize,
 }: {
+  eachGroupSize: number;
   setEachGroupSize: (eachGroupSize: number) => void;
 }) {
+  const handleChange = (
+    _: React.MouseEvent<HTMLElement>,
+    newGroupSize: number | null,
+  ) => {
+    if (newGroupSize) {
+      setEachGroupSize(newGroupSize);
+    }
+  };
   return (
     <div className="root">
-      <div>원하는 조별 인원 수:</div>
-      <Button variant="contained" onClick={() => setEachGroupSize(3)}>
-        3명
-      </Button>
-      <Button variant="contained" onClick={() => setEachGroupSize(4)}>
-        4명
-      </Button>
-      <Button variant="contained" onClick={() => setEachGroupSize(5)}>
-        5명
-      </Button>
-      <Button variant="contained" onClick={() => setEachGroupSize(6)}>
-        6명
-      </Button>
+      <ToggleButtonGroup
+        value={eachGroupSize}
+        exclusive
+        onChange={handleChange}
+      >
+        {[3, 4, 5, 6].map((size) => (
+          <ToggleButton key={size} value={size}>
+            <div className="inside-toggle">{size}명</div>
+          </ToggleButton>
+        ))}
+      </ToggleButtonGroup>
       <style jsx>{`
         .root {
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           gap: 5px;
+        }
+        .inside-toggle {
+          padding: 0 10px;
+          font-weight: bold;
+          font-size: 1rem;
         }
       `}</style>
     </div>

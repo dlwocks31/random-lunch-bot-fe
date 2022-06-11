@@ -197,8 +197,15 @@ export function PartitionBuilder({
   return (
     <div className="config-root">
       <div className="config-container">
-        <EachGroupSizeEditor setEachGroupSize={setEachGroupSize} />
         <div>
+          <h3 className="title">조별 기본 인원 수</h3>
+          <EachGroupSizeEditor
+            eachGroupSize={eachGroupSize}
+            setEachGroupSize={setEachGroupSize}
+          />
+        </div>
+        <div>
+          <h3 className="title">조 개수 설정</h3>
           <GroupCountEditor
             eachGroupSize={eachGroupSize}
             users={officeUsers()}
@@ -214,35 +221,46 @@ export function PartitionBuilder({
             setGroupCount={setRemoteGroupCount}
           />
         </div>
-        <UserGroupSelector
-          allUsers={allSlackUsers()}
-          groupUsers={unselectedUsers()}
-          groupLabel="불참"
-          addGroupUser={addUnselectUser}
-        />
-        <UserGroupSelector
-          allUsers={allSlackUsers()}
-          groupUsers={remoteUsers()}
-          groupLabel="재택"
-          addGroupUser={addRemoteUser}
-        />
-        <UserGroupSelector
-          allUsers={allSlackUsers()}
-          groupUsers={officeUsers()}
-          groupLabel="사무실"
-          addGroupUser={addOfficeUser}
-        />
-        <FlexUserFetcher
-          users={users}
-          addRemoteUsersByEmail={addRemoteUsersByEmail}
-          addUnselectedUsersByEmail={addUnselectedUsersByEmail}
-        />
-        <TagEditor
-          users={initialUsers}
-          tagMap={tagMap}
-          onTagMapChange={setTagMap}
-        />
-        <Button onClick={regenerateOptimizedPartition}>재추첨</Button>
+        <div>
+          <h3 className="title">조원 설정</h3>
+          <UserGroupSelector
+            allUsers={allSlackUsers()}
+            groupUsers={unselectedUsers()}
+            groupLabel="불참"
+            addGroupUser={addUnselectUser}
+          />
+          <UserGroupSelector
+            allUsers={allSlackUsers()}
+            groupUsers={remoteUsers()}
+            groupLabel="재택"
+            addGroupUser={addRemoteUser}
+          />
+          <UserGroupSelector
+            allUsers={allSlackUsers()}
+            groupUsers={officeUsers()}
+            groupLabel="사무실"
+            addGroupUser={addOfficeUser}
+          />
+        </div>
+        <div>
+          <h3 className="title">태그 설정</h3>
+          <TagEditor
+            users={initialUsers}
+            tagMap={tagMap}
+            onTagMapChange={setTagMap}
+          />
+        </div>
+        <div>
+          <h3 className="title">플렉스 연동</h3>
+          <FlexUserFetcher
+            users={users}
+            addRemoteUsersByEmail={addRemoteUsersByEmail}
+            addUnselectedUsersByEmail={addUnselectedUsersByEmail}
+          />
+        </div>
+        <Button onClick={regenerateOptimizedPartition} variant="outlined">
+          재추첨
+        </Button>
       </div>
       <style jsx>{`
         .config-root {
@@ -257,6 +275,9 @@ export function PartitionBuilder({
           display: flex;
           flex-direction: column;
           gap: 10px;
+        }
+        .title {
+          margin: 5px 0;
         }
       `}</style>
     </div>

@@ -24,18 +24,28 @@ export function FlexUserFetcher({
   }
 
   return users.length === 0 ? null : (
-    <div>
+    <div className="root">
       <TextField
-        label="flex aid"
+        label="x-flex-aid"
         value={flexAid}
         onChange={(e) => setFlexAid(e.target.value)}
+        size="small"
       />
       <TextField
         label="date"
         value={date}
         onChange={(e) => setDate(e.target.value)}
+        size="small"
       />
-      <Button onClick={fetchApi}>Import setting from Flex</Button>
+      <Button onClick={fetchApi} size="small" variant="outlined">
+        플렉스 설정 가져오기
+      </Button>
+      <style jsx>{`
+        .root {
+          display: flex;
+          gap: 5px;
+        }
+      `}</style>
     </div>
   );
 }

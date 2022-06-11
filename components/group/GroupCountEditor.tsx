@@ -36,6 +36,9 @@ export function GroupCountEditor({
   const standardPartitionLabel = standardPartitionConfig
     .map((c) => `${c.groupSize}인조 * ${c.groupCount}개`)
     .join(" + ");
+  if (users.length === 0) {
+    return null;
+  }
   return (
     <div className="root">
       <div className="label-root">
@@ -79,6 +82,7 @@ export function GroupCountEditor({
           display: flex;
           gap: 10px;
           align-items: center;
+          margin: 5px 0;
         }
       `}</style>
     </div>
