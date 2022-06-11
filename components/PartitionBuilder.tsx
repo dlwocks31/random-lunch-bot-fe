@@ -245,7 +245,9 @@ export function PartitionBuilder({
           <div className="iconed-header">
             <h3 className="title">태그 설정</h3>
             <Tooltip title="같은 태그에 속해있는 유저들은 같은 조에 속하지 않게 됩니다.">
-              <HelpIcon />
+              <IconButton disableRipple>
+                <HelpIcon />
+              </IconButton>
             </Tooltip>
           </div>
           <h3 className="title"></h3>
@@ -259,7 +261,9 @@ export function PartitionBuilder({
           <div className="iconed-header">
             <h3 className="title">플렉스 연동</h3>
             <Tooltip title="플렉스에서 휴가자, 재택자 정보를 가져올 수 있습니다.">
-              <HelpIcon />
+              <IconButton disableRipple>
+                <HelpIcon />
+              </IconButton>
             </Tooltip>
           </div>
 
