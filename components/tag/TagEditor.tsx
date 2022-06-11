@@ -1,4 +1,11 @@
-import { Button, Chip, Collapse, Modal, TextField } from "@mui/material";
+import {
+  Button,
+  Chip,
+  Collapse,
+  Modal,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import Select from "react-select";
 import { useState } from "react";
 import { SlackUser } from "../../utils/slack/slack-user";
@@ -17,8 +24,19 @@ export function TagEditor({
   const [isOpened, setIsOpened] = useState(false);
   return (
     <div>
+      <div className="tag-preview">
+        <div>현재 태그: </div>
+        {Array.from(tagMap.entries()).map(([key, value]) => (
+          <Tooltip
+            title={`총 ${value.length}명`}
+            onClick={() => setIsOpened((open) => !open)}
+          >
+            <Chip key={key} label={key} />
+          </Tooltip>
+        ))}
+      </div>
       <Button variant="contained" onClick={() => setIsOpened((open) => !open)}>
-        태그 확인
+        태그 상세 정보 {isOpened ? "숨기기" : "보기"}
       </Button>
       <Collapse in={isOpened}>
         <div>
@@ -73,16 +91,21 @@ export function TagEditor({
           />
         </div>
         <TagGenerator users={users} onTagMapChange={onTagMapChange} />
-        <style jsx>{`
-          .new-tag-container {
-            display: flex;
-          }
-          .each-tag-container {
-            display: flex;
-            gap: 10px;
-          }
-        `}</style>
       </Collapse>
+      <style jsx>{`
+        .new-tag-container {
+          display: flex;
+        }
+        .each-tag-container {
+          display: flex;
+          gap: 10px;
+        }
+        .tag-preview {
+          display: flex;
+          align-items: center;
+          gap: 2px;
+        }
+      `}</style>
     </div>
   );
 }

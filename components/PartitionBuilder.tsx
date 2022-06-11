@@ -250,7 +250,6 @@ export function PartitionBuilder({
               </IconButton>
             </Tooltip>
           </div>
-          <h3 className="title"></h3>
           <TagEditor
             users={initialUsers}
             tagMap={tagMap}
@@ -266,7 +265,6 @@ export function PartitionBuilder({
               </IconButton>
             </Tooltip>
           </div>
-
           <FlexUserFetcher
             users={users}
             addRemoteUsersByEmail={addRemoteUsersByEmail}
