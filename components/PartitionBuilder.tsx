@@ -244,7 +244,7 @@ export function PartitionBuilder({
         <div>
           <div className="iconed-header">
             <h3 className="title">태그 설정</h3>
-            <Tooltip title="같은 태그에 속해있는 유저들은 같은 조에 속하지 않게 됩니다.">
+            <Tooltip title="같은 태그에 속해있는 유저들은 가능한 한 같은 조에 속하지 않게 됩니다.">
               <IconButton disableRipple>
                 <HelpIcon />
               </IconButton>
@@ -292,7 +292,6 @@ export function PartitionBuilder({
         .iconed-header {
           display: flex;
           align-items: center;
-          gap: 5px;
         }
         .title {
           margin: 5px 0;

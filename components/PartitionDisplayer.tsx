@@ -9,7 +9,7 @@ export function PartitionDisplayer({
   const officeGroupCount = 100; // TODO
   return (
     <div>
-      <div>Partition Displayer</div>
+      <h2>조 추첨 예시 결과</h2>
       {partition.map((users, i) => (
         <div className="group-container" key={users.map((u) => u.id).join("-")}>
           <div>

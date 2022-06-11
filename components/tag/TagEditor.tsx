@@ -23,7 +23,7 @@ export function TagEditor({
   const [newTagName, setNewTagName] = useState("");
   const [isOpened, setIsOpened] = useState(false);
   return (
-    <div>
+    <div className="root">
       <div className="tag-preview">
         <div>현재 태그: </div>
         {Array.from(tagMap.entries()).map(([key, value]) => (
@@ -35,7 +35,7 @@ export function TagEditor({
           </Tooltip>
         ))}
       </div>
-      <Button variant="contained" onClick={() => setIsOpened((open) => !open)}>
+      <Button variant="outlined" onClick={() => setIsOpened((open) => !open)}>
         태그 상세 정보 {isOpened ? "숨기기" : "보기"}
       </Button>
       <Collapse in={isOpened}>
@@ -104,6 +104,11 @@ export function TagEditor({
           display: flex;
           align-items: center;
           gap: 2px;
+        }
+        .root {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
         }
       `}</style>
     </div>
