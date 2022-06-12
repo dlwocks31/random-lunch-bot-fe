@@ -2,28 +2,28 @@ import { Chip } from "@mui/material";
 import { SlackUser } from "../../utils/slack/slack-user";
 import Select from "react-select";
 
-export function UserGroupSelector({
+export function UserGroupTypeSelector({
   allUsers,
-  groupUsers,
-  groupLabel,
+  includedUsers: includedUsers,
+  groupTypeLabel,
   addGroupUser,
 }: {
   allUsers: SlackUser[];
-  groupUsers: SlackUser[];
-  groupLabel: string;
+  includedUsers: SlackUser[];
+  groupTypeLabel: string;
   addGroupUser: (userId: string) => void;
 }) {
   const unselectedUsers = allUsers.filter(
-    (u) => !groupUsers.some((su) => su.id === u.id),
+    (u) => !includedUsers.some((su) => su.id === u.id),
   );
   return (
     <div className="root">
       <div className="top-root">
         <div>
-          {groupLabel} - 총 {groupUsers.length}명
+          {groupTypeLabel} - 총 {includedUsers.length}명
         </div>
         <Select
-          placeholder={`${groupLabel} 그룹에 추가할 유저 이름을 검색하세요`}
+          placeholder={`${groupTypeLabel} 그룹에 추가할 유저 이름을 검색하세요`}
           options={unselectedUsers.map(({ id, displayName }) => ({
             value: id,
             label: displayName,
@@ -37,7 +37,7 @@ export function UserGroupSelector({
         />
       </div>
       <div>
-        {groupUsers.map((u) => (
+        {includedUsers.map((u) => (
           <Chip sx={{ margin: "3px 1px" }} label={u.displayName} key={u.id} />
         ))}
       </div>

@@ -8,7 +8,7 @@ import { SlackUser } from "../utils/slack/slack-user";
 import { FlexUserFetcher } from "./fetch/FlexUserFetcher";
 import { EachGroupSizeEditor } from "./group/EachGroupSizeEditor";
 import { GroupCountEditor } from "./group/GroupCountEditor";
-import { UserGroupSelector } from "./group/UserGroupSelector";
+import { UserGroupTypeSelector } from "./group/UserGroupSelector";
 import { TagEditor } from "./tag/TagEditor";
 import HelpIcon from "@mui/icons-material/Help";
 
@@ -222,22 +222,22 @@ export function PartitionBuilder({
         </div>
         <div>
           <h3 className="title">조원 설정</h3>
-          <UserGroupSelector
+          <UserGroupTypeSelector
             allUsers={allSlackUsers()}
-            groupUsers={unselectedUsers()}
-            groupLabel="불참"
+            includedUsers={unselectedUsers()}
+            groupTypeLabel="불참"
             addGroupUser={addUnselectUser}
           />
-          <UserGroupSelector
+          <UserGroupTypeSelector
             allUsers={allSlackUsers()}
-            groupUsers={remoteUsers()}
-            groupLabel="재택"
+            includedUsers={remoteUsers()}
+            groupTypeLabel="재택"
             addGroupUser={addRemoteUser}
           />
-          <UserGroupSelector
+          <UserGroupTypeSelector
             allUsers={allSlackUsers()}
-            groupUsers={officeUsers()}
-            groupLabel="사무실"
+            includedUsers={officeUsers()}
+            groupTypeLabel="사무실"
             addGroupUser={addOfficeUser}
           />
         </div>
