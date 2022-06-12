@@ -10,10 +10,10 @@ import { EachGroupSizeEditor } from "./group/EachGroupSizeEditor";
 import { GroupCountEditor } from "./group/GroupCountEditor";
 import { UserGroupTypeSelector } from "./group/UserGroupSelector";
 import { TagEditor } from "./tag/TagEditor";
-import HelpIcon from "@mui/icons-material/Help";
 import { GroupType } from "../utils/domain/GroupType";
 import { Partition } from "../utils/domain/Partition";
 import { Group } from "../utils/domain/Group";
+import { HelpIconWithTooltip } from "./util/HelpIconWithTooltip";
 
 export function PartitionBuilder({
   initialUsers,
@@ -216,11 +216,7 @@ export function PartitionBuilder({
         <div>
           <div className="iconed-header">
             <h3 className="title">태그 설정</h3>
-            <Tooltip title="같은 태그에 속해있는 유저들은 가능한 한 같은 조에 속하지 않게 됩니다.">
-              <IconButton disableRipple>
-                <HelpIcon />
-              </IconButton>
-            </Tooltip>
+            <HelpIconWithTooltip title="같은 태그에 속해있는 유저들은 가능한 한 같은 조에 속하지 않게 됩니다." />
           </div>
           <TagEditor
             users={initialUsers}
@@ -231,11 +227,7 @@ export function PartitionBuilder({
         <div>
           <div className="iconed-header">
             <h3 className="title">플렉스 연동</h3>
-            <Tooltip title="플렉스에서 휴가자, 재택자 정보를 가져올 수 있습니다.">
-              <IconButton disableRipple>
-                <HelpIcon />
-              </IconButton>
-            </Tooltip>
+            <HelpIconWithTooltip title="플렉스에서 휴가자, 재택자 정보를 가져올 수 있습니다." />
           </div>
           <FlexUserFetcher
             users={users}
