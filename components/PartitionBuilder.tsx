@@ -11,6 +11,7 @@ import { GroupCountEditor } from "./group/GroupCountEditor";
 import { UserGroupTypeSelector } from "./group/UserGroupSelector";
 import { TagEditor } from "./tag/TagEditor";
 import HelpIcon from "@mui/icons-material/Help";
+import { GroupType } from "../utils/domain/GroupType";
 
 export function PartitionBuilder({
   initialUsers,
@@ -26,100 +27,64 @@ export function PartitionBuilder({
   const [users, setUsers] = useState<LunchUser[]>([]);
   useEffect(() => {
     setUsers(
-      initialUsers.map((u) => ({
-        user: u,
-        selected: !(
-          u.statusEmoji === ":palm_tree:" || u.statusMessage.includes("휴직")
-        ),
-        isRemote: u.statusEmoji === ":house_with_garden:",
-      })),
+      initialUsers.map((user) => {
+        const groupType: GroupType =
+          user.statusEmoji === ":palm_tree:" ||
+          user.statusMessage.includes("휴직")
+            ? GroupType.EXCLUDED
+            : user.statusEmoji === ":house_with_garden:"
+            ? GroupType.REMOTE
+            : GroupType.OFFICE;
+        return new LunchUser(user, groupType);
+      }),
     );
   }, [initialUsers]);
   console.log(`users: ${users.length}, initialUsers: ${initialUsers.length}`);
   function officeUsers() {
-    return users.filter((u) => u.selected && !u.isRemote).map((u) => u.user);
+    return users.filter((u) => u.isOffice()).map((u) => u.user);
   }
   function remoteUsers() {
-    return users.filter((u) => u.selected && u.isRemote).map((u) => u.user);
+    return users.filter((u) => u.isRemote()).map((u) => u.user);
   }
 
-  function unselectedUsers() {
-    return users.filter((u) => !u.selected).map((u) => u.user);
+  function excludedUsers() {
+    return users.filter((u) => u.isExcluded()).map((u) => u.user);
   }
 
   function allSlackUsers() {
     return users.map((u) => u.user);
   }
 
-  function addUnselectUser(userId: string) {
-    setUsers((users) =>
-      users.map((u) => {
-        const unselected = u.user.id === userId;
-        if (unselected) {
-          return {
-            ...u,
-            isRemote: false,
-            selected: false,
-          };
-        }
-        return u;
-      }),
-    );
+  function addExcludedUser(userId: string) {
+    setUserGroupTypeIf(GroupType.EXCLUDED, (u) => u.id === userId);
   }
 
   function addRemoteUser(userId: string) {
-    setUsers((users) =>
-      users.map((u) => {
-        const remote = u.user.id === userId;
-        if (remote) {
-          return {
-            ...u,
-            isRemote: true,
-            selected: true,
-          };
-        }
-        return u;
-      }),
-    );
+    setUserGroupTypeIf(GroupType.REMOTE, (u) => u.id === userId);
   }
 
   function addOfficeUser(userId: string) {
-    setUsers((users) =>
-      users.map((u) => {
-        const office = u.user.id === userId;
-        if (office) {
-          return {
-            ...u,
-            isRemote: false,
-            selected: true,
-          };
-        }
-        return u;
-      }),
-    );
+    setUserGroupTypeIf(GroupType.OFFICE, (u) => u.id === userId);
   }
   function addRemoteUsersByEmail(emails: string[]) {
-    setUsers((users) =>
-      users.map((u) => {
-        const isRemote =
-          (u.isRemote || emails.includes(u.user.email)) && u.selected;
-        return {
-          ...u,
-          isRemote,
-        };
-      }),
-    );
+    setUserGroupTypeIf(GroupType.REMOTE, (u) => emails.includes(u.email));
   }
 
-  function addUnselectedUsersByEmail(emails: string[]) {
+  function addExcludedUsersByEmail(emails: string[]) {
+    setUserGroupTypeIf(GroupType.EXCLUDED, (u) => emails.includes(u.email));
+  }
+
+  function setUserGroupTypeIf(
+    groupType: GroupType,
+    predicate: (u: SlackUser) => boolean,
+  ) {
     setUsers((users) =>
       users.map((u) => {
-        const selected = emails.includes(u.user.email) ? false : u.selected;
-        return {
-          ...u,
-          selected,
-          isRemote: selected ? u.isRemote : false,
-        };
+        if (predicate(u.user)) {
+          return new LunchUser(u.user, groupType);
+        } else {
+          return u;
+        }
       }),
     );
   }
@@ -224,9 +189,9 @@ export function PartitionBuilder({
           <h3 className="title">조원 설정</h3>
           <UserGroupTypeSelector
             allUsers={allSlackUsers()}
-            includedUsers={unselectedUsers()}
+            includedUsers={excludedUsers()}
             groupTypeLabel="불참"
-            addGroupUser={addUnselectUser}
+            addGroupUser={addExcludedUser}
           />
           <UserGroupTypeSelector
             allUsers={allSlackUsers()}
@@ -268,7 +233,7 @@ export function PartitionBuilder({
           <FlexUserFetcher
             users={users}
             addRemoteUsersByEmail={addRemoteUsersByEmail}
-            addUnselectedUsersByEmail={addUnselectedUsersByEmail}
+            addUnselectedUsersByEmail={addExcludedUsersByEmail}
           />
         </div>
         <Button onClick={regenerateOptimizedPartition} variant="outlined">
