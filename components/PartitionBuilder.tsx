@@ -25,9 +25,7 @@ export function PartitionBuilder({
   const [eachGroupSize, setEachGroupSize] = useState(4);
   const [officeGroupCount, setOfficeGroupCount] = useState(0);
   const [remoteGroupCount, setRemoteGroupCount] = useState(0);
-  const [tagToUserIdMap, setTagToUserIdMap] = useState<Map<string, string[]>>(
-    new Map(),
-  );
+  const [tagMap, setTagMap] = useState<Map<string, string[]>>(new Map());
   const [users, setUsers] = useState<LunchUser[]>([]);
   useEffect(() => {
     setUsers(
@@ -95,12 +93,12 @@ export function PartitionBuilder({
 
   // start grouping
 
-  const userIdToTagMap: Map<string, string[]> = new Map();
-  for (const [tag, userIds] of tagToUserIdMap.entries() || []) {
+  const tagMapReversed: Map<string, string[]> = new Map();
+  for (const [tag, userIds] of tagMap.entries() || []) {
     for (const userId of userIds) {
-      const tagsOfUserId = userIdToTagMap.get(userId) || [];
+      const tagsOfUserId = tagMapReversed.get(userId) || [];
       tagsOfUserId.push(tag);
-      userIdToTagMap.set(userId, tagsOfUserId);
+      tagMapReversed.set(userId, tagsOfUserId);
     }
   }
 
@@ -111,8 +109,8 @@ export function PartitionBuilder({
       for (let j = i + 1; j < team.length; j++) {
         const u1 = team[i];
         const u2 = team[j];
-        const tagsOfU1 = userIdToTagMap.get(u1.id) || [];
-        const tagsOfU2 = userIdToTagMap.get(u2.id) || [];
+        const tagsOfU1 = tagMapReversed.get(u1.id) || [];
+        const tagsOfU2 = tagMapReversed.get(u2.id) || [];
         for (const t1 of tagsOfU1) {
           for (const t2 of tagsOfU2) {
             if (t1 === t2) {
@@ -164,7 +162,7 @@ export function PartitionBuilder({
     remoteUsers().length,
     officeGroupCount,
     remoteGroupCount,
-    tagToUserIdMap,
+    tagMap,
   ]);
   // end grouping
   return (
@@ -222,8 +220,8 @@ export function PartitionBuilder({
           </div>
           <TagEditor
             users={initialUsers}
-            tagMap={tagToUserIdMap}
-            onTagMapChange={setTagToUserIdMap}
+            tagMap={tagMap}
+            onTagMapChange={setTagMap}
           />
         </div>
         <div>
@@ -235,7 +233,6 @@ export function PartitionBuilder({
             users={users}
             addRemoteUsersByEmail={addRemoteUsersByEmail}
             addUnselectedUsersByEmail={addExcludedUsersByEmail}
-            onTagToUserIdMapChange={setTagToUserIdMap}
           />
         </div>
         <Button onClick={regenerateOptimizedPartition} variant="outlined">
