@@ -5,7 +5,7 @@ import { Partition } from "../utils/domain/Partition";
 export function PartitionDisplayer({ partition }: { partition: Partition }) {
   return (
     <div>
-      <h2>조 추첨 예시 결과</h2>
+      <h3>조 추첨 예시 결과</h3>
       {partition.groups.map((group, i) => (
         <div
           className="group-container"
@@ -29,6 +29,7 @@ export function PartitionDisplayer({ partition }: { partition: Partition }) {
           display: flex;
           gap: 3px;
           align-items: center;
+          padding: 2px 0;
         }
       `}</style>
     </div>

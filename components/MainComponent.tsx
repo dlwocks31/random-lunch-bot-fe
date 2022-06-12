@@ -36,9 +36,13 @@ export function MainComponent() {
       <PartitionBuilder initialUsers={users} setPartition={setPartition} />
       <PartitionDisplayer partition={partition} />
       <div>
+        <h3>슬랙 메세지 전송</h3>
         <TemplateMessageEditor
           templateMessage={templateMessage}
           setTemplateMessage={setTemplateMessage}
+          setTemplateMessageToDefault={() =>
+            setTemplateMessage(DEFAULT_TEMPLATE_MESSAGE)
+          }
         />
         <SendSlackMessage
           templateMessage={templateMessage}

@@ -39,7 +39,7 @@ export function SendSlackMessage({
     <div className="root">
       <div className="select-container">
         <Select
-          placeholder={`Select a conversation: ${conversations.length} conversations found`}
+          placeholder={`메세지를 전송할 채널을 선택해 주세요 (총 ${conversations.length}개)`}
           options={conversations.map(({ id, name }) => ({
             value: id,
             label: name,
@@ -64,7 +64,7 @@ export function SendSlackMessage({
             width: 500px;
           }
           .root {
-            padding: 10px;
+            padding: 10px 0;
             display: flex;
             flex-direction: column;
             gap: 10px;
