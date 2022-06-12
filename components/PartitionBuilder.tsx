@@ -12,13 +12,15 @@ import { UserGroupTypeSelector } from "./group/UserGroupSelector";
 import { TagEditor } from "./tag/TagEditor";
 import HelpIcon from "@mui/icons-material/Help";
 import { GroupType } from "../utils/domain/GroupType";
+import { Partition } from "../utils/domain/Partition";
+import { Group } from "../utils/domain/Group";
 
 export function PartitionBuilder({
   initialUsers,
   setPartition,
 }: {
   initialUsers: SlackUser[];
-  setPartition: (partition: SlackUser[][]) => void;
+  setPartition: (partition: Partition) => void;
 }) {
   const [eachGroupSize, setEachGroupSize] = useState(4);
   const [officeGroupCount, setOfficeGroupCount] = useState(0);
@@ -137,7 +139,12 @@ export function PartitionBuilder({
     console.log(
       `officePartition: ${officePartition}, remotePartition: ${remotePartition}`,
     );
-    setPartition(concat(officePartition, remotePartition));
+    setPartition({
+      groups: concat(
+        officePartition.map((users) => new Group(GroupType.OFFICE, users)),
+        remotePartition.map((users) => new Group(GroupType.REMOTE, users)),
+      ),
+    });
   }
   function regenerateOptimizedPartition() {
     generateOptimizedPartition();

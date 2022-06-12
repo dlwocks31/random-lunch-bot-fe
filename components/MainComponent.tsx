@@ -5,6 +5,7 @@ import { TemplateMessageEditor } from "./message/TemplateMessageEditor";
 import { SlackServiceFactory } from "../utils/slack/SlackServiceFactory";
 import { PartitionBuilder } from "./PartitionBuilder";
 import { PartitionDisplayer } from "./PartitionDisplayer";
+import { Partition } from "../utils/domain/Partition";
 
 const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:orange_heart: 조를 발표합니다!
 > 가장 앞에 있는 분이 이 채널에 조원들을 소환해서 스레드로 함께 메뉴를 정해주세요 :simple_smile:
@@ -12,7 +13,7 @@ const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:oran
 `;
 export function MainComponent() {
   const [users, setUsers] = useState<SlackUser[]>([]);
-  const [partition, setPartition] = useState<SlackUser[][]>([]);
+  const [partition, setPartition] = useState<Partition>({ groups: [] });
   // tag name -> user ids map
 
   const [templateMessage, setTemplateMessage] = useState(
@@ -51,13 +52,6 @@ export function MainComponent() {
           justify-content: center;
           padding: 10px;
           gap: 15px;
-        }
-        .form-control {
-          display: flex;
-        }
-        .datagrid-container {
-          height: 500px;
-          display: flex;
         }
       `}</style>
     </div>

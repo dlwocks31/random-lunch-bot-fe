@@ -1,13 +1,13 @@
-import { SlackUser } from "./slack-user";
+import { Partition } from "../domain/Partition";
 
 export function buildSlackMessage(
-  groups: SlackUser[][],
+  partition: Partition,
   baseMessage: string,
 ): string {
   const messageList = [];
   let groupNum = 1;
-  for (let users of groups) {
-    const names = users.map((u) => `<@${u.id}> `).join(" ");
+  for (const group of partition.groups) {
+    const names = group.users.map((u) => `<@${u.id}> `).join(" ");
     messageList.push(`${groupNum}조: ${names} `);
     groupNum++;
   }

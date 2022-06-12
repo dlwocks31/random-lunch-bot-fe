@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { SlackUser } from "../../utils/slack/slack-user";
 import { buildSlackMessage } from "../../utils/slack/BuildSlackMessage";
 import { SlackServiceFactory } from "../../utils/slack/SlackServiceFactory";
+import { Partition } from "../../utils/domain/Partition";
 
 export function SendSlackMessage({
   templateMessage,
   partition,
 }: {
   templateMessage: string;
-  partition: SlackUser[][];
+  partition: Partition;
 }) {
   const [channel, setChannel] = useState("");
   const [conversations, setConversations] = useState<

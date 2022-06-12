@@ -1,24 +1,23 @@
 import { Chip } from "@mui/material";
-import { SlackUser } from "../utils/slack/slack-user";
+import { GroupType } from "../utils/domain/GroupType";
+import { Partition } from "../utils/domain/Partition";
 
-export function PartitionDisplayer({
-  partition,
-}: {
-  partition: SlackUser[][];
-}) {
-  const officeGroupCount = 100; // TODO
+export function PartitionDisplayer({ partition }: { partition: Partition }) {
   return (
     <div>
       <h2>조 추첨 예시 결과</h2>
-      {partition.map((users, i) => (
-        <div className="group-container" key={users.map((u) => u.id).join("-")}>
+      {partition.groups.map((group, i) => (
+        <div
+          className="group-container"
+          key={group.users.map((u) => u.id).join("-")}
+        >
           <div>
             <div>
-              Group {i + 1} ({users.length}명) (
-              {i < officeGroupCount ? "사무실" : "재택"})
+              Group {i + 1} ({group.users.length}명) (
+              {group.groupType === GroupType.OFFICE ? "사무실" : "재택"})
             </div>
           </div>
-          {users.map((u) => (
+          {group.users.map((u) => (
             <div key={u.id}>
               <Chip label={u.displayName} />
             </div>
