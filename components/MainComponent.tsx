@@ -6,6 +6,7 @@ import { SlackServiceFactory } from "../utils/slack/SlackServiceFactory";
 import { PartitionBuilder } from "./PartitionBuilder";
 import { PartitionDisplayer } from "./PartitionDisplayer";
 import { Partition } from "../utils/domain/Partition";
+import { CollapseContainer } from "./util/CollapseContainer";
 
 const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:orange_heart: 조를 발표합니다!
 > 가장 앞에 있는 분이 이 채널에 조원들을 소환해서 스레드로 함께 메뉴를 정해주세요 :simple_smile:
@@ -33,7 +34,10 @@ export function MainComponent() {
 
   return (
     <div className="form-root">
-      <PartitionBuilder initialUsers={users} setPartition={setPartition} />
+      <CollapseContainer title="조 설정">
+        <PartitionBuilder initialUsers={users} setPartition={setPartition} />
+      </CollapseContainer>
+
       <PartitionDisplayer partition={partition} />
       <div>
         <h3>슬랙 메세지 전송</h3>

@@ -167,88 +167,78 @@ export function PartitionBuilder({
   // end grouping
   return (
     <div className="config-root">
-      <div className="config-container">
-        <div>
-          <h3 className="title">조별 기본 인원 수</h3>
-          <EachGroupSizeEditor
-            eachGroupSize={eachGroupSize}
-            setEachGroupSize={setEachGroupSize}
-          />
-        </div>
-        <div>
-          <h3 className="title">조 개수 설정</h3>
-          <GroupCountEditor
-            eachGroupSize={eachGroupSize}
-            users={officeUsers()}
-            groupCount={officeGroupCount}
-            groupTypeLabel="사무실"
-            setGroupCount={setOfficeGroupCount}
-          />
-          <GroupCountEditor
-            eachGroupSize={eachGroupSize}
-            users={remoteUsers()}
-            groupCount={remoteGroupCount}
-            groupTypeLabel="재택"
-            setGroupCount={setRemoteGroupCount}
-          />
-        </div>
-        <div>
-          <h3 className="title">조원 설정</h3>
-          <UserGroupTypeSelector
-            allUsers={allSlackUsers()}
-            includedUsers={excludedUsers()}
-            groupTypeLabel="불참"
-            addGroupUser={addExcludedUser}
-          />
-          <UserGroupTypeSelector
-            allUsers={allSlackUsers()}
-            includedUsers={remoteUsers()}
-            groupTypeLabel="재택"
-            addGroupUser={addRemoteUser}
-          />
-          <UserGroupTypeSelector
-            allUsers={allSlackUsers()}
-            includedUsers={officeUsers()}
-            groupTypeLabel="사무실"
-            addGroupUser={addOfficeUser}
-          />
-        </div>
-        <div>
-          <div className="iconed-header">
-            <h3 className="title">태그 설정</h3>
-            <HelpIconWithTooltip title="같은 태그에 속해있는 유저들은 가능한 한 같은 조에 속하지 않게 됩니다." />
-          </div>
-          <TagEditor
-            users={initialUsers}
-            tagMap={tagMap}
-            onTagMapChange={setTagMap}
-          />
-        </div>
-        <div>
-          <div className="iconed-header">
-            <h3 className="title">플렉스 연동</h3>
-            <HelpIconWithTooltip title="플렉스에서 휴가자, 재택자 정보를 가져올 수 있습니다." />
-          </div>
-          <FlexUserFetcher
-            users={users}
-            addRemoteUsersByEmail={addRemoteUsersByEmail}
-            addUnselectedUsersByEmail={addExcludedUsersByEmail}
-          />
-        </div>
-        <Button onClick={regenerateOptimizedPartition} variant="outlined">
-          재추첨
-        </Button>
+      <div>
+        <h3 className="title">조별 기본 인원 수</h3>
+        <EachGroupSizeEditor
+          eachGroupSize={eachGroupSize}
+          setEachGroupSize={setEachGroupSize}
+        />
       </div>
+      <div>
+        <h3 className="title">조 개수 설정</h3>
+        <GroupCountEditor
+          eachGroupSize={eachGroupSize}
+          users={officeUsers()}
+          groupCount={officeGroupCount}
+          groupTypeLabel="사무실"
+          setGroupCount={setOfficeGroupCount}
+        />
+        <GroupCountEditor
+          eachGroupSize={eachGroupSize}
+          users={remoteUsers()}
+          groupCount={remoteGroupCount}
+          groupTypeLabel="재택"
+          setGroupCount={setRemoteGroupCount}
+        />
+      </div>
+      <div>
+        <h3 className="title">조원 설정</h3>
+        <UserGroupTypeSelector
+          allUsers={allSlackUsers()}
+          includedUsers={excludedUsers()}
+          groupTypeLabel="불참"
+          addGroupUser={addExcludedUser}
+        />
+        <UserGroupTypeSelector
+          allUsers={allSlackUsers()}
+          includedUsers={remoteUsers()}
+          groupTypeLabel="재택"
+          addGroupUser={addRemoteUser}
+        />
+        <UserGroupTypeSelector
+          allUsers={allSlackUsers()}
+          includedUsers={officeUsers()}
+          groupTypeLabel="사무실"
+          addGroupUser={addOfficeUser}
+        />
+      </div>
+      <div>
+        <div className="iconed-header">
+          <h3 className="title">태그 설정</h3>
+          <HelpIconWithTooltip title="같은 태그에 속해있는 유저들은 가능한 한 같은 조에 속하지 않게 됩니다." />
+        </div>
+        <TagEditor
+          users={initialUsers}
+          tagMap={tagMap}
+          onTagMapChange={setTagMap}
+        />
+      </div>
+      <div>
+        <div className="iconed-header">
+          <h3 className="title">플렉스 연동</h3>
+          <HelpIconWithTooltip title="플렉스에서 휴가자, 재택자 정보를 가져올 수 있습니다." />
+        </div>
+        <FlexUserFetcher
+          users={users}
+          addRemoteUsersByEmail={addRemoteUsersByEmail}
+          addUnselectedUsersByEmail={addExcludedUsersByEmail}
+        />
+      </div>
+      <Button onClick={regenerateOptimizedPartition} variant="outlined">
+        재추첨
+      </Button>
       <style jsx>{`
         .config-root {
-          display: flex;
-        }
-        .config-container {
-          border-radius: 20px;
-          padding: 20px;
-          border: 2px solid #1976d2;
-          flex-grow: 1;
-
           display: flex;
           flex-direction: column;
           gap: 10px;
