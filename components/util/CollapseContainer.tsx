@@ -13,7 +13,11 @@ export function CollapseContainer({
     <div>
       <div className="top-bar">
         <h2 className="title">{title}</h2>
-        <Button onClick={() => setOpened((open) => !open)}>
+        <Button
+          onClick={() => setOpened((open) => !open)}
+          className="open-button"
+          sx={{ minWidth: "100px" }}
+        >
           {opened ? "닫기" : "열기"}
         </Button>
       </div>
@@ -41,6 +45,9 @@ export function CollapseContainer({
             border-bottom-left-radius: 10px;
             border-bottom-right-radius: 10px;
             padding: 20px;
+          }
+          .open-button {
+            width: 200px;
           }
         `}
       </style>
