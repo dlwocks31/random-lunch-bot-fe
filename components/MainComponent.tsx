@@ -38,21 +38,25 @@ export function MainComponent() {
         <PartitionBuilder initialUsers={users} setPartition={setPartition} />
       </CollapseContainer>
 
-      <PartitionDisplayer partition={partition} />
-      <div>
-        <h3>슬랙 메세지 전송</h3>
-        <TemplateMessageEditor
-          templateMessage={templateMessage}
-          setTemplateMessage={setTemplateMessage}
-          setTemplateMessageToDefault={() =>
-            setTemplateMessage(DEFAULT_TEMPLATE_MESSAGE)
-          }
-        />
-        <SendSlackMessage
-          templateMessage={templateMessage}
-          partition={partition}
-        />
-      </div>
+      <CollapseContainer title="조 추첨 예시 결과">
+        <PartitionDisplayer partition={partition} />
+      </CollapseContainer>
+      <CollapseContainer title="슬랙 메세지 전송">
+        <div>
+          <TemplateMessageEditor
+            templateMessage={templateMessage}
+            setTemplateMessage={setTemplateMessage}
+            setTemplateMessageToDefault={() =>
+              setTemplateMessage(DEFAULT_TEMPLATE_MESSAGE)
+            }
+          />
+          <SendSlackMessage
+            templateMessage={templateMessage}
+            partition={partition}
+          />
+        </div>
+      </CollapseContainer>
+
       <style jsx>{`
         .form-root {
           display: flex;
