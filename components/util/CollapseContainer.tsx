@@ -15,8 +15,8 @@ export function CollapseContainer({
         <h2 className="title">{title}</h2>
         <Button
           onClick={() => setOpened((open) => !open)}
-          className="open-button"
-          sx={{ minWidth: "100px" }}
+          variant="outlined"
+          sx={{ flexGrow: 1, maxWidth: "200px" }}
         >
           {opened ? "닫기" : "열기"}
         </Button>
@@ -38,6 +38,7 @@ export function CollapseContainer({
           }
           .title {
             margin: 12px 0;
+            flex-grow: 4;
           }
           .collapse-item {
             border: 1px solid grey;
@@ -45,9 +46,6 @@ export function CollapseContainer({
             border-bottom-left-radius: 10px;
             border-bottom-right-radius: 10px;
             padding: 20px;
-          }
-          .open-button {
-            width: 200px;
           }
         `}
       </style>
