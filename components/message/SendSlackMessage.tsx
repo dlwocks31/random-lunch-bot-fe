@@ -1,4 +1,4 @@
-import { Button, TextField } from "@mui/material";
+import { Button, Checkbox, FormControlLabel, TextField } from "@mui/material";
 import Select from "react-select";
 import { useEffect, useState } from "react";
 import { SlackUser } from "../../utils/slack/slack-user";
@@ -17,7 +17,12 @@ export function SendSlackMessage({
   const [conversations, setConversations] = useState<
     { id: string; name: string }[]
   >([]);
-  const message = buildSlackMessage(partition, templateMessage);
+  const [isUserMentioned, setIsUserMentioned] = useState(true);
+  const message = buildSlackMessage(
+    partition,
+    templateMessage,
+    isUserMentioned,
+  );
   const getConversations = async () => {
     const slackService = await SlackServiceFactory();
     const conversations = await slackService.listConversation();
@@ -37,16 +42,16 @@ export function SendSlackMessage({
 
   return (
     <div className="root">
-      <div className="select-container">
-        <Select
-          placeholder={`메세지를 전송할 채널을 선택해 주세요 (총 ${conversations.length}개)`}
-          options={conversations.map(({ id, name }) => ({
-            value: id,
-            label: name,
-          }))}
-          onChange={(e) => setChannel(e?.value || "")}
-        />
-      </div>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={isUserMentioned}
+            onChange={(e) => setIsUserMentioned(e.target.checked)}
+          />
+        }
+        label="사용자 이름을 슬랙 멘션으로 전송합니다."
+      />
+
       <TextField
         label="Message"
         disabled
@@ -56,12 +61,35 @@ export function SendSlackMessage({
         value={message}
       />
 
-      <Button onClick={sendSlackMessage}>Send</Button>
+      <div className="send-container">
+        <div className="select-container">
+          <Select
+            placeholder={`메세지를 전송할 채널을 선택해 주세요 (총 ${conversations.length}개)`}
+            options={conversations.map(({ id, name }) => ({
+              value: id,
+              label: name,
+            }))}
+            onChange={(e) => setChannel(e?.value || "")}
+          />
+        </div>
+        <Button
+          onClick={sendSlackMessage}
+          variant="contained"
+          sx={{ flexGrow: 1 }}
+        >
+          메세지 전송하기
+        </Button>
+      </div>
+
       <style jsx>
         {`
-          .select-container {
+          .send-container {
             display: flex;
-            width: 500px;
+            justify-content: space-around;
+            gap: 10px;
+          }
+          .select-container {
+            flex-grow: 1;
           }
           .root {
             padding: 10px 0;
