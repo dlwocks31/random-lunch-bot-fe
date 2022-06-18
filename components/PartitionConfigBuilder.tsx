@@ -149,31 +149,6 @@ export function PartitionConfigBuilder({
         />
       </div>
       <div>
-        <h3 className="title">조 개수 설정</h3>
-        <GroupCountEditor
-          users={partitionConfig.officeUsers}
-          groupCount={partitionConfig.officeGroupCount}
-          groupTypeLabel="사무실"
-          setGroupCount={(officeGroupCount: number) =>
-            setPartitionConfig((config) => ({
-              ...config,
-              officeGroupCount,
-            }))
-          }
-        />
-        <GroupCountEditor
-          users={partitionConfig.remoteUsers}
-          groupCount={partitionConfig.remoteGroupCount}
-          groupTypeLabel="재택"
-          setGroupCount={(remoteGroupCount: number) =>
-            setPartitionConfig((config) => ({
-              ...config,
-              remoteGroupCount,
-            }))
-          }
-        />
-      </div>
-      <div>
         <h3 className="title">조원 설정</h3>
         <UserGroupTypeSelector
           allUsers={initialUsers}
@@ -193,6 +168,13 @@ export function PartitionConfigBuilder({
           includedUsers={partitionConfig.remoteUsers}
           groupTypeLabel="재택"
           addGroupUser={addRemoteUser}
+          groupCount={partitionConfig.remoteGroupCount}
+          setGroupCount={(remoteGroupCount: number) =>
+            setPartitionConfig((config) => ({
+              ...config,
+              remoteGroupCount,
+            }))
+          }
         />
         <UserGroupTypeSelector
           allUsers={initialUsers}

@@ -1,6 +1,7 @@
 import { Chip } from "@mui/material";
 import { SlackUser } from "../../utils/slack/slack-user";
 import Select from "react-select";
+import { GroupCountEditor } from "./GroupCountEditor";
 
 export function UserGroupTypeSelector({
   allUsers,
@@ -14,8 +15,8 @@ export function UserGroupTypeSelector({
   includedUsers: SlackUser[];
   groupTypeLabel: string;
   addGroupUser: (userId: string) => void;
-  groupCount: number;
-  setGroupCount: (groupCount: number) => void;
+  groupCount?: number;
+  setGroupCount?: (groupCount: number) => void;
 }) {
   const unselectedUsers = allUsers.filter(
     (u) => !includedUsers.some((su) => su.id === u.id),
@@ -24,21 +25,32 @@ export function UserGroupTypeSelector({
     <div className="root">
       <div className="top-root">
         <div>
-          {groupTypeLabel} - 총 {includedUsers.length}명
+          <Select
+            placeholder={`${groupTypeLabel} 그룹에 추가할 유저 이름을 검색하세요`}
+            options={unselectedUsers.map(({ id, displayName }) => ({
+              value: id,
+              label: displayName,
+            }))}
+            value={null}
+            onChange={(e) => {
+              if (e) {
+                addGroupUser(e.value);
+              }
+            }}
+          />
         </div>
-        <Select
-          placeholder={`${groupTypeLabel} 그룹에 추가할 유저 이름을 검색하세요`}
-          options={unselectedUsers.map(({ id, displayName }) => ({
-            value: id,
-            label: displayName,
-          }))}
-          value={null}
-          onChange={(e) => {
-            if (e) {
-              addGroupUser(e.value);
-            }
-          }}
-        />
+        <div>
+          {groupCount && setGroupCount ? (
+            <GroupCountEditor
+              groupCount={groupCount}
+              usersCount={includedUsers.length}
+              groupTypeLabel={groupTypeLabel}
+              setGroupCount={setGroupCount}
+            ></GroupCountEditor>
+          ) : (
+            `${groupTypeLabel} - 총 ${includedUsers.length}명`
+          )}
+        </div>
       </div>
       <div>
         {includedUsers.map((u) => (
@@ -49,7 +61,7 @@ export function UserGroupTypeSelector({
         .top-root {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 15px;
         }
         .root {
           display: flex;

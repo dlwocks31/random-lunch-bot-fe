@@ -5,7 +5,7 @@ export function getStandardPartitionConfig(
   usersCount: number,
   groupCount: number,
 ): { groupSize: number; groupCount: number }[] {
-  if (groupCount <= 0) return [];
+  if (groupCount <= 0 || !usersCount || !groupCount) return [];
   const fakeUsers = Array.from({ length: usersCount }, () => 0);
   const result = createStandardPartition(fakeUsers, groupCount);
   const grouped = groupBy(result, (group) => group.length);

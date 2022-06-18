@@ -1,35 +1,34 @@
 import { IconButton } from "@mui/material";
-import { SlackUser } from "../../utils/slack/slack-user";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import { getStandardPartitionConfig } from "../../utils/group/GetStandardPartitionConfig";
 export function GroupCountEditor({
   groupCount,
-  users,
+  usersCount,
   groupTypeLabel = "",
   setGroupCount,
 }: {
   groupCount: number;
-  users: SlackUser[];
+  usersCount: number;
   groupTypeLabel: string;
   setGroupCount: (groupCount: number) => void;
 }) {
   const max = (a: number, b: number) => (a > b ? a : b);
   const min = (a: number, b: number) => (a < b ? a : b);
   const incrementGroupCount = () => {
-    setGroupCount(min(groupCount + 1, users.length));
+    setGroupCount(min(groupCount + 1, usersCount));
   };
   const decrementGroupCount = () => {
     setGroupCount(max(groupCount - 1, 1));
   };
   const standardPartitionConfig = getStandardPartitionConfig(
-    users.length,
+    usersCount,
     groupCount,
   );
   const standardPartitionLabel = standardPartitionConfig
     .map((c) => `${c.groupSize}인조 * ${c.groupCount}개`)
     .join(" + ");
-  if (users.length === 0) {
+  if (usersCount === 0) {
     return null;
   }
   return (
@@ -37,7 +36,7 @@ export function GroupCountEditor({
       <div className="label-root">
         <div className="numbers">{groupTypeLabel}</div>
         <div>에서 참석하는</div>
-        <div className="numbers">{users?.length}</div>
+        <div className="numbers">{usersCount}</div>
         <div>명의 유저 조 개수:</div>
       </div>
       <div className="edit-root">
