@@ -3,10 +3,11 @@ import { SendSlackMessage } from "./message/SendSlackMessage";
 import { SlackUser } from "../utils/slack/slack-user";
 import { TemplateMessageEditor } from "./message/TemplateMessageEditor";
 import { SlackServiceFactory } from "../utils/slack/SlackServiceFactory";
+import { PartitionConfigBuilder } from "./PartitionConfigBuilder";
 import { PartitionBuilder } from "./PartitionBuilder";
-import { PartitionDisplayer } from "./PartitionDisplayer";
 import { Partition } from "../utils/domain/Partition";
 import { CollapseContainer } from "./util/CollapseContainer";
+import { PartitionConfig } from "../utils/domain/PartitionConfig";
 
 const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:orange_heart: 조를 발표합니다!
 > 가장 앞에 있는 분이 이 채널에 조원들을 소환해서 스레드로 함께 메뉴를 정해주세요 :simple_smile:
@@ -14,6 +15,14 @@ const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:oran
 `;
 export function MainComponent() {
   const [users, setUsers] = useState<SlackUser[]>([]);
+  const [partitionConfig, setPartitionConfig] = useState<PartitionConfig>({
+    officeUsers: [],
+    remoteUsers: [],
+    excludedUsers: [],
+    officeGroupCount: 0,
+    remoteGroupCount: 0,
+    tagToUserIdsMap: new Map(),
+  });
   const [partition, setPartition] = useState<Partition>({ groups: [] });
   // tag name -> user ids map
 
@@ -35,11 +44,19 @@ export function MainComponent() {
   return (
     <div className="form-root">
       <CollapseContainer title="조 설정">
-        <PartitionBuilder initialUsers={users} setPartition={setPartition} />
+        <PartitionConfigBuilder
+          initialUsers={users}
+          partitionConfig={partitionConfig}
+          setPartitionConfig={setPartitionConfig}
+        />
       </CollapseContainer>
 
       <CollapseContainer title="조 추첨 예시 결과">
-        <PartitionDisplayer partition={partition} />
+        <PartitionBuilder
+          partition={partition}
+          partitionConfig={partitionConfig}
+          setPartition={setPartition}
+        />
       </CollapseContainer>
       <CollapseContainer title="슬랙 메세지 전송">
         <div>

@@ -19,7 +19,12 @@ export function GroupCountEditor({
   setGroupCount: (groupCount: number) => void;
 }) {
   useEffect(() => {
-    setGroupCount(ceil(users.length / eachGroupSize));
+    console.log(
+      `XXX users.length = ${users.length}, eachGroupSize = ${eachGroupSize} at groupTypeLabel = ${groupTypeLabel}`,
+    );
+    const groupCount = ceil(users.length / eachGroupSize);
+    console.log(`groupCount Set to ${groupCount}`);
+    setGroupCount(groupCount);
   }, [users.length, eachGroupSize]);
   const max = (a: number, b: number) => (a > b ? a : b);
   const min = (a: number, b: number) => (a < b ? a : b);
