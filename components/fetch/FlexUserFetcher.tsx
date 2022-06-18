@@ -1,14 +1,13 @@
 import { Button, TextField } from "@mui/material";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { LunchUser } from "../../utils/domain/LunchUser";
 
 export function FlexUserFetcher({
-  users,
+  hasUser,
   addRemoteUsersByEmail,
   addUnselectedUsersByEmail,
 }: {
-  users: LunchUser[];
+  hasUser: boolean;
   addRemoteUsersByEmail: (emails: string[]) => void;
   addUnselectedUsersByEmail: (emails: string[]) => void;
 }) {
@@ -23,7 +22,7 @@ export function FlexUserFetcher({
       });
   }
 
-  return users.length === 0 ? null : (
+  return hasUser ? (
     <div className="root">
       <TextField
         label="x-flex-aid"
@@ -47,5 +46,5 @@ export function FlexUserFetcher({
         }
       `}</style>
     </div>
-  );
+  ) : null;
 }

@@ -1,7 +1,6 @@
-import { Button, IconButton, Tooltip } from "@mui/material";
-import { concat } from "lodash";
+import { Button } from "@mui/material";
+import { concat, groupBy } from "lodash";
 import { useEffect, useState } from "react";
-import { LunchUser } from "../utils/domain/LunchUser";
 import { createStandardPartition } from "../utils/group/CreateStandardPartition";
 import { optimizePartition } from "../utils/group/OptimizePartition";
 import { SlackUser } from "../utils/slack/slack-user";
@@ -14,6 +13,8 @@ import { GroupType } from "../utils/domain/GroupType";
 import { Partition } from "../utils/domain/Partition";
 import { Group } from "../utils/domain/Group";
 import { HelpIconWithTooltip } from "./util/HelpIconWithTooltip";
+import { PartitionConfig } from "../utils/domain/PartitionConfig";
+import { getGroupTypeHeuristics } from "../utils/slack/GetGroupTypeHeuristics";
 
 export function PartitionBuilder({
   initialUsers,
@@ -23,78 +24,113 @@ export function PartitionBuilder({
   setPartition: (partition: Partition) => void;
 }) {
   const [eachGroupSize, setEachGroupSize] = useState(4);
-  const [officeGroupCount, setOfficeGroupCount] = useState(0);
-  const [remoteGroupCount, setRemoteGroupCount] = useState(0);
-  const [tagMap, setTagMap] = useState<Map<string, string[]>>(new Map());
-  const [users, setUsers] = useState<LunchUser[]>([]);
+  const [partitionConfig, setPartitionConfig] = useState<PartitionConfig>({
+    officeUsers: [],
+    remoteUsers: [],
+    excludedUsers: [],
+    officeGroupCount: 0,
+    remoteGroupCount: 0,
+    tagToUserIdsMap: new Map(),
+  });
   useEffect(() => {
-    setUsers(
-      initialUsers.map((user) => {
-        const groupType: GroupType =
-          user.statusEmoji === ":palm_tree:" ||
-          user.statusMessage.includes("휴직")
-            ? GroupType.EXCLUDED
-            : user.statusEmoji === ":house_with_garden:"
-            ? GroupType.REMOTE
-            : GroupType.OFFICE;
-        return new LunchUser(user, groupType);
-      }),
+    const groupedUser = groupBy(initialUsers, (user) =>
+      getGroupTypeHeuristics(user),
     );
+    const newPartitionConfig: PartitionConfig = {
+      officeUsers: groupedUser[GroupType.OFFICE] || [],
+      remoteUsers: groupedUser[GroupType.REMOTE] || [],
+      excludedUsers: groupedUser[GroupType.EXCLUDED] || [],
+      officeGroupCount: 0,
+      remoteGroupCount: 0,
+      tagToUserIdsMap: new Map(),
+    };
+    setPartitionConfig(newPartitionConfig);
   }, [initialUsers]);
-  console.log(`users: ${users.length}, initialUsers: ${initialUsers.length}`);
-  function officeUsers() {
-    return users.filter((u) => u.isOffice()).map((u) => u.user);
-  }
-  function remoteUsers() {
-    return users.filter((u) => u.isRemote()).map((u) => u.user);
-  }
-
-  function excludedUsers() {
-    return users.filter((u) => u.isExcluded()).map((u) => u.user);
-  }
-
-  function allSlackUsers() {
-    return users.map((u) => u.user);
-  }
+  console.log(`initialUsers: ${initialUsers.length}`);
 
   function addExcludedUser(userId: string) {
-    setUserGroupTypeIf(GroupType.EXCLUDED, (u) => u.id === userId);
+    setExcludedUserIf((u) => u.id === userId);
   }
 
   function addRemoteUser(userId: string) {
-    setUserGroupTypeIf(GroupType.REMOTE, (u) => u.id === userId);
+    setRemoteUserIf((u) => u.id === userId);
   }
 
   function addOfficeUser(userId: string) {
-    setUserGroupTypeIf(GroupType.OFFICE, (u) => u.id === userId);
+    setOfficeUserIf((u) => u.id === userId);
   }
   function addRemoteUsersByEmail(emails: string[]) {
-    setUserGroupTypeIf(GroupType.REMOTE, (u) => emails.includes(u.email));
+    setRemoteUserIf((u) => emails.includes(u.email));
   }
 
   function addExcludedUsersByEmail(emails: string[]) {
-    setUserGroupTypeIf(GroupType.EXCLUDED, (u) => emails.includes(u.email));
+    setExcludedUserIf((u) => emails.includes(u.email));
   }
 
-  function setUserGroupTypeIf(
-    groupType: GroupType,
-    predicate: (u: SlackUser) => boolean,
-  ) {
-    setUsers((users) =>
-      users.map((u) => {
-        if (predicate(u.user)) {
-          return new LunchUser(u.user, groupType);
-        } else {
-          return u;
-        }
-      }),
+  function setOfficeUserIf(predicate: (u: SlackUser) => boolean) {
+    const remoteUsers = partitionConfig.remoteUsers.filter(
+      (u) => !predicate(u),
     );
+    const excludedUsers = partitionConfig.excludedUsers.filter(
+      (u) => !predicate(u),
+    );
+    const officeUsers = concat(
+      partitionConfig.officeUsers,
+      partitionConfig.remoteUsers.filter(predicate),
+      partitionConfig.excludedUsers.filter(predicate),
+    );
+    setPartitionConfig((config) => ({
+      ...config,
+      officeUsers,
+      remoteUsers,
+      excludedUsers,
+    }));
   }
 
+  function setRemoteUserIf(predicate: (u: SlackUser) => boolean) {
+    const officeUsers = partitionConfig.officeUsers.filter(
+      (u) => !predicate(u),
+    );
+    const excludedUsers = partitionConfig.excludedUsers.filter(
+      (u) => !predicate(u),
+    );
+    const remoteUsers = concat(
+      partitionConfig.remoteUsers,
+      partitionConfig.officeUsers.filter(predicate),
+      partitionConfig.excludedUsers.filter(predicate),
+    );
+    setPartitionConfig((config) => ({
+      ...config,
+      officeUsers,
+      remoteUsers,
+      excludedUsers,
+    }));
+  }
+
+  function setExcludedUserIf(predicate: (u: SlackUser) => boolean) {
+    const officeUsers = partitionConfig.officeUsers.filter(
+      (u) => !predicate(u),
+    );
+    const remoteUsers = partitionConfig.remoteUsers.filter(
+      (u) => !predicate(u),
+    );
+    const excludedUsers = concat(
+      partitionConfig.excludedUsers,
+      partitionConfig.officeUsers.filter(predicate),
+      partitionConfig.remoteUsers.filter(predicate),
+    );
+    setPartitionConfig((config) => ({
+      ...config,
+      officeUsers,
+      remoteUsers,
+      excludedUsers,
+    }));
+  }
   // start grouping
 
   const tagMapReversed: Map<string, string[]> = new Map();
-  for (const [tag, userIds] of tagMap.entries() || []) {
+  for (const [tag, userIds] of partitionConfig.tagToUserIdsMap.entries() ||
+    []) {
     for (const userId of userIds) {
       const tagsOfUserId = tagMapReversed.get(userId) || [];
       tagsOfUserId.push(tag);
@@ -127,12 +163,18 @@ export function PartitionBuilder({
   function generateOptimizedPartition() {
     console.log("Generate optimized partition");
     const officePartition = optimizePartition(
-      createStandardPartition(officeUsers(), officeGroupCount),
+      createStandardPartition(
+        partitionConfig.officeUsers,
+        partitionConfig.officeGroupCount,
+      ),
       1000,
       groupPenaltyFn,
     );
     const remotePartition = optimizePartition(
-      createStandardPartition(remoteUsers(), remoteGroupCount),
+      createStandardPartition(
+        partitionConfig.remoteUsers,
+        partitionConfig.remoteGroupCount,
+      ),
       1000,
       groupPenaltyFn,
     );
@@ -149,21 +191,8 @@ export function PartitionBuilder({
   function regenerateOptimizedPartition() {
     generateOptimizedPartition();
   }
-  /*
-  외부에서 officeUsers, remoteUsers를 `.filter`해서 내려준다. 
-  이떄 만약 officeUsers에 대해 useEffect한다면:
-  - Home이 rerender될 때 officeUser는 항상 재생성된다
-  - 따라서 여기 있는 useEffect가 작동하고 generateOptimizedPartition -> setPartition이 실행되게 됨.
-  - setPartition은 Home의 rerender를 유발함으로 무한 루프가 돌게 됨..
-  이걸 방지하기 위해 officeUsers대신 .length 에 대해 useEffect를 해준다.
-  */
-  useEffect(generateOptimizedPartition, [
-    officeUsers().length,
-    remoteUsers().length,
-    officeGroupCount,
-    remoteGroupCount,
-    tagMap,
-  ]);
+
+  useEffect(generateOptimizedPartition, [partitionConfig]);
   // end grouping
   return (
     <div className="config-root">
@@ -178,38 +207,42 @@ export function PartitionBuilder({
         <h3 className="title">조 개수 설정</h3>
         <GroupCountEditor
           eachGroupSize={eachGroupSize}
-          users={officeUsers()}
-          groupCount={officeGroupCount}
+          users={partitionConfig.officeUsers}
+          groupCount={partitionConfig.officeGroupCount}
           groupTypeLabel="사무실"
-          setGroupCount={setOfficeGroupCount}
+          setGroupCount={(officeGroupCount: number) =>
+            setPartitionConfig((config) => ({ ...config, officeGroupCount }))
+          }
         />
         <GroupCountEditor
           eachGroupSize={eachGroupSize}
-          users={remoteUsers()}
-          groupCount={remoteGroupCount}
+          users={partitionConfig.remoteUsers}
+          groupCount={partitionConfig.remoteGroupCount}
           groupTypeLabel="재택"
-          setGroupCount={setRemoteGroupCount}
+          setGroupCount={(remoteGroupCount: number) =>
+            setPartitionConfig((config) => ({ ...config, remoteGroupCount }))
+          }
         />
       </div>
       <div>
         <h3 className="title">조원 설정</h3>
         <UserGroupTypeSelector
-          allUsers={allSlackUsers()}
-          includedUsers={excludedUsers()}
-          groupTypeLabel="불참"
-          addGroupUser={addExcludedUser}
+          allUsers={initialUsers}
+          includedUsers={partitionConfig.officeUsers}
+          groupTypeLabel="사무실"
+          addGroupUser={addOfficeUser}
         />
         <UserGroupTypeSelector
-          allUsers={allSlackUsers()}
-          includedUsers={remoteUsers()}
+          allUsers={initialUsers}
+          includedUsers={partitionConfig.remoteUsers}
           groupTypeLabel="재택"
           addGroupUser={addRemoteUser}
         />
         <UserGroupTypeSelector
-          allUsers={allSlackUsers()}
-          includedUsers={officeUsers()}
-          groupTypeLabel="사무실"
-          addGroupUser={addOfficeUser}
+          allUsers={initialUsers}
+          includedUsers={partitionConfig.excludedUsers}
+          groupTypeLabel="불참"
+          addGroupUser={addExcludedUser}
         />
       </div>
       <div>
@@ -219,8 +252,13 @@ export function PartitionBuilder({
         </div>
         <TagEditor
           users={initialUsers}
-          tagMap={tagMap}
-          onTagMapChange={setTagMap}
+          tagMap={partitionConfig.tagToUserIdsMap}
+          onTagMapChange={(tagMap) =>
+            setPartitionConfig((config) => ({
+              ...config,
+              tagToUserIdsMap: tagMap,
+            }))
+          }
         />
       </div>
       <div>
@@ -229,7 +267,7 @@ export function PartitionBuilder({
           <HelpIconWithTooltip title="플렉스에서 휴가자, 재택자 정보를 가져올 수 있습니다." />
         </div>
         <FlexUserFetcher
-          users={users}
+          hasUser={initialUsers.length > 0}
           addRemoteUsersByEmail={addRemoteUsersByEmail}
           addUnselectedUsersByEmail={addExcludedUsersByEmail}
         />
