@@ -1,4 +1,4 @@
-import { concat, groupBy } from "lodash";
+import { ceil, concat, groupBy } from "lodash";
 import { useEffect, useState } from "react";
 import { SlackUser } from "../utils/slack/slack-user";
 import { FlexUserFetcher } from "./fetch/FlexUserFetcher";
@@ -37,6 +37,27 @@ export function PartitionConfigBuilder({
       };
     });
   }, [initialUsers]);
+
+  useEffect(() => {
+    const officeGroupCount = ceil(
+      partitionConfig.officeUsers.length / eachGroupSize,
+    );
+    setPartitionConfig((config) => ({
+      ...config,
+      officeGroupCount,
+    }));
+  }, [partitionConfig.officeUsers, eachGroupSize]);
+
+  useEffect(() => {
+    const remoteGroupCount = ceil(
+      partitionConfig.remoteUsers.length / eachGroupSize,
+    );
+    setPartitionConfig((config) => ({
+      ...config,
+      remoteGroupCount,
+    }));
+  }, [partitionConfig.remoteUsers, eachGroupSize]);
+
   console.log(`initialUsers: ${initialUsers.length}`);
 
   function addExcludedUser(userId: string) {
@@ -130,7 +151,6 @@ export function PartitionConfigBuilder({
       <div>
         <h3 className="title">조 개수 설정</h3>
         <GroupCountEditor
-          eachGroupSize={eachGroupSize}
           users={partitionConfig.officeUsers}
           groupCount={partitionConfig.officeGroupCount}
           groupTypeLabel="사무실"
@@ -142,7 +162,6 @@ export function PartitionConfigBuilder({
           }
         />
         <GroupCountEditor
-          eachGroupSize={eachGroupSize}
           users={partitionConfig.remoteUsers}
           groupCount={partitionConfig.remoteGroupCount}
           groupTypeLabel="재택"

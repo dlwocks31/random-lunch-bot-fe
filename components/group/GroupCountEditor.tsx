@@ -1,31 +1,19 @@
-import { Button, IconButton } from "@mui/material";
-import { ceil } from "lodash";
-import { useEffect } from "react";
+import { IconButton } from "@mui/material";
 import { SlackUser } from "../../utils/slack/slack-user";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import { getStandardPartitionConfig } from "../../utils/group/GetStandardPartitionConfig";
 export function GroupCountEditor({
-  eachGroupSize,
   groupCount,
   users,
   groupTypeLabel = "",
   setGroupCount,
 }: {
-  eachGroupSize: number;
   groupCount: number;
   users: SlackUser[];
   groupTypeLabel: string;
   setGroupCount: (groupCount: number) => void;
 }) {
-  useEffect(() => {
-    console.log(
-      `XXX users.length = ${users.length}, eachGroupSize = ${eachGroupSize} at groupTypeLabel = ${groupTypeLabel}`,
-    );
-    const groupCount = ceil(users.length / eachGroupSize);
-    console.log(`groupCount Set to ${groupCount}`);
-    setGroupCount(groupCount);
-  }, [users.length, eachGroupSize]);
   const max = (a: number, b: number) => (a > b ? a : b);
   const min = (a: number, b: number) => (a < b ? a : b);
   const incrementGroupCount = () => {
