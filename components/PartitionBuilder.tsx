@@ -1,5 +1,5 @@
 import { Button, Chip } from "@mui/material";
-import { concat, shuffle } from "lodash";
+import { concat } from "lodash";
 import { useEffect } from "react";
 import { Group } from "../utils/domain/Group";
 import { GroupType } from "../utils/domain/GroupType";
@@ -54,7 +54,7 @@ export function PartitionBuilder({
     console.log("Generate optimized partition");
     const officePartition = optimizePartition(
       createStandardPartition(
-        shuffle(partitionConfig.officeUsers),
+        partitionConfig.officeUsers,
         partitionConfig.officeGroupCount,
       ),
       1000,
@@ -62,7 +62,7 @@ export function PartitionBuilder({
     );
     const remotePartition = optimizePartition(
       createStandardPartition(
-        shuffle(partitionConfig.remoteUsers),
+        partitionConfig.remoteUsers,
         partitionConfig.remoteGroupCount,
       ),
       1000,
@@ -77,9 +77,6 @@ export function PartitionBuilder({
         remotePartition.map((users) => new Group(GroupType.REMOTE, users)),
       ),
     });
-  }
-  function regenerateOptimizedPartition() {
-    generateOptimizedPartition();
   }
 
   useEffect(generateOptimizedPartition, [partitionConfig]);
@@ -103,7 +100,7 @@ export function PartitionBuilder({
           ))}
         </div>
       ))}
-      <Button onClick={regenerateOptimizedPartition} variant="outlined">
+      <Button onClick={generateOptimizedPartition} variant="outlined">
         재추첨
       </Button>
       <style jsx>{`
