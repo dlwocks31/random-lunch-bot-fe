@@ -7,11 +7,15 @@ export function UserGroupTypeSelector({
   includedUsers: includedUsers,
   groupTypeLabel,
   addGroupUser,
+  groupCount,
+  setGroupCount,
 }: {
   allUsers: SlackUser[];
   includedUsers: SlackUser[];
   groupTypeLabel: string;
   addGroupUser: (userId: string) => void;
+  groupCount: number;
+  setGroupCount: (groupCount: number) => void;
 }) {
   const unselectedUsers = allUsers.filter(
     (u) => !includedUsers.some((su) => su.id === u.id),

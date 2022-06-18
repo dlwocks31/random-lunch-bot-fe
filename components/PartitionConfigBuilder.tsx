@@ -180,6 +180,13 @@ export function PartitionConfigBuilder({
           includedUsers={partitionConfig.officeUsers}
           groupTypeLabel="사무실"
           addGroupUser={addOfficeUser}
+          groupCount={partitionConfig.officeGroupCount}
+          setGroupCount={(officeGroupCount: number) =>
+            setPartitionConfig((config) => ({
+              ...config,
+              officeGroupCount,
+            }))
+          }
         />
         <UserGroupTypeSelector
           allUsers={initialUsers}
