@@ -1,5 +1,5 @@
 import { Button, Chip } from "@mui/material";
-import { concat } from "lodash";
+import { concat, shuffle } from "lodash";
 import { useEffect } from "react";
 import { Group } from "../utils/domain/Group";
 import { GroupType } from "../utils/domain/GroupType";
@@ -54,7 +54,7 @@ export function PartitionBuilder({
     console.log("Generate optimized partition");
     const officePartition = optimizePartition(
       createStandardPartition(
-        partitionConfig.officeUsers,
+        shuffle(partitionConfig.officeUsers),
         partitionConfig.officeGroupCount,
       ),
       1000,
@@ -62,7 +62,7 @@ export function PartitionBuilder({
     );
     const remotePartition = optimizePartition(
       createStandardPartition(
-        partitionConfig.remoteUsers,
+        shuffle(partitionConfig.remoteUsers),
         partitionConfig.remoteGroupCount,
       ),
       1000,
@@ -81,34 +81,47 @@ export function PartitionBuilder({
 
   useEffect(generateOptimizedPartition, [partitionConfig]);
   return (
-    <div>
-      {partition.groups.map((group, i) => (
-        <div
-          className="group-container"
-          key={group.users.map((u) => u.id).join("-")}
-        >
-          <div>
+    <div className="root-container">
+      <div className="all-group-container">
+        {partition.groups.map((group, i) => (
+          <div
+            className="each-group-container"
+            key={group.users.map((u) => u.id).join("-")}
+          >
             <div>
-              Group {i + 1} ({group.users.length}명) (
-              {group.groupType === GroupType.OFFICE ? "사무실" : "재택"})
+              <div>
+                Group {i + 1} ({group.users.length}명) (
+                {group.groupType === GroupType.OFFICE ? "사무실" : "재택"})
+              </div>
             </div>
+            {group.users.map((u) => (
+              <div key={u.id}>
+                <Chip label={u.displayName} />
+              </div>
+            ))}
           </div>
-          {group.users.map((u) => (
-            <div key={u.id}>
-              <Chip label={u.displayName} />
-            </div>
-          ))}
-        </div>
-      ))}
-      <Button onClick={generateOptimizedPartition} variant="outlined">
+        ))}
+      </div>
+
+      <Button onClick={generateOptimizedPartition} variant="outlined" fullWidth>
         재추첨
       </Button>
       <style jsx>{`
-        .group-container {
+        .each-group-container {
           display: flex;
           gap: 3px;
           align-items: center;
           padding: 2px 0;
+        }
+        .root-container {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+        }
+        .all-group-container {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
         }
       `}</style>
     </div>
