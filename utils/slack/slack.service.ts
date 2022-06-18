@@ -27,7 +27,9 @@ export class SlackService {
     return { ok: result.ok };
   }
 
-  async listConversation(): Promise<{ id: string; name: string }[]> {
+  async listConversation(): Promise<
+    { id: string; name: string; membersCount: number }[]
+  > {
     // https://api.slack.com/methods/conversations.list
     const channels = [];
     let cursor = undefined;
@@ -38,6 +40,7 @@ export class SlackService {
       const onePageChannels: any = (
         await axios.post("https://slack.com/api/conversations.list", formData)
       ).data;
+      console.log("onePageChannels", onePageChannels);
       console.log(onePageChannels);
       if (!onePageChannels.channels) break;
       channels.push(...onePageChannels.channels);
@@ -48,7 +51,11 @@ export class SlackService {
     const ret = [];
     for (let channel of channels) {
       if (channel.is_archived) continue;
-      ret.push({ id: channel.id, name: channel.name });
+      ret.push({
+        id: channel.id,
+        name: channel.name,
+        membersCount: channel.num_members,
+      });
     }
     return ret;
   }

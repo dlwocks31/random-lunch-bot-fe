@@ -1,7 +1,16 @@
-import { Button, Checkbox, FormControlLabel, TextField } from "@mui/material";
+import {
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControlLabel,
+  TextField,
+} from "@mui/material";
 import Select from "react-select";
 import { useEffect, useState } from "react";
-import { SlackUser } from "../../utils/slack/slack-user";
 import { buildSlackMessage } from "../../utils/slack/BuildSlackMessage";
 import { SlackServiceFactory } from "../../utils/slack/SlackServiceFactory";
 import { Partition } from "../../utils/domain/Partition";
@@ -15,9 +24,10 @@ export function SendSlackMessage({
 }) {
   const [channel, setChannel] = useState("");
   const [conversations, setConversations] = useState<
-    { id: string; name: string }[]
+    { id: string; name: string; membersCount: number }[]
   >([]);
   const [isUserMentioned, setIsUserMentioned] = useState(true);
+  const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false);
   const message = buildSlackMessage(
     partition,
     templateMessage,
@@ -34,6 +44,14 @@ export function SendSlackMessage({
     console.log(JSON.stringify(joinResult));
     const result = await slackService.send(message, channel);
     console.log(JSON.stringify(result));
+  };
+
+  const channelDescription = () => {
+    const conv = conversations.find((c) => c.id === channel);
+    if (conv) {
+      return `${conv.name} (멤버 ${conv.membersCount}명)`;
+    }
+    return "";
   };
 
   useEffect(() => {
@@ -59,7 +77,7 @@ export function SendSlackMessage({
             onChange={(e) => setIsUserMentioned(e.target.checked)}
           />
         }
-        label="사용자 이름을 슬랙 멘션으로 전송합니다."
+        label="슬랙 메세지에서 조원을 멘션합니다."
       />
       <div className="text-field-container">
         <TextField
@@ -72,9 +90,44 @@ export function SendSlackMessage({
         />
       </div>
 
-      <Button onClick={sendSlackMessage} variant="contained">
-        메세지 전송하기
+      <Button
+        onClick={() => setIsConfirmDialogOpened(true)}
+        variant="contained"
+        disabled={!channel}
+      >
+        {channel ? "메세지 전송하기" : "채널을 선택해 주세요."}
       </Button>
+      <Dialog
+        open={isConfirmDialogOpened}
+        onClose={() => setIsConfirmDialogOpened(false)}
+      >
+        <DialogTitle>정말로 메세지를 전송하시겠습니까?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            슬랙 채널{" "}
+            <span style={{ fontWeight: "bold" }}> {channelDescription()}</span>{" "}
+            에 메세지를 전송합니다.
+          </DialogContentText>
+
+          <DialogActions>
+            <Button
+              onClick={() => setIsConfirmDialogOpened(false)}
+              variant="outlined"
+            >
+              취소
+            </Button>
+            <Button
+              onClick={() => {
+                setIsConfirmDialogOpened(false);
+                sendSlackMessage();
+              }}
+              variant="contained"
+            >
+              메세지 전송
+            </Button>
+          </DialogActions>
+        </DialogContent>
+      </Dialog>
 
       <style jsx>
         {`
