@@ -11,10 +11,8 @@ import Select from "react-select";
 import { SlackServiceFactory } from "../utils/slack/SlackServiceFactory";
 
 export function UsersFetcher({
-  users,
   setUsers,
 }: {
-  users: SlackUser[];
   setUsers: (users: SlackUser[]) => void;
 }) {
   const [fetchType, _setFetchType] = useState("all");
@@ -24,7 +22,6 @@ export function UsersFetcher({
       setUsers(allSlackUsers);
     }
   };
-  const [channel, setChannel] = useState("");
   const [conversations, setConversations] = useState<
     { id: string; name: string; membersCount: number }[]
   >([]);
@@ -90,7 +87,6 @@ export function UsersFetcher({
               onChange={(event) => {
                 if (event) {
                   const ch: string = event.value;
-                  setChannel(ch);
                   setUsersByChannel(ch);
                 }
               }}

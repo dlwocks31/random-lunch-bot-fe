@@ -34,7 +34,7 @@ export function MainComponent() {
   return (
     <div className="form-root">
       <CollapseContainer title="조 설정">
-        <UsersFetcher users={users} setUsers={setUsers} />
+        <UsersFetcher setUsers={setUsers} />
         <PartitionConfigBuilder
           initialUsers={users}
           partitionConfig={partitionConfig}
