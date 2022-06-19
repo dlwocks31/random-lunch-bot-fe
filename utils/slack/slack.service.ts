@@ -1,4 +1,7 @@
-import { UsersListResponse } from "@slack/web-api";
+import {
+  ConversationsMembersResponse,
+  UsersListResponse,
+} from "@slack/web-api";
 import axios from "axios";
 import { SlackUser } from "./slack-user";
 
@@ -92,5 +95,27 @@ export class SlackService {
       );
     }
     return ret;
+  }
+
+  async getConversationMembers(channel: string): Promise<string[]> {
+    // https://api.slack.com/methods/conversations.members
+    const members: string[] = [];
+    let cursor = undefined;
+    while (true) {
+      const formData =
+        `token=${this.slackToken}&channel=${channel}` +
+        (cursor ? `&cursor=${cursor}` : "");
+      const onePageUsers: ConversationsMembersResponse = (
+        await axios.post(
+          "https://slack.com/api/conversations.members",
+          formData,
+        )
+      ).data;
+      if (!onePageUsers.members) break;
+      members.push(...onePageUsers.members);
+      cursor = onePageUsers.response_metadata?.next_cursor;
+      if (!cursor) break;
+    }
+    return members;
   }
 }

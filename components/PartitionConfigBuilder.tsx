@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { SlackUser } from "../utils/slack/slack-user";
 import { FlexUserFetcher } from "./fetch/FlexUserFetcher";
 import { EachGroupSizeEditor } from "./group/EachGroupSizeEditor";
-import { GroupCountEditor } from "./group/GroupCountEditor";
 import { UserGroupTypeSelector } from "./group/UserGroupSelector";
 import { TagEditor } from "./tag/TagEditor";
 import { GroupType } from "../utils/domain/GroupType";
@@ -149,7 +148,7 @@ export function PartitionConfigBuilder({
         />
       </div>
       <div>
-        <h3 className="title">조원 설정</h3>
+        <h3 className="title">그룹 설정</h3>
         <UserGroupTypeSelector
           allUsers={initialUsers}
           includedUsers={partitionConfig.officeUsers}

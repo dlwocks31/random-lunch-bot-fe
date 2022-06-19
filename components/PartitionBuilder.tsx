@@ -80,17 +80,15 @@ export function PartitionBuilder({
   }
 
   useEffect(generateOptimizedPartition, [partitionConfig]);
+  console.log(`XXX partition=${partition.groups.map((u) => u.users.length)}`);
   return (
     <div className="root-container">
       <div className="all-group-container">
         {partition.groups.map((group, i) => (
-          <div
-            className="each-group-container"
-            key={group.users.map((u) => u.id).join("-")}
-          >
+          <div className="each-group-container">
             <div>
               <div>
-                Group {i + 1} ({group.users.length}명) (
+                {i + 1}조: ({group.users.length}명,{" "}
                 {group.groupType === GroupType.OFFICE ? "사무실" : "재택"})
               </div>
             </div>

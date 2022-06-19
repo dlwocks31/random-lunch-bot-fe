@@ -8,6 +8,7 @@ import { PartitionBuilder } from "./PartitionBuilder";
 import { Partition } from "../utils/domain/Partition";
 import { CollapseContainer } from "./util/CollapseContainer";
 import { PartitionConfig } from "../utils/domain/PartitionConfig";
+import { UsersFetcher } from "./UsersFetcher";
 
 const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:orange_heart: 조를 발표합니다!
 > 가장 앞에 있는 분이 이 채널에 조원들을 소환해서 스레드로 함께 메뉴를 정해주세요 :simple_smile:
@@ -29,21 +30,11 @@ export function MainComponent() {
   const [templateMessage, setTemplateMessage] = useState(
     DEFAULT_TEMPLATE_MESSAGE,
   );
-  useEffect(() => {
-    getUsersFromSlack();
-  }, []);
-
-  async function getUsersFromSlack() {
-    // TODO: API call로 대체
-    const slackService = await SlackServiceFactory();
-    slackService.findAllValidSlackUsers().then((users) => {
-      setUsers(users);
-    });
-  }
 
   return (
     <div className="form-root">
       <CollapseContainer title="조 설정">
+        <UsersFetcher users={users} setUsers={setUsers} />
         <PartitionConfigBuilder
           initialUsers={users}
           partitionConfig={partitionConfig}
