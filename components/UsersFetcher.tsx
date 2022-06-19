@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { SlackUser } from "../utils/slack/slack-user";
 import Select from "react-select";
 import { SlackServiceFactory } from "../utils/slack/SlackServiceFactory";
+import { sortBy } from "lodash";
 
 export function UsersFetcher({
   setUsers,
@@ -30,7 +31,13 @@ export function UsersFetcher({
   const getConversations = async () => {
     const slackService = await SlackServiceFactory();
     const conversations = await slackService.listConversation();
-    setConversations(conversations);
+    setConversations(
+      sortBy(
+        conversations.filter((c) => c.membersCount > 0),
+        (c) => -c.membersCount,
+        "name",
+      ),
+    );
   };
 
   useEffect(() => {

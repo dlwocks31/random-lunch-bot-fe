@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { buildSlackMessage } from "../../utils/slack/BuildSlackMessage";
 import { SlackServiceFactory } from "../../utils/slack/SlackServiceFactory";
 import { Partition } from "../../utils/domain/Partition";
+import { sortBy } from "lodash";
 
 export function SendSlackMessage({
   templateMessage,
@@ -36,7 +37,13 @@ export function SendSlackMessage({
   const getConversations = async () => {
     const slackService = await SlackServiceFactory();
     const conversations = await slackService.listConversation();
-    setConversations(conversations);
+    setConversations(
+      sortBy(
+        conversations.filter((c) => c.membersCount > 0),
+        (c) => -c.membersCount,
+        "name",
+      ),
+    );
   };
   const sendSlackMessage = async () => {
     const slackService = await SlackServiceFactory();
