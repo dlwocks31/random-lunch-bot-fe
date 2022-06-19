@@ -8,15 +8,11 @@ export function UserGroupTypeSelector({
   includedUsers: includedUsers,
   groupTypeLabel,
   addGroupUser,
-  groupCount,
-  setGroupCount,
 }: {
   allUsers: SlackUser[];
   includedUsers: SlackUser[];
   groupTypeLabel: string;
   addGroupUser: (userId: string) => void;
-  groupCount?: number;
-  setGroupCount?: (groupCount: number) => void;
 }) {
   const unselectedUsers = allUsers.filter(
     (u) => !includedUsers.some((su) => su.id === u.id),
@@ -24,6 +20,9 @@ export function UserGroupTypeSelector({
   return (
     <div className="root">
       <div className="top-root">
+        <div>
+          {groupTypeLabel} (총 {includedUsers.length}명)
+        </div>
         <div>
           <Select
             placeholder={`${groupTypeLabel} 그룹에 추가할 유저 이름을 검색하세요`}
@@ -38,18 +37,6 @@ export function UserGroupTypeSelector({
               }
             }}
           />
-        </div>
-        <div>
-          {groupCount && setGroupCount ? (
-            <GroupCountEditor
-              groupCount={groupCount}
-              usersCount={includedUsers.length}
-              groupTypeLabel={groupTypeLabel}
-              setGroupCount={setGroupCount}
-            ></GroupCountEditor>
-          ) : (
-            `${groupTypeLabel} - 총 ${includedUsers.length}명`
-          )}
         </div>
       </div>
       <div>

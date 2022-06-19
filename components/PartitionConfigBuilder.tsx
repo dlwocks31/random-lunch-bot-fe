@@ -9,6 +9,7 @@ import { GroupType } from "../utils/domain/GroupType";
 import { HelpIconWithTooltip } from "./util/HelpIconWithTooltip";
 import { PartitionConfig } from "../utils/domain/PartitionConfig";
 import { getGroupTypeHeuristics } from "../utils/slack/GetGroupTypeHeuristics";
+import { GroupCountEditor } from "./group/GroupCountEditor";
 
 export function PartitionConfigBuilder({
   initialUsers,
@@ -141,10 +142,32 @@ export function PartitionConfigBuilder({
   return (
     <div className="config-root">
       <div>
-        <h3 className="title">조별 기본 인원 수</h3>
+        <h3 className="title">조별 인원 수</h3>
         <EachGroupSizeEditor
           eachGroupSize={eachGroupSize}
           setEachGroupSize={setEachGroupSize}
+        />
+        <GroupCountEditor
+          groupCount={partitionConfig.officeGroupCount}
+          usersCount={partitionConfig.officeUsers.length}
+          groupTypeLabel="사무실"
+          setGroupCount={(officeGroupCount: number) =>
+            setPartitionConfig((config) => ({
+              ...config,
+              officeGroupCount,
+            }))
+          }
+        />
+        <GroupCountEditor
+          groupCount={partitionConfig.remoteGroupCount}
+          usersCount={partitionConfig.remoteUsers.length}
+          groupTypeLabel="재택"
+          setGroupCount={(remoteGroupCount: number) =>
+            setPartitionConfig((config) => ({
+              ...config,
+              remoteGroupCount,
+            }))
+          }
         />
       </div>
       <div>
@@ -154,26 +177,12 @@ export function PartitionConfigBuilder({
           includedUsers={partitionConfig.officeUsers}
           groupTypeLabel="사무실"
           addGroupUser={addOfficeUser}
-          groupCount={partitionConfig.officeGroupCount}
-          setGroupCount={(officeGroupCount: number) =>
-            setPartitionConfig((config) => ({
-              ...config,
-              officeGroupCount,
-            }))
-          }
         />
         <UserGroupTypeSelector
           allUsers={initialUsers}
           includedUsers={partitionConfig.remoteUsers}
           groupTypeLabel="재택"
           addGroupUser={addRemoteUser}
-          groupCount={partitionConfig.remoteGroupCount}
-          setGroupCount={(remoteGroupCount: number) =>
-            setPartitionConfig((config) => ({
-              ...config,
-              remoteGroupCount,
-            }))
-          }
         />
         <UserGroupTypeSelector
           allUsers={initialUsers}
