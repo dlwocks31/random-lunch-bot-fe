@@ -10,7 +10,7 @@ function encodeData(data: any) {
 const SLACK_CALLBACK_HOST = process.env.NEXT_PUBLIC_SLACK_OAUTH_CALLBACK_HOST;
 export const SLACK_CALLBACK_BASE_QUERY = {
   scope: "channels:join,chat:write,users:read,users:read.email,channels:read",
-  redirect_uri: `${SLACK_CALLBACK_HOST}/api/auth/callback`,
+  redirect_uri: `${SLACK_CALLBACK_HOST}/api/slack/callback`,
   client_id: "724758129958.3531603815618",
 };
 
