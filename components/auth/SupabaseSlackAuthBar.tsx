@@ -10,6 +10,7 @@ export function SupabaseSlackAuthBar({
   setSlackInstalled: (slackInstalled: boolean) => void;
 }) {
   const [userEmail, setUserEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [oauthStatus, setOauthStatus] = useState<{ team: string } | null>(null);
 
   async function queryOauthStatus() {
@@ -58,7 +59,7 @@ export function SupabaseSlackAuthBar({
       <Toolbar>
         <Typography sx={{ flexGrow: 1 }}>My Lunch Bot</Typography>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {userEmail ? (
+          {userEmail && (
             <div className="login-data-container">
               <div>로그인 되었습니다. Email: {userEmail}</div>
               <Button
@@ -71,35 +72,27 @@ export function SupabaseSlackAuthBar({
               <Typography sx={{ flexGrow: 1 }}>{appBarText}</Typography>
               {shouldShowAddToSlackButton && <AddToSlackButton />}
               {userEmail !== "test@test.com" && (
-                <Button
-                  color="inherit"
-                  variant="outlined"
-                  onClick={() =>
-                    supabase.auth.signIn({
-                      email: "test@test.com",
-                      password: "qwer1234",
-                    })
-                  }
-                >
-                  로그인
-                </Button>
+                <div>
+                  <Button
+                    color="inherit"
+                    variant="outlined"
+                    onClick={() =>
+                      supabase.auth.signIn({
+                        email: "test@test.com",
+                        password,
+                      })
+                    }
+                  >
+                    로그인
+                  </Button>
+                  <TextField
+                    label="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    size="small"
+                  />
+                </div>
               )}
-            </div>
-          ) : (
-            <div>
-              <TextField></TextField>
-              <Button
-                color="inherit"
-                variant="outlined"
-                onClick={() =>
-                  supabase.auth.signUp({
-                    email: "test@test.com",
-                    password: "test",
-                  })
-                }
-              >
-                로그인
-              </Button>
             </div>
           )}
         </div>
