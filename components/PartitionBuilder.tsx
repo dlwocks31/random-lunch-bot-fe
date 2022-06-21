@@ -85,7 +85,10 @@ export function PartitionBuilder({
     <div className="root-container">
       <div className="all-group-container">
         {partition.groups.map((group, i) => (
-          <div className="each-group-container">
+          <div
+            className="each-group-container"
+            key={group.users.map((u) => u.id).join("-") + i}
+          >
             <div>
               <div>
                 {i + 1}조: ({group.users.length}명,{" "}

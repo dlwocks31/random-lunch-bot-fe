@@ -30,6 +30,7 @@ export function TagEditor({
           <Tooltip
             title={`총 ${value.length}명`}
             onClick={() => setIsOpened((open) => !open)}
+            key={key + value.join("-")}
           >
             <Chip key={key} label={key} />
           </Tooltip>
