@@ -1,8 +1,9 @@
-import { AppBar, Button, TextField, Toolbar, Typography } from "@mui/material";
+import { AppBar, Button, Toolbar, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { supabase } from "../../utils/supabase/supabaseClient";
 import { AddToSlackButton } from "./AddToSlackButton";
+import { LoginDialog } from "./LoginDialog";
 
 export function SupabaseSlackAuthBar({
   setSlackInstalled,
@@ -10,7 +11,6 @@ export function SupabaseSlackAuthBar({
   setSlackInstalled: (slackInstalled: boolean) => void;
 }) {
   const [userEmail, setUserEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [oauthStatus, setOauthStatus] = useState<{ team: string } | null>(null);
   const isAnonUser = userEmail.endsWith("@anon-login.com");
   async function queryOauthStatus() {
@@ -30,7 +30,7 @@ export function SupabaseSlackAuthBar({
     }
   }
 
-  useEffect(() => {
+  function signUpAnonUser() {
     const currentUser = supabase.auth.user();
     console.log("currentUser is", currentUser);
     if (!currentUser) {
@@ -46,7 +46,8 @@ export function SupabaseSlackAuthBar({
         queryOauthStatus();
       }
     }
-  });
+  }
+  useEffect(signUpAnonUser);
 
   const isSlackAdded = oauthStatus !== null;
 
@@ -59,23 +60,13 @@ export function SupabaseSlackAuthBar({
             <>
               <div>미로그인 상태입니다.</div>
               <div>
-                <Button
-                  color="inherit"
-                  variant="outlined"
-                  onClick={() =>
-                    supabase.auth.signIn({
-                      email: "test@test.com",
-                      password,
-                    })
-                  }
-                >
-                  로그인
-                </Button>
-                <TextField
-                  label="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  size="small"
+                <LoginDialog
+                  handleLogin={(email, password) => {
+                    supabase.auth.signIn({ email, password }).then(() => {
+                      setUserEmail(email);
+                      queryOauthStatus();
+                    });
+                  }}
                 />
               </div>
             </>
@@ -85,7 +76,12 @@ export function SupabaseSlackAuthBar({
               <Button
                 color="inherit"
                 variant="outlined"
-                onClick={() => supabase.auth.signOut()}
+                onClick={() =>
+                  supabase.auth.signOut().then(() => {
+                    setOauthStatus(null);
+                    signUpAnonUser();
+                  })
+                }
               >
                 로그아웃
               </Button>
