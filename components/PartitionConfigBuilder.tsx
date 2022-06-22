@@ -72,6 +72,7 @@ export function PartitionConfigBuilder({
     setOfficeUserIf((u) => u.id === userId);
   }
   function addRemoteUsersByEmail(emails: string[]) {
+    console.log(`addRemoteUsersByEmail: ${emails}`);
     setRemoteUserIf((u) => emails.includes(u.email));
   }
 
@@ -80,63 +81,69 @@ export function PartitionConfigBuilder({
   }
 
   function setOfficeUserIf(predicate: (u: SlackUser) => boolean) {
-    const remoteUsers = partitionConfig.remoteUsers.filter(
-      (u) => !predicate(u),
-    );
-    const excludedUsers = partitionConfig.excludedUsers.filter(
-      (u) => !predicate(u),
-    );
-    const officeUsers = concat(
-      partitionConfig.officeUsers,
-      partitionConfig.remoteUsers.filter(predicate),
-      partitionConfig.excludedUsers.filter(predicate),
-    );
-    setPartitionConfig((config) => ({
-      ...config,
-      officeUsers,
-      remoteUsers,
-      excludedUsers,
-    }));
+    setPartitionConfig((partitionConfig) => {
+      const remoteUsers = partitionConfig.remoteUsers.filter(
+        (u) => !predicate(u),
+      );
+      const excludedUsers = partitionConfig.excludedUsers.filter(
+        (u) => !predicate(u),
+      );
+      const officeUsers = concat(
+        partitionConfig.officeUsers,
+        partitionConfig.remoteUsers.filter(predicate),
+        partitionConfig.excludedUsers.filter(predicate),
+      );
+      return {
+        ...partitionConfig,
+        officeUsers,
+        remoteUsers,
+        excludedUsers,
+      };
+    });
   }
 
   function setRemoteUserIf(predicate: (u: SlackUser) => boolean) {
-    const officeUsers = partitionConfig.officeUsers.filter(
-      (u) => !predicate(u),
-    );
-    const excludedUsers = partitionConfig.excludedUsers.filter(
-      (u) => !predicate(u),
-    );
-    const remoteUsers = concat(
-      partitionConfig.remoteUsers,
-      partitionConfig.officeUsers.filter(predicate),
-      partitionConfig.excludedUsers.filter(predicate),
-    );
-    setPartitionConfig((config) => ({
-      ...config,
-      officeUsers,
-      remoteUsers,
-      excludedUsers,
-    }));
+    setPartitionConfig((partitionConfig) => {
+      const officeUsers = partitionConfig.officeUsers.filter(
+        (u) => !predicate(u),
+      );
+      const excludedUsers = partitionConfig.excludedUsers.filter(
+        (u) => !predicate(u),
+      );
+      const remoteUsers = concat(
+        partitionConfig.remoteUsers,
+        partitionConfig.officeUsers.filter(predicate),
+        partitionConfig.excludedUsers.filter(predicate),
+      );
+      return {
+        ...partitionConfig,
+        officeUsers,
+        remoteUsers,
+        excludedUsers,
+      };
+    });
   }
 
   function setExcludedUserIf(predicate: (u: SlackUser) => boolean) {
-    const officeUsers = partitionConfig.officeUsers.filter(
-      (u) => !predicate(u),
-    );
-    const remoteUsers = partitionConfig.remoteUsers.filter(
-      (u) => !predicate(u),
-    );
-    const excludedUsers = concat(
-      partitionConfig.excludedUsers,
-      partitionConfig.officeUsers.filter(predicate),
-      partitionConfig.remoteUsers.filter(predicate),
-    );
-    setPartitionConfig((config) => ({
-      ...config,
-      officeUsers,
-      remoteUsers,
-      excludedUsers,
-    }));
+    setPartitionConfig((partitionConfig) => {
+      const officeUsers = partitionConfig.officeUsers.filter(
+        (u) => !predicate(u),
+      );
+      const remoteUsers = partitionConfig.remoteUsers.filter(
+        (u) => !predicate(u),
+      );
+      const excludedUsers = concat(
+        partitionConfig.excludedUsers,
+        partitionConfig.officeUsers.filter(predicate),
+        partitionConfig.remoteUsers.filter(predicate),
+      );
+      return {
+        ...partitionConfig,
+        officeUsers,
+        remoteUsers,
+        excludedUsers,
+      };
+    });
   }
 
   return (
