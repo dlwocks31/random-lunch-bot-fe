@@ -28,12 +28,11 @@ export function SendSlackMessage({
     { id: string; name: string; membersCount: number }[]
   >([]);
   const [isUserMentioned, setIsUserMentioned] = useState(true);
+  const [isOnlyTemplate, setIsOnlyTemplate] = useState(false);
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false);
-  const message = buildSlackMessage(
-    partition,
-    templateMessage,
-    isUserMentioned,
-  );
+  const message = isOnlyTemplate
+    ? templateMessage
+    : buildSlackMessage(partition, templateMessage, isUserMentioned);
   const getConversations = async () => {
     const slackService = await SlackServiceFactory();
     const conversations = await slackService.listConversation();
@@ -85,6 +84,15 @@ export function SendSlackMessage({
           />
         }
         label="슬랙 메세지에서 조원을 멘션합니다."
+      />
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={isOnlyTemplate}
+            onChange={(e) => setIsOnlyTemplate(e.target.checked)}
+          />
+        }
+        label="템플릿 메세지만 전송합니다."
       />
       <div className="text-field-container">
         <TextField
