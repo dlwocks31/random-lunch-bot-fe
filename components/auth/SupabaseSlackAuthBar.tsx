@@ -12,13 +12,14 @@ export function SupabaseSlackAuthBar({
   const [userEmail, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
   const [oauthStatus, setOauthStatus] = useState<{ team: string } | null>(null);
-
+  const isAnonUser = userEmail.endsWith("@anon-login.com");
   async function queryOauthStatus() {
     // TODO: API call로 변경 (oauth Token을 client에게 숨겨야 함)
     const { data } = await supabase
       .from("slack_oauth_tokens")
       .select()
       .single();
+
     const teamName = data?.raw_oauth_response?.team.name;
     if (teamName) {
       setOauthStatus({ team: teamName });
@@ -47,20 +48,39 @@ export function SupabaseSlackAuthBar({
     }
   });
 
-  const appBarText: string = userEmail
-    ? oauthStatus
-      ? `슬랙 앱이 설치되었습니다. Team: ${oauthStatus.team}`
-      : "슬랙 앱을 설치해주세요"
-    : "로그인";
-  const shouldShowAddToSlackButton: boolean = !!userEmail && !oauthStatus;
+  const isSlackAdded = oauthStatus !== null;
 
   return (
     <AppBar position="static">
       <Toolbar>
         <Typography sx={{ flexGrow: 1 }}>My Lunch Bot</Typography>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {userEmail && (
-            <div className="login-data-container">
+          {isAnonUser ? (
+            <>
+              <div>미로그인 상태입니다.</div>
+              <div>
+                <Button
+                  color="inherit"
+                  variant="outlined"
+                  onClick={() =>
+                    supabase.auth.signIn({
+                      email: "test@test.com",
+                      password,
+                    })
+                  }
+                >
+                  로그인
+                </Button>
+                <TextField
+                  label="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  size="small"
+                />
+              </div>
+            </>
+          ) : (
+            <>
               <div>로그인 되었습니다. Email: {userEmail}</div>
               <Button
                 color="inherit"
@@ -69,39 +89,15 @@ export function SupabaseSlackAuthBar({
               >
                 로그아웃
               </Button>
-              <Typography sx={{ flexGrow: 1 }}>{appBarText}</Typography>
-              {shouldShowAddToSlackButton && <AddToSlackButton />}
-              {userEmail !== "test@test.com" && (
-                <div>
-                  <Button
-                    color="inherit"
-                    variant="outlined"
-                    onClick={() =>
-                      supabase.auth.signIn({
-                        email: "test@test.com",
-                        password,
-                      })
-                    }
-                  >
-                    로그인
-                  </Button>
-                  <TextField
-                    label="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    size="small"
-                  />
-                </div>
-              )}
-            </div>
+            </>
+          )}
+          {isSlackAdded ? (
+            <div>슬랙 워크스페이스: {oauthStatus.team}</div>
+          ) : (
+            <AddToSlackButton />
           )}
         </div>
       </Toolbar>
-      <style jsx>{`
-        .login-data-container {
-          display: flex;
-        }
-      `}</style>
     </AppBar>
   );
 }
