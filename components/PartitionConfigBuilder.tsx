@@ -10,7 +10,7 @@ import { HelpIconWithTooltip } from "./util/HelpIconWithTooltip";
 import { PartitionConfig } from "../utils/domain/PartitionConfig";
 import { getGroupTypeHeuristics } from "../utils/slack/GetGroupTypeHeuristics";
 import { GroupCountEditor } from "./group/GroupCountEditor";
-import { appendFile } from "fs";
+import { Button } from "@mui/material";
 
 export function PartitionConfigBuilder({
   initialUsers,
@@ -24,7 +24,7 @@ export function PartitionConfigBuilder({
   ) => void;
 }) {
   const [eachGroupSize, setEachGroupSize] = useState(4);
-
+  const [isSlackStatusOpened, setIsSlackStatusOpened] = useState(false);
   const getGroupedUserV2 = (users: SlackUser[]) => {
     return groupBy(users, (user: SlackUser) => {
       return user.statusEmoji === ":palm_tree:" ||
@@ -238,45 +238,62 @@ export function PartitionConfigBuilder({
         />
       </div>
       <div>
-        <h3 className="title">슬랙 상태 이모지 기준으로 확인</h3>
-        <div>
-          🏡 = 재택 , 🌴 = 휴가 기준으로 확인할 수 있습니다. 실제 조에 포함되어
-          있지 않으면 볼드체로 표현됩니다.
-        </div>
-        <div>
-          재택:{" "}
-          {(groupedUserV2[GroupType.REMOTE] || [<span key={null}>.</span>])
-            .map<React.ReactNode>((a) => (
-              <span
-                key={a.id}
-                className={
-                  partitionConfig.remoteUsers.find((u) => u.id === a.id)
-                    ? ""
-                    : "bold-span"
-                }
-              >
-                {a.displayName}
-              </span>
-            ))
-            .reduce((prev, curr) => [prev, <span key={null}>, </span>, curr])}
-        </div>
-        <div>
-          휴가:{" "}
-          {(groupedUserV2[GroupType.EXCLUDED] || [<span key={null}>.</span>])
-            .map<React.ReactNode>((a) => (
-              <span
-                key={a.id}
-                className={
-                  partitionConfig.excludedUsers.find((u) => u.id === a.id)
-                    ? ""
-                    : "bold-span"
-                }
-              >
-                {a.displayName}
-              </span>
-            ))
-            .reduce((prev, curr) => [prev, <span key={null}>, </span>, curr])}
-        </div>
+        <Button onClick={() => setIsSlackStatusOpened((v) => !v)}>
+          슬랙 상태 이모지 기준으로 확인
+        </Button>
+        {isSlackStatusOpened && (
+          <>
+            <h3 className="title">슬랙 상태 이모지 기준으로 확인</h3>
+            <div>
+              🏡 = 재택 , 🌴 = 휴가 기준으로 확인할 수 있습니다. 실제 조에
+              포함되어 있지 않으면 볼드체로 표현됩니다.
+            </div>
+            <div>
+              재택:{" "}
+              {(groupedUserV2[GroupType.REMOTE] || [<span key={null}>.</span>])
+                .map<React.ReactNode>((a) => (
+                  <span
+                    key={a.id}
+                    className={
+                      partitionConfig.remoteUsers.find((u) => u.id === a.id)
+                        ? ""
+                        : "bold-span"
+                    }
+                  >
+                    {a.displayName}
+                  </span>
+                ))
+                .reduce((prev, curr) => [
+                  prev,
+                  <span key={null}>, </span>,
+                  curr,
+                ])}
+            </div>
+            <div>
+              휴가:{" "}
+              {(
+                groupedUserV2[GroupType.EXCLUDED] || [<span key={null}>.</span>]
+              )
+                .map<React.ReactNode>((a) => (
+                  <span
+                    key={a.id}
+                    className={
+                      partitionConfig.excludedUsers.find((u) => u.id === a.id)
+                        ? ""
+                        : "bold-span"
+                    }
+                  >
+                    {a.displayName}
+                  </span>
+                ))
+                .reduce((prev, curr) => [
+                  prev,
+                  <span key={null}>, </span>,
+                  curr,
+                ])}
+            </div>
+          </>
+        )}
       </div>
       <style jsx>{`
         .config-root {
