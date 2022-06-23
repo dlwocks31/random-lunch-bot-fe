@@ -248,6 +248,7 @@ export function PartitionConfigBuilder({
           {(groupedUserV2[GroupType.REMOTE] || [])
             .map<React.ReactNode>((a) => (
               <span
+                key={a.id}
                 className={
                   partitionConfig.remoteUsers.find((u) => u.id === a.id)
                     ? ""
@@ -257,13 +258,14 @@ export function PartitionConfigBuilder({
                 {a.displayName}
               </span>
             ))
-            .reduce((prev, curr) => [prev, <span>, </span>, curr])}
+            .reduce((prev, curr) => [prev, <span key={null}>, </span>, curr])}
         </div>
         <div>
           휴가:{" "}
           {(groupedUserV2[GroupType.EXCLUDED] || [])
             .map<React.ReactNode>((a) => (
               <span
+                key={a.id}
                 className={
                   partitionConfig.excludedUsers.find((u) => u.id === a.id)
                     ? ""
@@ -273,7 +275,7 @@ export function PartitionConfigBuilder({
                 {a.displayName}
               </span>
             ))
-            .reduce((prev, curr) => [prev, <span>, </span>, curr])}
+            .reduce((prev, curr) => [prev, <span key={null}>, </span>, curr])}
         </div>
       </div>
       <style jsx>{`
