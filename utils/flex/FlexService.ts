@@ -1,5 +1,7 @@
 import { chunk } from "lodash";
+import { determineTimeslotOfTime } from "./DetermineTimeslotOfTime";
 import { FlexApiService } from "./FlexApiService";
+import { FlexTimeSlot } from "./FlexTimeSlot";
 import { FlexTimeSlotType } from "./FlexTimeSlotType";
 import { FlexUser } from "./FlexUser";
 
@@ -15,11 +17,9 @@ export class FlexService {
     timeOff: FlexUser[];
   }> {
     const departmentIds = await this.flexApiService.getDepartmentIds();
-    console.log("XXX departmentIds", departmentIds);
     const simpleUsers = await this.flexApiService.searchSimpleUsers(
       departmentIds,
     );
-    console.log("XXX simpleUsers", simpleUsers.length);
     const flexUsers: FlexUser[] = await Promise.all(
       simpleUsers.map(async (u) => ({
         ...u,
@@ -28,7 +28,7 @@ export class FlexService {
     );
     const workSchedules: {
       flexId: string;
-      timeslots: { type: FlexTimeSlotType; start: string; end: string }[];
+      timeslots: FlexTimeSlot[];
     }[] = [];
     for (const userChunk of chunk(flexUsers, 20)) {
       workSchedules.push(
@@ -44,12 +44,13 @@ export class FlexService {
     for (const schedule of workSchedules) {
       const flexUser = flexUsers.find((u) => u.flexId === schedule.flexId);
       if (!flexUser) continue;
-      const overlapTimeslotsTypes = schedule.timeslots
-        .filter((timeSlot) => timeSlot.start <= time && timeSlot.end >= time)
-        .map((t) => t.type);
-      if (overlapTimeslotsTypes.includes(FlexTimeSlotType.TIME_OFF)) {
+      const timeslotOfTarget = determineTimeslotOfTime(
+        schedule.timeslots,
+        time,
+      );
+      if (timeslotOfTarget === FlexTimeSlotType.TIME_OFF) {
         timeOff.push(flexUser);
-      } else if (overlapTimeslotsTypes.includes(FlexTimeSlotType.REMOTE_WORK)) {
+      } else if (timeslotOfTarget === FlexTimeSlotType.REMOTE_WORK) {
         remoteWork.push(flexUser);
       } else {
         officeWork.push(flexUser);
