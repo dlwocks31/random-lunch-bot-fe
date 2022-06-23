@@ -10,6 +10,7 @@ import { HelpIconWithTooltip } from "./util/HelpIconWithTooltip";
 import { PartitionConfig } from "../utils/domain/PartitionConfig";
 import { getGroupTypeHeuristics } from "../utils/slack/GetGroupTypeHeuristics";
 import { GroupCountEditor } from "./group/GroupCountEditor";
+import { appendFile } from "fs";
 
 export function PartitionConfigBuilder({
   initialUsers,
@@ -24,6 +25,17 @@ export function PartitionConfigBuilder({
 }) {
   const [eachGroupSize, setEachGroupSize] = useState(4);
 
+  const getGroupedUserV2 = (users: SlackUser[]) => {
+    return groupBy(users, (user: SlackUser) => {
+      return user.statusEmoji === ":palm_tree:" ||
+        user.statusMessage.includes("휴직")
+        ? GroupType.EXCLUDED
+        : user.statusEmoji === ":house_with_garden:"
+        ? GroupType.REMOTE
+        : GroupType.OFFICE;
+    });
+  };
+  const groupedUserV2 = getGroupedUserV2(initialUsers);
   useEffect(() => {
     const groupedUser = groupBy(initialUsers, (user) =>
       getGroupTypeHeuristics(user),
@@ -225,6 +237,45 @@ export function PartitionConfigBuilder({
           addUnselectedUsersByEmail={addExcludedUsersByEmail}
         />
       </div>
+      <div>
+        <h3 className="title">슬랙 상태 이모지 기준으로 확인</h3>
+        <div>
+          🏡 = 재택 , 🌴 = 휴가 기준으로 확인할 수 있습니다. 실제 조에 포함되어
+          있지 않으면 볼드체로 표현됩니다.
+        </div>
+        <div>
+          재택:{" "}
+          {(groupedUserV2[GroupType.REMOTE] || [])
+            .map<React.ReactNode>((a) => (
+              <span
+                className={
+                  partitionConfig.remoteUsers.find((u) => u.id === a.id)
+                    ? ""
+                    : "bold-span"
+                }
+              >
+                {a.displayName}
+              </span>
+            ))
+            .reduce((prev, curr) => [prev, <span>, </span>, curr])}
+        </div>
+        <div>
+          휴가:{" "}
+          {(groupedUserV2[GroupType.EXCLUDED] || [])
+            .map<React.ReactNode>((a) => (
+              <span
+                className={
+                  partitionConfig.excludedUsers.find((u) => u.id === a.id)
+                    ? ""
+                    : "bold-span"
+                }
+              >
+                {a.displayName}
+              </span>
+            ))
+            .reduce((prev, curr) => [prev, <span>, </span>, curr])}
+        </div>
+      </div>
       <style jsx>{`
         .config-root {
           display: flex;
@@ -237,6 +288,9 @@ export function PartitionConfigBuilder({
         }
         .title {
           margin: 5px 0;
+        }
+        .bold-span {
+          font-weight: bold;
         }
       `}</style>
     </div>
