@@ -15,9 +15,11 @@ export class FlexService {
     timeOff: FlexUser[];
   }> {
     const departmentIds = await this.flexApiService.getDepartmentIds();
+    console.log("XXX departmentIds", departmentIds);
     const simpleUsers = await this.flexApiService.searchSimpleUsers(
       departmentIds,
     );
+    console.log("XXX simpleUsers", simpleUsers.length);
     const flexUsers: FlexUser[] = await Promise.all(
       simpleUsers.map(async (u) => ({
         ...u,
