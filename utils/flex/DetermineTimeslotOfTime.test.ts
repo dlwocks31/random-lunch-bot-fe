@@ -1,4 +1,4 @@
-import { determineTypeAtTime } from "./DetermineTimeslotOfTime";
+import { determineTimeslotOfTime } from "./DetermineTimeslotOfTime";
 import { FlexTimeSlotType } from "./FlexTimeSlotType";
 
 describe("DetermineTimeslotOfTime", () => {
@@ -16,7 +16,7 @@ describe("DetermineTimeslotOfTime", () => {
         type: FlexTimeSlotType.OFFICE_WORK,
       },
     ];
-    const result = determineTypeAtTime(timeslots, time);
+    const result = determineTimeslotOfTime(timeslots, time);
     expect(result).toBe(FlexTimeSlotType.OFFICE_WORK);
   });
 
@@ -35,7 +35,7 @@ describe("DetermineTimeslotOfTime", () => {
       },
     ];
 
-    const result = determineTypeAtTime(timeslots, time);
+    const result = determineTimeslotOfTime(timeslots, time);
     expect(result).toBe(FlexTimeSlotType.REMOTE_WORK);
   });
 });
