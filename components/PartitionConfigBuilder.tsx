@@ -245,7 +245,7 @@ export function PartitionConfigBuilder({
         </div>
         <div>
           재택:{" "}
-          {(groupedUserV2[GroupType.REMOTE] || [<span>.</span>])
+          {(groupedUserV2[GroupType.REMOTE] || [<span key={null}>.</span>])
             .map<React.ReactNode>((a) => (
               <span
                 key={a.id}
@@ -262,7 +262,7 @@ export function PartitionConfigBuilder({
         </div>
         <div>
           휴가:{" "}
-          {(groupedUserV2[GroupType.EXCLUDED] || [<span>.</span>])
+          {(groupedUserV2[GroupType.EXCLUDED] || [<span key={null}>.</span>])
             .map<React.ReactNode>((a) => (
               <span
                 key={a.id}
