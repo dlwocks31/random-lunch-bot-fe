@@ -1,14 +1,54 @@
 import { Button, Chip } from "@mui/material";
+import Select from "react-select";
+import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
 import { SlackUser } from "../../utils/slack/slack-user";
 import { CollapseContainer } from "../util/CollapseContainer";
 
+const CustomUserGroupTypeSelector = ({
+  allUsers,
+  includedUsers,
+  addGroupUser,
+}: {
+  allUsers: SlackUser[];
+  includedUsers: SlackUser[];
+  addGroupUser: (user: SlackUser) => void;
+}) => {
+  const unselectedUsers = allUsers.filter(
+    (u) => !includedUsers.some((su) => su.id === u.id),
+  );
+  return (
+    <div>
+      <Select
+        placeholder="유저 이름을 검색하세요"
+        options={unselectedUsers.map(({ id, displayName }) => ({
+          value: id,
+          label: displayName,
+        }))}
+        value={null}
+        onChange={(e) => {
+          if (e) {
+            const user = allUsers.find((u) => u.id === e.value);
+            if (user) {
+              addGroupUser(user);
+            }
+          }
+        }}
+      />
+    </div>
+  );
+};
+
 const MemberPartitionComponent = ({
   partition,
+  allUsers,
   groupTypeName,
+  onAddGroupUser,
 }: {
   partition: MemberPartition;
+  allUsers: SlackUser[];
   groupTypeName: string;
+  onAddGroupUser: (user: SlackUser) => void;
 }) => (
   <CollapseContainer
     title={`${groupTypeName} - 총 ${partition.userCount()}명 / ${partition.groupCount()}조`}
@@ -16,7 +56,14 @@ const MemberPartitionComponent = ({
     <div>
       <div>조별 인원 수: 3명 / 4명 / 5명 / 6명</div>
       <div>조 개수: (-) {partition.groupCount()}개 (+)</div>
-      <div>{groupTypeName} 인원 추가: 드롭다운</div>
+      <div>
+        {groupTypeName} 인원 추가:
+        <CustomUserGroupTypeSelector
+          allUsers={allUsers}
+          includedUsers={partition.users()}
+          addGroupUser={onAddGroupUser}
+        />
+      </div>
       <div>
         {partition.groups.map((group, i) => (
           <div key={i} className="group-container">
@@ -64,28 +111,31 @@ export const MainGroupComopnent = ({
   setMembers,
 }: {
   onStepIncrement: () => void;
-  members: {
-    office: MemberPartition;
-    remote: MemberPartition;
-    excluded: SlackUser[];
-  };
-  setMembers: (members: {
-    office: MemberPartition;
-    remote: MemberPartition;
-    excluded: SlackUser[];
-  }) => void;
+  members: MemberConfig;
+  setMembers: (members: MemberConfig) => void;
 }) => {
+  const allUsers = members.allUsers();
+  console.log("XXX remoteUser:");
+  console.log(members.remote);
   return (
     <div>
       <div>먼저, 슬랙에서 가져온 조원을 설정해 주세요.</div>
       <div>
         <MemberPartitionComponent
+          allUsers={allUsers}
           partition={members.office}
           groupTypeName="사무실"
+          onAddGroupUser={(user) =>
+            setMembers(members.moveMemberToOffice(user))
+          }
         />
         <MemberPartitionComponent
+          allUsers={allUsers}
           partition={members.remote}
           groupTypeName="재택"
+          onAddGroupUser={(user) =>
+            setMembers(members.moveMemberToRemote(user))
+          }
         />
         <UsersListComponent users={members.excluded} groupTypeName="제외" />
       </div>

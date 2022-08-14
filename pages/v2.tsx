@@ -10,11 +10,13 @@ const DEFAULT_EACH_GROUP_USER = 4;
 export default () => {
   const [slackInstalled, setSlackInstalled] = useState(false);
   const [step, setStep] = useState(0);
-  const [members, setMembers] = useState<MemberConfig>({
-    office: new MemberPartition([]),
-    remote: new MemberPartition([]),
-    excluded: [],
-  });
+  const [members, setMembers] = useState<MemberConfig>(
+    new MemberConfig(
+      new MemberPartition([], DEFAULT_EACH_GROUP_USER),
+      new MemberPartition([], DEFAULT_EACH_GROUP_USER),
+      [],
+    ),
+  );
   useEffect(() => {
     if (slackInstalled) {
       (async () => {
@@ -23,14 +25,16 @@ export default () => {
         console.log(users);
 
         const groupCount = Math.floor(users.length / DEFAULT_EACH_GROUP_USER);
-        const partition = new MemberPartition(
-          createStandardPartition(users, groupCount),
+        setMembers(
+          new MemberConfig(
+            new MemberPartition(
+              createStandardPartition(users, groupCount),
+              DEFAULT_EACH_GROUP_USER,
+            ),
+            new MemberPartition([], DEFAULT_EACH_GROUP_USER),
+            [],
+          ),
         );
-        setMembers({
-          office: partition,
-          remote: new MemberPartition([]),
-          excluded: [],
-        });
       })();
     }
   }, [slackInstalled]);

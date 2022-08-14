@@ -1,11 +1,10 @@
 import { Chip } from "@mui/material";
-import { SlackUser } from "../../utils/slack/slack-user";
 import Select from "react-select";
-import { GroupCountEditor } from "./GroupCountEditor";
+import { SlackUser } from "../../utils/slack/slack-user";
 
 export function UserGroupTypeSelector({
   allUsers,
-  includedUsers: includedUsers,
+  includedUsers,
   groupTypeLabel,
   addGroupUser,
 }: {
