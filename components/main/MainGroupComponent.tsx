@@ -2,6 +2,46 @@ import { Button, Chip } from "@mui/material";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
 import { SlackUser } from "../../utils/slack/slack-user";
 
+const MemberPartitionComponent = ({
+  partition,
+  groupTypeName,
+}: {
+  partition: MemberPartition;
+  groupTypeName: string;
+}) => (
+  <div>
+    <div>
+      <div>{groupTypeName}</div>
+      <div>
+        총 {partition.userCount()}명 / {partition.groupCount()}조
+      </div>
+    </div>
+    <div>
+      <div>조별 인원 수: 3명 / 4명 / 5명 / 6명</div>
+      <div>조 개수: (-) {partition.groupCount()}개 (+)</div>
+      <div>사무실 인원 추가: 드롭다운</div>
+      <div>
+        {partition.groups.map((group, i) => (
+          <div key={i} className="group-container">
+            <div>{i + 1}조:</div>
+            {group.map((user) => (
+              <Chip key={user.id} label={user.displayName} />
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+    <style jsx>{`
+      .group-container {
+        display: flex;
+        gap: 3px;
+        align-items: center;
+        padding: 2px 0;
+      }
+    `}</style>
+  </div>
+);
+
 export const MainGroupComopnent = ({
   onStepIncrement,
   members,
@@ -23,37 +63,14 @@ export const MainGroupComopnent = ({
     <div>
       <div>먼저, 슬랙에서 가져온 조원을 설정해 주세요.</div>
       <div>
-        <div>
-          사무실 - 총 {members.office.userCount()}명 /{" "}
-          {members.office.groupCount()}개 조
-        </div>
-        <div>
-          <div>조별 인원 수: 3명 / 4명 / 5명 / 6명</div>
-          <div>조 개수: (-) 15개 (+)</div>
-          <div>사무실 인원 추가: 드롭다운</div>
-          <div>
-            {members.office.groups.map((group, i) => (
-              <div key={i} className="group-container">
-                <div>{i + 1}조:</div>
-                {group.map((user) => (
-                  <Chip label={user.displayName} />
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      <div>
-        <div>
-          재택 - 총 {members.remote.userCount()}명 /{" "}
-          {members.remote.groupCount()}개 조
-        </div>
-        <div>
-          <div>조별 인원 수: 3명 / 4명 / 5명 / 6명</div>
-          <div>조 개수: (-) 15개 (+)</div>
-          <div>재택 인원 추가: 드롭다운</div>
-          <div>1조: {JSON.stringify(members.remote.groups)}</div>
-        </div>
+        <MemberPartitionComponent
+          partition={members.office}
+          groupTypeName="사무실"
+        />
+        <MemberPartitionComponent
+          partition={members.remote}
+          groupTypeName="재택"
+        />
       </div>
       <div>
         <div>불참 - 총 3명</div>
@@ -77,14 +94,6 @@ export const MainGroupComopnent = ({
       <Button variant="contained" onClick={onStepIncrement}>
         다음 단계로
       </Button>
-      <style jsx>{`
-        .group-container {
-          display: flex;
-          gap: 3px;
-          align-items: center;
-          padding: 2px 0;
-        }
-      `}</style>
     </div>
   );
 };
