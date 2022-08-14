@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, Chip } from "@mui/material";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
 import { SlackUser } from "../../utils/slack/slack-user";
 
@@ -31,7 +31,16 @@ export const MainGroupComopnent = ({
           <div>조별 인원 수: 3명 / 4명 / 5명 / 6명</div>
           <div>조 개수: (-) 15개 (+)</div>
           <div>사무실 인원 추가: 드롭다운</div>
-          <div>1조: {JSON.stringify(members.office.groups)}</div>
+          <div>
+            {members.office.groups.map((group, i) => (
+              <div key={i} className="group-container">
+                <div>{i + 1}조:</div>
+                {group.map((user) => (
+                  <Chip label={user.displayName} />
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
       <div>
@@ -68,6 +77,14 @@ export const MainGroupComopnent = ({
       <Button variant="contained" onClick={onStepIncrement}>
         다음 단계로
       </Button>
+      <style jsx>{`
+        .group-container {
+          display: flex;
+          gap: 3px;
+          align-items: center;
+          padding: 2px 0;
+        }
+      `}</style>
     </div>
   );
 };
