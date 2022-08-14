@@ -1,9 +1,17 @@
 import { Button } from "@mui/material";
+import { MemberPartition } from "../../utils/domain/MemberPartition";
+import { SlackUser } from "../../utils/slack/slack-user";
 
 export const MainMessageComponent = ({
   onStepDecrement,
+  members,
 }: {
   onStepDecrement: () => void;
+  members: {
+    office: MemberPartition;
+    remote: MemberPartition;
+    excluded: SlackUser[];
+  };
 }) => {
   return (
     <div>
