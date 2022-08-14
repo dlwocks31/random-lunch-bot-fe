@@ -1,6 +1,7 @@
 import { Button, Chip } from "@mui/material";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
 import { SlackUser } from "../../utils/slack/slack-user";
+import { CollapseContainer } from "../util/CollapseContainer";
 
 const MemberPartitionComponent = ({
   partition,
@@ -9,13 +10,9 @@ const MemberPartitionComponent = ({
   partition: MemberPartition;
   groupTypeName: string;
 }) => (
-  <div>
-    <div>
-      <div>{groupTypeName}</div>
-      <div>
-        총 {partition.userCount()}명 / {partition.groupCount()}조
-      </div>
-    </div>
+  <CollapseContainer
+    title={`${groupTypeName} - 총 ${partition.userCount()}명 / ${partition.groupCount()}조`}
+  >
     <div>
       <div>조별 인원 수: 3명 / 4명 / 5명 / 6명</div>
       <div>조 개수: (-) {partition.groupCount()}개 (+)</div>
@@ -30,16 +27,16 @@ const MemberPartitionComponent = ({
           </div>
         ))}
       </div>
+      <style jsx>{`
+        .group-container {
+          display: flex;
+          gap: 3px;
+          align-items: center;
+          padding: 2px 0;
+        }
+      `}</style>
     </div>
-    <style jsx>{`
-      .group-container {
-        display: flex;
-        gap: 3px;
-        align-items: center;
-        padding: 2px 0;
-      }
-    `}</style>
-  </div>
+  </CollapseContainer>
 );
 
 export const MainGroupComopnent = ({
