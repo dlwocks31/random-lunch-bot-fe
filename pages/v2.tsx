@@ -4,8 +4,9 @@ import { MainGroupComopnent } from "../components/main/MainGroupComponent";
 import { MainMessageComponent } from "../components/main/MainMessageComponent";
 import { MemberConfig } from "../utils/domain/MemberConfig";
 import { MemberPartition } from "../utils/domain/MemberPartition";
+import { createStandardPartition } from "../utils/group/CreateStandardPartition";
 import { SlackServiceFactory } from "../utils/slack/SlackServiceFactory";
-
+const DEFAULT_EACH_GROUP_USER = 4;
 export default () => {
   const [slackInstalled, setSlackInstalled] = useState(false);
   const [step, setStep] = useState(0);
@@ -20,6 +21,16 @@ export default () => {
         const slackService = await SlackServiceFactory();
         const users = await slackService.findAllValidSlackUsers();
         console.log(users);
+
+        const groupCount = Math.floor(users.length / DEFAULT_EACH_GROUP_USER);
+        const partition = new MemberPartition(
+          createStandardPartition(users, groupCount),
+        );
+        setMembers({
+          office: partition,
+          remote: new MemberPartition([]),
+          excluded: [],
+        });
       })();
     }
   }, [slackInstalled]);
