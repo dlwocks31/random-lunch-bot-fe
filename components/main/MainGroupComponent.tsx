@@ -16,7 +16,7 @@ const MemberPartitionComponent = ({
     <div>
       <div>조별 인원 수: 3명 / 4명 / 5명 / 6명</div>
       <div>조 개수: (-) {partition.groupCount()}개 (+)</div>
-      <div>사무실 인원 추가: 드롭다운</div>
+      <div>{groupTypeName} 인원 추가: 드롭다운</div>
       <div>
         {partition.groups.map((group, i) => (
           <div key={i} className="group-container">
@@ -35,6 +35,25 @@ const MemberPartitionComponent = ({
           padding: 2px 0;
         }
       `}</style>
+    </div>
+  </CollapseContainer>
+);
+
+const UsersListComponent = ({
+  users,
+  groupTypeName,
+}: {
+  users: SlackUser[];
+  groupTypeName: string;
+}) => (
+  <CollapseContainer title={`${groupTypeName} - 총 ${users.length}명`}>
+    <div>
+      <div>{groupTypeName} 인원 추가: 드롭다운</div>
+      <div>
+        {users.map((user) => (
+          <Chip key={user.id} label={user.displayName} />
+        ))}
+      </div>
     </div>
   </CollapseContainer>
 );
@@ -68,10 +87,7 @@ export const MainGroupComopnent = ({
           partition={members.remote}
           groupTypeName="재택"
         />
-      </div>
-      <div>
-        <div>불참 - 총 3명</div>
-        <div>불참 인원: {JSON.stringify(members.excluded)}</div>
+        <UsersListComponent users={members.excluded} groupTypeName="제외" />
       </div>
       <div>
         <div>부가 설정</div>
