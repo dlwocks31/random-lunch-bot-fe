@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
-import { SendSlackMessage } from "./message/SendSlackMessage";
-import { SlackUser } from "../utils/slack/slack-user";
-import { TemplateMessageEditor } from "./message/TemplateMessageEditor";
-import { SlackServiceFactory } from "../utils/slack/SlackServiceFactory";
-import { PartitionConfigBuilder } from "./PartitionConfigBuilder";
-import { PartitionBuilder } from "./PartitionBuilder";
+import { useState } from "react";
 import { Partition } from "../utils/domain/Partition";
-import { CollapseContainer } from "./util/CollapseContainer";
 import { PartitionConfig } from "../utils/domain/PartitionConfig";
+import { SlackUser } from "../utils/slack/slack-user";
+import { SendSlackMessage } from "./message/SendSlackMessage";
+import { TemplateMessageEditor } from "./message/TemplateMessageEditor";
+import { PartitionBuilder } from "./PartitionBuilder";
+import { PartitionConfigBuilder } from "./PartitionConfigBuilder";
 import { UsersFetcher } from "./UsersFetcher";
+import { CollapseContainer } from "./util/CollapseContainer";
 
 const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:orange_heart: 조를 발표합니다!
 > 가장 앞에 있는 분이 이 채널에 조원들을 소환해서 스레드로 함께 메뉴를 정해주세요 :simple_smile:
