@@ -1,3 +1,4 @@
+import { sortBy } from "lodash";
 import { useEffect, useState } from "react";
 import { SupabaseSlackAuthBar } from "../components/auth/SupabaseSlackAuthBar";
 import { MainGroupComopnent } from "../components/main/MainGroupComponent";
@@ -8,8 +9,12 @@ import { createStandardPartition } from "../utils/group/CreateStandardPartition"
 import { SlackServiceFactory } from "../utils/slack/SlackServiceFactory";
 const DEFAULT_EACH_GROUP_USER = 4;
 export default () => {
-  const [slackInstalled, setSlackInstalled] = useState(false);
   const [step, setStep] = useState(0);
+
+  const [slackInstalled, setSlackInstalled] = useState(false);
+  const [conversations, setConversations] = useState<
+    { id: string; name: string; membersCount: number }[]
+  >([]);
   const [members, setMembers] = useState<MemberConfig>(
     new MemberConfig(
       new MemberPartition([], DEFAULT_EACH_GROUP_USER),
@@ -17,6 +22,18 @@ export default () => {
       [],
     ),
   );
+  const getConversations = async () => {
+    const slackService = await SlackServiceFactory();
+    const conversations = await slackService.listConversation();
+    setConversations(
+      sortBy(
+        conversations.filter((c) => c.membersCount > 0),
+        (c) => -c.membersCount,
+        "name",
+      ),
+    );
+  };
+
   useEffect(() => {
     if (slackInstalled) {
       (async () => {
@@ -35,6 +52,8 @@ export default () => {
             [],
           ),
         );
+
+        getConversations();
       })();
     }
   }, [slackInstalled]);
