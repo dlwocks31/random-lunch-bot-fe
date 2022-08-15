@@ -5,6 +5,7 @@ import { MainGroupComopnent } from "../components/main/MainGroupComponent";
 import { MainMessageComponent } from "../components/main/MainMessageComponent";
 import { MemberConfig } from "../utils/domain/MemberConfig";
 import { MemberPartition } from "../utils/domain/MemberPartition";
+import { SlackConversation } from "../utils/domain/SlackConversation";
 import { createStandardPartition } from "../utils/group/CreateStandardPartition";
 import { SlackServiceFactory } from "../utils/slack/SlackServiceFactory";
 const DEFAULT_EACH_GROUP_USER = 4;
@@ -12,9 +13,7 @@ export default () => {
   const [step, setStep] = useState(0);
 
   const [slackInstalled, setSlackInstalled] = useState(false);
-  const [conversations, setConversations] = useState<
-    { id: string; name: string; membersCount: number }[]
-  >([]);
+  const [conversations, setConversations] = useState<SlackConversation[]>([]);
   const [members, setMembers] = useState<MemberConfig>(
     new MemberConfig(
       new MemberPartition([], DEFAULT_EACH_GROUP_USER),
@@ -70,6 +69,7 @@ export default () => {
         ) : (
           <MainMessageComponent
             onStepDecrement={() => setStep(0)}
+            slackConversations={conversations}
             members={members}
           />
         )
