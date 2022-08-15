@@ -1,3 +1,4 @@
+import { shuffle } from "lodash";
 import { createStandardPartition } from "../group/CreateStandardPartition";
 import { optimizePartition } from "../group/OptimizePartition";
 import { SlackUser } from "../slack/slack-user";
@@ -56,8 +57,9 @@ export class MemberPartition {
 
   shuffleByTagMap(tagMap: TagMap): MemberPartition {
     const userIdToTagsMap = tagMap.userIdToTagsMap();
+    const shuffledUsers = shuffle(this.users());
     const newGroups = optimizePartition(
-      this.groups,
+      createStandardPartition(shuffledUsers, this.groupCount()),
       1000,
       (team: SlackUser[]) => {
         let sumScore = 0;

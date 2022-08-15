@@ -47,6 +47,7 @@ export const MainGroupComopnent = ({
           setPartition={(partition) =>
             setMembers(members.setOfficePartition(partition))
           }
+          onShuffle={() => setMembers(members.shuffleByTagMap(tagMap))}
         />
         <MemberPartitionComponent
           allUsers={allUsers}
@@ -58,6 +59,7 @@ export const MainGroupComopnent = ({
           setPartition={(partition) =>
             setMembers(members.setRemotePartition(partition))
           }
+          onShuffle={() => setMembers(members.shuffleByTagMap(tagMap))}
         />
         <UsersListComponent
           users={members.excluded}
@@ -174,12 +176,14 @@ const MemberPartitionComponent = ({
   groupTypeName,
   onAddGroupUser,
   setPartition,
+  onShuffle,
 }: {
   partition: MemberPartition;
   allUsers: SlackUser[];
   groupTypeName: string;
   onAddGroupUser: (user: SlackUser) => void;
   setPartition: (partition: MemberPartition) => void;
+  onShuffle: () => void;
 }) => (
   <CollapseContainer
     title={`${groupTypeName} - 총 ${partition.userCount()}명 / ${partition.groupCount()}조`}
@@ -222,6 +226,9 @@ const MemberPartitionComponent = ({
           </div>
         ))}
       </div>
+      <Button variant="outlined" fullWidth onClick={onShuffle}>
+        재추첨
+      </Button>
       <style jsx>{`
         .group-container {
           display: flex;
