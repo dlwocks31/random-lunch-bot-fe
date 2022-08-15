@@ -8,6 +8,7 @@ import { MemberPartition } from "../../utils/domain/MemberPartition";
 import { TagMap } from "../../utils/domain/TagMap";
 import { SlackUser } from "../../utils/slack/slack-user";
 import { generateTags } from "../../utils/tag/GenerateTags";
+import { FlexUserFetcher } from "../fetch/FlexUserFetcher";
 import { EachGroupSizeEditor } from "../group/EachGroupSizeEditor";
 import { CollapseContainer } from "../util/CollapseContainer";
 
@@ -79,9 +80,21 @@ export const MainGroupComopnent = ({
           <div>유저 가져오는 채널:</div>
           <div>전체에서 가져오기</div>
         </div>
-        <div>
-          <div>flex 연동</div>
-          <div>계정: ...</div>
+        <div className="extra-setting-each-container">
+          <div className="extra-setting-title">flex 연동</div>
+          <ExtraSettingViewer settingName="flex 연동 설정">
+            <FlexUserFetcher
+              hasUser
+              moveMembersByEmail={(
+                toExcludedEmails: string[],
+                toRemoteEmails: string[],
+              ) => {
+                setMembers(
+                  members.moveMembersByEmail(toExcludedEmails, toRemoteEmails),
+                );
+              }}
+            />
+          </ExtraSettingViewer>
         </div>
         <div className="extra-setting-each-container">
           <div className="extra-setting-title">같은 조 피하기 설정</div>

@@ -50,6 +50,35 @@ export class MemberConfig {
     );
   }
 
+  moveMembersToExcludedByEmail(emails: string[]): MemberConfig {
+    const members = this.allUsers().filter((user) =>
+      emails.includes(user.email),
+    );
+    return members.reduce(
+      (acc, member) => acc.moveMemberToExcluded(member),
+      this as MemberConfig,
+    );
+  }
+
+  moveMembersToRemoteByEmail(emails: string[]): MemberConfig {
+    const members = this.allUsers().filter((user) =>
+      emails.includes(user.email),
+    );
+    return members.reduce(
+      (acc, member) => acc.moveMemberToRemote(member),
+      this as MemberConfig,
+    );
+  }
+
+  moveMembersByEmail(
+    toExcludedEmails: string[],
+    toRemoteEmails: string[],
+  ): MemberConfig {
+    return this.moveMembersToExcludedByEmail(
+      toExcludedEmails,
+    ).moveMembersToRemoteByEmail(toRemoteEmails);
+  }
+
   allUsers(): SlackUser[] {
     return this.office
       .users()
