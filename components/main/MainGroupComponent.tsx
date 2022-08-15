@@ -1,10 +1,13 @@
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { Button, Chip, IconButton } from "@mui/material";
+import { Button, Chip, Collapse, IconButton, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
 import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
+import { TagMap } from "../../utils/domain/TagMap";
 import { SlackUser } from "../../utils/slack/slack-user";
+import { generateTags } from "../../utils/tag/GenerateTags";
 import { EachGroupSizeEditor } from "../group/EachGroupSizeEditor";
 import { CollapseContainer } from "../util/CollapseContainer";
 
@@ -18,6 +21,14 @@ export const MainGroupComopnent = ({
   setMembers: (members: MemberConfig) => void;
 }) => {
   const allUsers = members.allUsers();
+  const [tagMap, setTagMap] = useState<TagMap>(new TagMap([]));
+
+  useEffect(() => {
+    if (!tagMap.tags.length) {
+      setTagMap(new TagMap(generateTags(allUsers)));
+    }
+  }, [members]);
+
   console.log("XXX remoteUser:");
   console.log(members.remote);
   return (
@@ -55,6 +66,9 @@ export const MainGroupComopnent = ({
           }
         />
       </div>
+      <Button variant="contained" onClick={onStepIncrement} fullWidth>
+        다음 단계로 {">"}
+      </Button>
       <div>
         <div>부가 설정</div>
         <div>
@@ -67,12 +81,15 @@ export const MainGroupComopnent = ({
         </div>
         <div>
           <div>같은 조 피하기 설정</div>
-          <div>더 자세히 설정:</div>
+          <div>
+            <CustomTagEditor
+              users={allUsers}
+              tagMap={tagMap}
+              setTagMap={setTagMap}
+            />
+          </div>
         </div>
       </div>
-      <Button variant="contained" onClick={onStepIncrement}>
-        다음 단계로
-      </Button>
     </div>
   );
 };
@@ -244,3 +261,85 @@ const UsersListComponent = ({
     </div>
   </CollapseContainer>
 );
+
+const CustomTagEditor = ({
+  users,
+  tagMap,
+  setTagMap,
+}: {
+  users: SlackUser[];
+  tagMap: TagMap;
+  setTagMap: (tagMap: TagMap) => void;
+}) => {
+  const [newTagName, setNewTagName] = useState("");
+  const [isOpened, setIsOpened] = useState(false);
+  return (
+    <div className="root">
+      <Button variant="outlined" onClick={() => setIsOpened((open) => !open)}>
+        같은 조 피하기 설정 {isOpened ? "숨기기" : "보기"}
+      </Button>
+      <Collapse in={isOpened}>
+        <div>
+          <div>Tags: </div>
+          {Object.entries(tagMap.tagToUserIdsMap()).map(([tag, userIds]) => (
+            <div key={tag} className="each-tag-container">
+              <Chip label={tag} />
+              <Select
+                isMulti
+                options={users.map(({ id, displayName }) => ({
+                  value: id,
+                  label: displayName,
+                }))}
+                value={userIds.map((id) => {
+                  const user = users.find((u) => u.id === id);
+                  return {
+                    value: id,
+                    label: user?.displayName || "",
+                  };
+                })}
+                onChange={(e) => {
+                  const userIds = e.map((e) => e.value);
+                  setTagMap(tagMap.setUserIdsOfTag(tag, userIds));
+                }}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="new-tag-container">
+          <div>태그 이름 추가하기:</div>
+          <TextField
+            label="태그 이름"
+            size="small"
+            value={newTagName}
+            onChange={(e) => setNewTagName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                setTagMap(tagMap.setNewTag(newTagName));
+                setNewTagName("");
+              }
+            }}
+          />
+        </div>
+      </Collapse>
+      <style jsx>{`
+        .new-tag-container {
+          display: flex;
+        }
+        .each-tag-container {
+          display: flex;
+          gap: 10px;
+        }
+        .tag-preview {
+          display: flex;
+          align-items: center;
+          gap: 2px;
+        }
+        .root {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+      `}</style>
+    </div>
+  );
+};

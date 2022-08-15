@@ -1,13 +1,6 @@
-import {
-  Button,
-  Chip,
-  Collapse,
-  Modal,
-  TextField,
-  Tooltip,
-} from "@mui/material";
-import Select from "react-select";
+import { Button, Chip, Collapse, TextField, Tooltip } from "@mui/material";
 import { useState } from "react";
+import Select from "react-select";
 import { SlackUser } from "../../utils/slack/slack-user";
 import { TagGenerator } from "./TagGenerator";
 

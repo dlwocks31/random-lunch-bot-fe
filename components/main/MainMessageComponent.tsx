@@ -48,7 +48,7 @@ export const MainMessageComponent = ({
   return (
     <div>
       <Button variant="contained" onClick={onStepDecrement}>
-        이전 단계로..
+        {"<"} 이전 단계로
       </Button>
       <div>
         <Select
