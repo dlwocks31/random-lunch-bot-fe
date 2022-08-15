@@ -8,6 +8,75 @@ import { SlackUser } from "../../utils/slack/slack-user";
 import { EachGroupSizeEditor } from "../group/EachGroupSizeEditor";
 import { CollapseContainer } from "../util/CollapseContainer";
 
+export const MainGroupComopnent = ({
+  onStepIncrement,
+  members,
+  setMembers,
+}: {
+  onStepIncrement: () => void;
+  members: MemberConfig;
+  setMembers: (members: MemberConfig) => void;
+}) => {
+  const allUsers = members.allUsers();
+  console.log("XXX remoteUser:");
+  console.log(members.remote);
+  return (
+    <div>
+      <div>먼저, 슬랙에서 가져온 조원을 설정해 주세요.</div>
+      <div>
+        <MemberPartitionComponent
+          allUsers={allUsers}
+          partition={members.office}
+          groupTypeName="사무실"
+          onAddGroupUser={(user) =>
+            setMembers(members.moveMemberToOffice(user))
+          }
+          setPartition={(partition) =>
+            setMembers(members.setOfficePartition(partition))
+          }
+        />
+        <MemberPartitionComponent
+          allUsers={allUsers}
+          partition={members.remote}
+          groupTypeName="재택"
+          onAddGroupUser={(user) =>
+            setMembers(members.moveMemberToRemote(user))
+          }
+          setPartition={(partition) =>
+            setMembers(members.setRemotePartition(partition))
+          }
+        />
+        <UsersListComponent
+          users={members.excluded}
+          groupTypeName="제외"
+          allUsers={allUsers}
+          onAddGroupUser={(user) =>
+            setMembers(members.moveMemberToExcluded(user))
+          }
+        />
+      </div>
+      <div>
+        <div>부가 설정</div>
+        <div>
+          <div>유저 가져오는 채널:</div>
+          <div>전체에서 가져오기</div>
+        </div>
+        <div>
+          <div>flex 연동</div>
+          <div>계정: ...</div>
+        </div>
+        <div>
+          <div>같은 조 피하기 설정</div>
+          <div>더 자세히 설정:</div>
+        </div>
+      </div>
+      <Button variant="contained" onClick={onStepIncrement}>
+        다음 단계로
+      </Button>
+    </div>
+  );
+};
+
 const CustomGroupCountEditor = ({
   groupCount,
   setGroupCount,
@@ -175,72 +244,3 @@ const UsersListComponent = ({
     </div>
   </CollapseContainer>
 );
-
-export const MainGroupComopnent = ({
-  onStepIncrement,
-  members,
-  setMembers,
-}: {
-  onStepIncrement: () => void;
-  members: MemberConfig;
-  setMembers: (members: MemberConfig) => void;
-}) => {
-  const allUsers = members.allUsers();
-  console.log("XXX remoteUser:");
-  console.log(members.remote);
-  return (
-    <div>
-      <div>먼저, 슬랙에서 가져온 조원을 설정해 주세요.</div>
-      <div>
-        <MemberPartitionComponent
-          allUsers={allUsers}
-          partition={members.office}
-          groupTypeName="사무실"
-          onAddGroupUser={(user) =>
-            setMembers(members.moveMemberToOffice(user))
-          }
-          setPartition={(partition) =>
-            setMembers(members.setOfficePartition(partition))
-          }
-        />
-        <MemberPartitionComponent
-          allUsers={allUsers}
-          partition={members.remote}
-          groupTypeName="재택"
-          onAddGroupUser={(user) =>
-            setMembers(members.moveMemberToRemote(user))
-          }
-          setPartition={(partition) =>
-            setMembers(members.setRemotePartition(partition))
-          }
-        />
-        <UsersListComponent
-          users={members.excluded}
-          groupTypeName="제외"
-          allUsers={allUsers}
-          onAddGroupUser={(user) =>
-            setMembers(members.moveMemberToExcluded(user))
-          }
-        />
-      </div>
-      <div>
-        <div>부가 설정</div>
-        <div>
-          <div>유저 가져오는 채널:</div>
-          <div>전체에서 가져오기</div>
-        </div>
-        <div>
-          <div>flex 연동</div>
-          <div>계정: ...</div>
-        </div>
-        <div>
-          <div>같은 조 피하기 설정</div>
-          <div>더 자세히 설정:</div>
-        </div>
-      </div>
-      <Button variant="contained" onClick={onStepIncrement}>
-        다음 단계로
-      </Button>
-    </div>
-  );
-};

@@ -18,22 +18,6 @@ const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:oran
 > 맛있게 먹고 사진 찍고 <#C01BUJFGM4G> 방에 공유하는 것 잊지 마세요 :camera_with_flash:
 `;
 
-const customBuildSlackMessage = (members: MemberConfig) => {
-  const messageList = [];
-  let groupNum = 1;
-  for (const users of members.office.groups) {
-    const names = users.map((u) => `<@${u.id}>`).join(" ");
-    messageList.push(`${groupNum}조: ${names}`);
-    groupNum++;
-  }
-  for (const users of members.remote.groups) {
-    const names = users.map((u) => `<@${u.id}>`).join(" ");
-    messageList.push(`${groupNum}조: ${names}`);
-    groupNum++;
-  }
-  return messageList.join("\n");
-};
-
 export const MainMessageComponent = ({
   onStepDecrement,
   members,
@@ -132,4 +116,20 @@ export const MainMessageComponent = ({
       </Dialog>
     </div>
   );
+};
+
+const customBuildSlackMessage = (members: MemberConfig) => {
+  const messageList = [];
+  let groupNum = 1;
+  for (const users of members.office.groups) {
+    const names = users.map((u) => `<@${u.id}>`).join(" ");
+    messageList.push(`${groupNum}조: ${names}`);
+    groupNum++;
+  }
+  for (const users of members.remote.groups) {
+    const names = users.map((u) => `<@${u.id}>`).join(" ");
+    messageList.push(`${groupNum}조: ${names}`);
+    groupNum++;
+  }
+  return messageList.join("\n");
 };
