@@ -1,10 +1,50 @@
-import { Button, Chip } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import { Button, Chip, IconButton } from "@mui/material";
 import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
 import { SlackUser } from "../../utils/slack/slack-user";
 import { EachGroupSizeEditor } from "../group/EachGroupSizeEditor";
 import { CollapseContainer } from "../util/CollapseContainer";
+
+const CustomGroupCountEditor = ({
+  groupCount,
+  setGroupCount,
+}: {
+  groupCount: number;
+  setGroupCount: (groupCount: number) => void;
+}) => {
+  return (
+    <div className="root">
+      <div className="edit-root">
+        <IconButton onClick={() => setGroupCount(groupCount - 1)} size="small">
+          <RemoveIcon />
+        </IconButton>
+        <div>{groupCount}</div>
+        <IconButton onClick={() => setGroupCount(groupCount + 1)} size="small">
+          <AddIcon />
+        </IconButton>
+      </div>
+
+      <style jsx>{`
+        .edit-root {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          border: 1px solid #1976d2;
+          border-radius: 5px;
+        }
+        .root {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+          margin: 5px 0;
+        }
+      `}</style>
+    </div>
+  );
+};
 
 const CustomUserGroupTypeSelector = ({
   allUsers,
@@ -58,7 +98,7 @@ const MemberPartitionComponent = ({
   >
     <div>
       <div>
-        조별 인원 수:{" "}
+        조별 최소 인원 수:{" "}
         <EachGroupSizeEditor
           eachGroupSize={partition.defaultGroupSize}
           setEachGroupSize={(eachGroupSize) => {
@@ -67,7 +107,15 @@ const MemberPartitionComponent = ({
           }}
         />
       </div>
-      <div>조 개수: (-) {partition.groupCount()}개 (+)</div>
+      <div>
+        조 개수:
+        <CustomGroupCountEditor
+          groupCount={partition.groupCount()}
+          setGroupCount={(groupCount) =>
+            setPartition(partition.changeGroupCount(groupCount))
+          }
+        />
+      </div>
       <div>
         {groupTypeName} 인원 추가:
         <CustomUserGroupTypeSelector

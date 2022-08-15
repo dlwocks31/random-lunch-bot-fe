@@ -61,4 +61,16 @@ export class MemberPartition {
       newDefaultGroupSize,
     );
   }
+
+  changeGroupCount(newGroupCount: number): MemberPartition {
+    if (newGroupCount > this.userCount() || newGroupCount < 1) {
+      console.log("ERROR");
+      return this;
+    }
+    const minGroupSize = Math.floor(this.userCount() / newGroupCount);
+    return new MemberPartition(
+      createStandardPartition(this.users(), newGroupCount),
+      Math.min(6, Math.max(3, minGroupSize)),
+    );
+  }
 }
