@@ -3,6 +3,7 @@ import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
 import { SlackUser } from "../../utils/slack/slack-user";
+import { EachGroupSizeEditor } from "../group/EachGroupSizeEditor";
 import { CollapseContainer } from "../util/CollapseContainer";
 
 const CustomUserGroupTypeSelector = ({
@@ -44,17 +45,28 @@ const MemberPartitionComponent = ({
   allUsers,
   groupTypeName,
   onAddGroupUser,
+  setPartition,
 }: {
   partition: MemberPartition;
   allUsers: SlackUser[];
   groupTypeName: string;
   onAddGroupUser: (user: SlackUser) => void;
+  setPartition: (partition: MemberPartition) => void;
 }) => (
   <CollapseContainer
     title={`${groupTypeName} - 총 ${partition.userCount()}명 / ${partition.groupCount()}조`}
   >
     <div>
-      <div>조별 인원 수: 3명 / 4명 / 5명 / 6명</div>
+      <div>
+        조별 인원 수:{" "}
+        <EachGroupSizeEditor
+          eachGroupSize={partition.defaultGroupSize}
+          setEachGroupSize={(eachGroupSize) => {
+            console.log("eachGroupSize is ", eachGroupSize);
+            setPartition(partition.changeDefaultGroupSize(eachGroupSize));
+          }}
+        />
+      </div>
       <div>조 개수: (-) {partition.groupCount()}개 (+)</div>
       <div>
         {groupTypeName} 인원 추가:
@@ -139,6 +151,9 @@ export const MainGroupComopnent = ({
           onAddGroupUser={(user) =>
             setMembers(members.moveMemberToOffice(user))
           }
+          setPartition={(partition) =>
+            setMembers(members.setOfficePartition(partition))
+          }
         />
         <MemberPartitionComponent
           allUsers={allUsers}
@@ -146,6 +161,9 @@ export const MainGroupComopnent = ({
           groupTypeName="재택"
           onAddGroupUser={(user) =>
             setMembers(members.moveMemberToRemote(user))
+          }
+          setPartition={(partition) =>
+            setMembers(members.setRemotePartition(partition))
           }
         />
         <UsersListComponent

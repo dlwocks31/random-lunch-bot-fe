@@ -20,7 +20,7 @@ export class MemberPartition {
   }
 
   add(user: SlackUser): MemberPartition {
-    const flatUsers = this.groups.reduce((acc, group) => acc.concat(group), []);
+    const flatUsers = this.users();
     if (flatUsers.includes(user)) {
       return this;
     } else {
@@ -37,7 +37,7 @@ export class MemberPartition {
   }
 
   remove(user: SlackUser): MemberPartition {
-    const flatUsers = this.groups.reduce((acc, group) => acc.concat(group), []);
+    const flatUsers = this.users();
     if (flatUsers.includes(user)) {
       flatUsers.splice(flatUsers.indexOf(user), 1);
       return new MemberPartition(
@@ -50,5 +50,15 @@ export class MemberPartition {
     } else {
       return this;
     }
+  }
+
+  changeDefaultGroupSize(newDefaultGroupSize: number): MemberPartition {
+    return new MemberPartition(
+      createStandardPartition(
+        this.users(),
+        Math.max(1, Math.floor(this.users().length / newDefaultGroupSize)),
+      ),
+      newDefaultGroupSize,
+    );
   }
 }

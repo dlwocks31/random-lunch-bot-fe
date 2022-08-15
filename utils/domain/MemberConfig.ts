@@ -8,6 +8,14 @@ export class MemberConfig {
     public readonly excluded: SlackUser[],
   ) {}
 
+  setOfficePartition(office: MemberPartition): MemberConfig {
+    return new MemberConfig(office, this.remote, this.excluded);
+  }
+
+  setRemotePartition(remote: MemberPartition): MemberConfig {
+    return new MemberConfig(this.office, remote, this.excluded);
+  }
+
   moveMemberToOffice(member: SlackUser): MemberConfig {
     return new MemberConfig(
       this.office.add(member),
