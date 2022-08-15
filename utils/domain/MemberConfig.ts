@@ -1,5 +1,6 @@
 import { SlackUser } from "../slack/slack-user";
 import { MemberPartition } from "./MemberPartition";
+import { TagMap } from "./TagMap";
 
 export class MemberConfig {
   constructor(
@@ -14,6 +15,12 @@ export class MemberConfig {
 
   setRemotePartition(remote: MemberPartition): MemberConfig {
     return new MemberConfig(this.office, remote, this.excluded);
+  }
+
+  shuffleByTagMap(tagMap: TagMap): MemberConfig {
+    const office = this.office.shuffleByTagMap(tagMap);
+    const remote = this.remote.shuffleByTagMap(tagMap);
+    return new MemberConfig(office, remote, this.excluded);
   }
 
   moveMemberToOffice(member: SlackUser): MemberConfig {

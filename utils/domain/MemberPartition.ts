@@ -1,5 +1,7 @@
 import { createStandardPartition } from "../group/CreateStandardPartition";
+import { optimizePartition } from "../group/OptimizePartition";
 import { SlackUser } from "../slack/slack-user";
+import { TagMap } from "./TagMap";
 
 export class MemberPartition {
   constructor(
@@ -50,6 +52,35 @@ export class MemberPartition {
     } else {
       return this;
     }
+  }
+
+  shuffleByTagMap(tagMap: TagMap): MemberPartition {
+    const userIdToTagsMap = tagMap.userIdToTagsMap();
+    const newGroups = optimizePartition(
+      this.groups,
+      1000,
+      (team: SlackUser[]) => {
+        let sumScore = 0;
+        for (let i = 0; i < team.length; i++) {
+          for (let j = i + 1; j < team.length; j++) {
+            const u1 = team[i];
+            const u2 = team[j];
+            const tagsOfU1 = userIdToTagsMap[u1.id] || [];
+            const tagsOfU2 = userIdToTagsMap[u2.id] || [];
+            for (const t1 of tagsOfU1) {
+              for (const t2 of tagsOfU2) {
+                if (t1 === t2) {
+                  // todo: use function call
+                  sumScore += 1;
+                }
+              }
+            }
+          }
+        }
+        return sumScore;
+      },
+    );
+    return new MemberPartition(newGroups, this.defaultGroupSize);
   }
 
   changeDefaultGroupSize(newDefaultGroupSize: number): MemberPartition {

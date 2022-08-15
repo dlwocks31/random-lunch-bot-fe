@@ -12,6 +12,17 @@ export class TagMap {
     return map;
   }
 
+  userIdToTagsMap(): { [userId: string]: string[] } {
+    const map: { [userId: string]: string[] } = {};
+    this.tags.forEach((tag) => {
+      if (!map[tag.userId]) map[tag.userId] = [];
+      if (tag.tag) {
+        map[tag.userId].push(tag.tag);
+      }
+    });
+    return map;
+  }
+
   setUserIdsOfTag(tag: string, userIds: string[]): TagMap {
     const newTags = this.tags
       .filter((t) => t.tag !== tag)

@@ -25,9 +25,11 @@ export const MainGroupComopnent = ({
 
   useEffect(() => {
     if (!tagMap.tags.length) {
-      setTagMap(new TagMap(generateTags(allUsers)));
+      const newTagMap = new TagMap(generateTags(allUsers));
+      setTagMap(newTagMap);
+      setMembers(members.shuffleByTagMap(newTagMap));
     }
-  }, [members]);
+  }, [members.allUsers().length]); // 어떻게 더 잘 할 수 있을까..
 
   console.log("XXX remoteUser:");
   console.log(members.remote);
