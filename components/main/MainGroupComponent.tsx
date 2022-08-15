@@ -88,14 +88,25 @@ const MemberPartitionComponent = ({
 
 const UsersListComponent = ({
   users,
+  allUsers,
   groupTypeName,
+  onAddGroupUser,
 }: {
   users: SlackUser[];
+  allUsers: SlackUser[];
   groupTypeName: string;
+  onAddGroupUser: (user: SlackUser) => void;
 }) => (
   <CollapseContainer title={`${groupTypeName} - 총 ${users.length}명`}>
     <div>
-      <div>{groupTypeName} 인원 추가: 드롭다운</div>
+      <div>
+        {groupTypeName} 인원 추가:{" "}
+        <CustomUserGroupTypeSelector
+          allUsers={allUsers}
+          includedUsers={users}
+          addGroupUser={onAddGroupUser}
+        />
+      </div>
       <div>
         {users.map((user) => (
           <Chip key={user.id} label={user.displayName} />
@@ -137,7 +148,14 @@ export const MainGroupComopnent = ({
             setMembers(members.moveMemberToRemote(user))
           }
         />
-        <UsersListComponent users={members.excluded} groupTypeName="제외" />
+        <UsersListComponent
+          users={members.excluded}
+          groupTypeName="제외"
+          allUsers={allUsers}
+          onAddGroupUser={(user) =>
+            setMembers(members.moveMemberToExcluded(user))
+          }
+        />
       </div>
       <div>
         <div>부가 설정</div>
