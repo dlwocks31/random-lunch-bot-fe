@@ -51,15 +51,7 @@ export const MainMessageComponent = ({
         {"<"} 이전 단계로
       </Button>
       <div>
-        <Select
-          placeholder={`메세지를 전송할 채널을 선택해 주세요 (총 ${slackConversations.length}개)`}
-          options={slackConversations.map(({ id, name }) => ({
-            value: id,
-            label: name,
-          }))}
-          onChange={(e) => setChannel(e?.value || "")}
-        />{" "}
-        채널로 전송할 메세지:
+        메세지:
         <div>
           <TextField
             label="전송할 메세지"
@@ -69,19 +61,25 @@ export const MainMessageComponent = ({
             rows={20}
             value={message}
           />
+          <div>전송할 채널:</div>
+          <Select
+            placeholder={`메세지를 전송할 채널을 선택해 주세요 (총 ${slackConversations.length}개)`}
+            options={slackConversations.map(({ id, name }) => ({
+              value: id,
+              label: name,
+            }))}
+            onChange={(e) => setChannel(e?.value || "")}
+          />{" "}
         </div>
       </div>
-      <div>
-        고급 설정:
-        <div>이거 하기 체크박스</div>
-        <div>저거 하기 체크박스</div>
-      </div>
+      <div>추가 설정:</div>
       <Button
         onClick={() => setIsConfirmDialogOpened(true)}
         variant="contained"
+        fullWidth
         disabled={!channel}
       >
-        {channel ? "메세지 전송하기" : "채널을 선택해 주세요."}
+        {channel ? "메세지 전송하기" : "메세지를 전송할 채널을 선택해 주세요."}
       </Button>
       <Dialog
         open={isConfirmDialogOpened}
