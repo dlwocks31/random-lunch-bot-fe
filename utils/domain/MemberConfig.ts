@@ -1,13 +1,29 @@
+import { createStandardPartition } from "../group/CreateStandardPartition";
 import { SlackUser } from "../slack/slack-user";
 import { MemberPartition } from "./MemberPartition";
 import { TagMap } from "./TagMap";
 
+const DEFAULT_EACH_GROUP_USER = 4;
 export class MemberConfig {
   constructor(
     public readonly office: MemberPartition,
     public readonly remote: MemberPartition,
     public readonly excluded: SlackUser[],
   ) {}
+
+  static initializeFromUsers(slackUser: SlackUser[]): MemberConfig {
+    return new MemberConfig(
+      new MemberPartition(
+        createStandardPartition(
+          slackUser,
+          Math.floor(slackUser.length / DEFAULT_EACH_GROUP_USER),
+        ),
+        DEFAULT_EACH_GROUP_USER,
+      ),
+      new MemberPartition([], DEFAULT_EACH_GROUP_USER),
+      [],
+    );
+  }
 
   setOfficePartition(office: MemberPartition): MemberConfig {
     return new MemberConfig(office, this.remote, this.excluded);

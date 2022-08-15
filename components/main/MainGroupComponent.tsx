@@ -1,12 +1,25 @@
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { Button, Chip, Collapse, IconButton, TextField } from "@mui/material";
+import {
+  Button,
+  Chip,
+  Collapse,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  IconButton,
+  Radio,
+  RadioGroup,
+  TextField,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
+import { SlackConversation } from "../../utils/domain/SlackConversation";
 import { TagMap } from "../../utils/domain/TagMap";
 import { SlackUser } from "../../utils/slack/slack-user";
+import { SlackServiceFactory } from "../../utils/slack/SlackServiceFactory";
 import { generateTags } from "../../utils/tag/GenerateTags";
 import { FlexUserFetcher } from "../fetch/FlexUserFetcher";
 import { EachGroupSizeEditor } from "../group/EachGroupSizeEditor";
@@ -16,10 +29,12 @@ export const MainGroupComopnent = ({
   onStepIncrement,
   members,
   setMembers,
+  conversations,
 }: {
   onStepIncrement: () => void;
   members: MemberConfig;
   setMembers: (members: MemberConfig) => void;
+  conversations: SlackConversation[];
 }) => {
   const allUsers = members.allUsers();
   const [tagMap, setTagMap] = useState<TagMap>(new TagMap([]));
@@ -75,10 +90,21 @@ export const MainGroupComopnent = ({
         다음 단계로 {">"}
       </Button>
       <div>
-        <div>부가 설정</div>
+        <div>추가 설정</div>
         <div>
           <div>유저 가져오는 채널:</div>
-          <div>전체에서 가져오기</div>
+          <ExtraSettingViewer settingName="유저 가져오는 채널">
+            <CustomUsersFetcher
+              conversations={conversations}
+              setUsers={(users) =>
+                setMembers(
+                  MemberConfig.initializeFromUsers(users).shuffleByTagMap(
+                    tagMap,
+                  ),
+                )
+              }
+            />
+          </ExtraSettingViewer>
         </div>
         <div className="extra-setting-each-container">
           <div className="extra-setting-title">flex 연동</div>
@@ -387,6 +413,85 @@ const ExtraSettingViewer = ({
           gap: 10px;
         }
       `}</style>
+    </div>
+  );
+};
+
+const CustomUsersFetcher = ({
+  setUsers,
+  conversations,
+}: {
+  setUsers: (users: SlackUser[]) => void;
+  conversations: SlackConversation[];
+}) => {
+  const [fetchType, _setFetchType] = useState("all");
+  const [allSlackUsers, setAllSlackUsers] = useState<SlackUser[]>([]);
+  const setFetchType = (fetchType: string) => {
+    _setFetchType(fetchType);
+    if (fetchType === "all") {
+      setUsers(allSlackUsers);
+    }
+  };
+
+  const setUsersByAll = async () => {
+    const slackService = await SlackServiceFactory();
+    const users = await slackService.findAllValidSlackUsers();
+    console.log("AT setUsersByAll, users:", users);
+    setUsers(users);
+    setAllSlackUsers(users);
+  };
+
+  const setUsersByChannel = async (channel: string) => {
+    const slackService = await SlackServiceFactory();
+    const memberIds = await slackService.getConversationMembers(channel);
+    const members = memberIds
+      .map((id) => allSlackUsers.find((user) => user.id === id))
+      .filter((user): user is SlackUser => user !== undefined);
+    setUsers(members);
+  };
+
+  useEffect(() => {
+    setUsersByAll();
+  }, []);
+  return (
+    <div>
+      <FormControl>
+        <FormLabel>조원을 어떻게 가져올까요?</FormLabel>
+        <RadioGroup
+          value={fetchType}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            setFetchType(event.target.value);
+          }}
+        >
+          <FormControlLabel
+            value="all"
+            control={<Radio />}
+            label="워크스페이스의 모든 유저 가져오기"
+          />
+          <FormControlLabel
+            value="from-channel"
+            control={<Radio />}
+            label="특정 채널에서 가져오기"
+          />
+        </RadioGroup>
+        {fetchType === "from-channel" && (
+          <div style={{ marginLeft: "30px" }}>
+            <Select
+              placeholder={`조원을 가져올 채널을 선택해 주세요 (총 ${conversations.length}개)`}
+              options={conversations.map(({ id, name }) => ({
+                value: id,
+                label: name,
+              }))}
+              onChange={(event) => {
+                if (event) {
+                  const ch: string = event.value;
+                  setUsersByChannel(ch);
+                }
+              }}
+            />
+          </div>
+        )}
+      </FormControl>
     </div>
   );
 };

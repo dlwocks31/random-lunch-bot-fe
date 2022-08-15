@@ -6,7 +6,6 @@ import { MainMessageComponent } from "../components/main/MainMessageComponent";
 import { MemberConfig } from "../utils/domain/MemberConfig";
 import { MemberPartition } from "../utils/domain/MemberPartition";
 import { SlackConversation } from "../utils/domain/SlackConversation";
-import { createStandardPartition } from "../utils/group/CreateStandardPartition";
 import { SlackServiceFactory } from "../utils/slack/SlackServiceFactory";
 const DEFAULT_EACH_GROUP_USER = 4;
 export default () => {
@@ -35,25 +34,7 @@ export default () => {
 
   useEffect(() => {
     if (slackInstalled) {
-      (async () => {
-        const slackService = await SlackServiceFactory();
-        const users = await slackService.findAllValidSlackUsers();
-        console.log(users);
-
-        const groupCount = Math.floor(users.length / DEFAULT_EACH_GROUP_USER);
-        setMembers(
-          new MemberConfig(
-            new MemberPartition(
-              createStandardPartition(users, groupCount),
-              DEFAULT_EACH_GROUP_USER,
-            ),
-            new MemberPartition([], DEFAULT_EACH_GROUP_USER),
-            [],
-          ),
-        );
-
-        getConversations();
-      })();
+      getConversations();
     }
   }, [slackInstalled]);
   return (
@@ -65,6 +46,7 @@ export default () => {
             onStepIncrement={() => setStep(1)}
             members={members}
             setMembers={setMembers}
+            conversations={conversations}
           />
         ) : (
           <MainMessageComponent
