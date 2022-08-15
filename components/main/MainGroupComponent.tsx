@@ -83,17 +83,28 @@ export const MainGroupComopnent = ({
           <div>flex 연동</div>
           <div>계정: ...</div>
         </div>
-        <div>
-          <div>같은 조 피하기 설정</div>
-          <div>
-            <CustomTagEditor
-              users={allUsers}
-              tagMap={tagMap}
-              setTagMap={setTagMap}
-            />
-          </div>
+        <div className="extra-setting-each-container">
+          <div className="extra-setting-title">같은 조 피하기 설정</div>
+          <CustomTagEditor
+            users={allUsers}
+            tagMap={tagMap}
+            setTagMap={setTagMap}
+          />
         </div>
       </div>
+      <style jsx>
+        {`
+          .extra-setting-title {
+            font-size: 1.2rem;
+          }
+          .extra-setting-each-container {
+            display: flex;
+            flex-direction: column;
+            padding: 0.5rem;
+            gap: 5px;
+          }
+        `}
+      </style>
     </div>
   );
 };
@@ -281,55 +292,49 @@ const CustomTagEditor = ({
   setTagMap: (tagMap: TagMap) => void;
 }) => {
   const [newTagName, setNewTagName] = useState("");
-  const [isOpened, setIsOpened] = useState(false);
   return (
-    <div className="root">
-      <Button variant="outlined" onClick={() => setIsOpened((open) => !open)}>
-        같은 조 피하기 설정 {isOpened ? "숨기기" : "보기"}
-      </Button>
-      <Collapse in={isOpened}>
-        <div>
-          <div>Tags: </div>
-          {Object.entries(tagMap.tagToUserIdsMap()).map(([tag, userIds]) => (
-            <div key={tag} className="each-tag-container">
-              <Chip label={tag} />
-              <Select
-                isMulti
-                options={users.map(({ id, displayName }) => ({
+    <ExtraSettingViewer settingName="같은 조 피하기 설정">
+      <div>
+        <div>Tags: </div>
+        {Object.entries(tagMap.tagToUserIdsMap()).map(([tag, userIds]) => (
+          <div key={tag} className="each-tag-container">
+            <Chip label={tag} />
+            <Select
+              isMulti
+              options={users.map(({ id, displayName }) => ({
+                value: id,
+                label: displayName,
+              }))}
+              value={userIds.map((id) => {
+                const user = users.find((u) => u.id === id);
+                return {
                   value: id,
-                  label: displayName,
-                }))}
-                value={userIds.map((id) => {
-                  const user = users.find((u) => u.id === id);
-                  return {
-                    value: id,
-                    label: user?.displayName || "",
-                  };
-                })}
-                onChange={(e) => {
-                  const userIds = e.map((e) => e.value);
-                  setTagMap(tagMap.setUserIdsOfTag(tag, userIds));
-                }}
-              />
-            </div>
-          ))}
-        </div>
-        <div className="new-tag-container">
-          <div>태그 이름 추가하기:</div>
-          <TextField
-            label="태그 이름"
-            size="small"
-            value={newTagName}
-            onChange={(e) => setNewTagName(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                setTagMap(tagMap.setNewTag(newTagName));
-                setNewTagName("");
-              }
-            }}
-          />
-        </div>
-      </Collapse>
+                  label: user?.displayName || "",
+                };
+              })}
+              onChange={(e) => {
+                const userIds = e.map((e) => e.value);
+                setTagMap(tagMap.setUserIdsOfTag(tag, userIds));
+              }}
+            />
+          </div>
+        ))}
+      </div>
+      <div className="new-tag-container">
+        <div>태그 이름 추가하기:</div>
+        <TextField
+          label="태그 이름"
+          size="small"
+          value={newTagName}
+          onChange={(e) => setNewTagName(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              setTagMap(tagMap.setNewTag(newTagName));
+              setNewTagName("");
+            }
+          }}
+        />
+      </div>
       <style jsx>{`
         .new-tag-container {
           display: flex;
@@ -343,6 +348,26 @@ const CustomTagEditor = ({
           align-items: center;
           gap: 2px;
         }
+      `}</style>
+    </ExtraSettingViewer>
+  );
+};
+
+const ExtraSettingViewer = ({
+  settingName,
+  children,
+}: {
+  settingName: string;
+  children: React.ReactNode;
+}) => {
+  const [isOpened, setIsOpened] = useState(false);
+  return (
+    <div className="root">
+      <Button variant="outlined" onClick={() => setIsOpened((open) => !open)}>
+        {settingName} {isOpened ? "숨기기" : "보기"}
+      </Button>
+      <Collapse in={isOpened}>{children}</Collapse>
+      <style jsx>{`
         .root {
           display: flex;
           flex-direction: column;
