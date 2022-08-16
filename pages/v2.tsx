@@ -8,7 +8,7 @@ import { MemberPartition } from "../utils/domain/MemberPartition";
 import { SlackConversation } from "../utils/domain/SlackConversation";
 import { SlackServiceFactory } from "../utils/slack/SlackServiceFactory";
 const DEFAULT_EACH_GROUP_USER = 4;
-export default () => {
+export default function V2() {
   const [step, setStep] = useState(0);
 
   const [slackInstalled, setSlackInstalled] = useState(false);
@@ -60,4 +60,4 @@ export default () => {
       )}
     </>
   );
-};
+}
