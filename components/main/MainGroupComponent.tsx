@@ -53,7 +53,8 @@ export const MainGroupComopnent = ({
   console.log(members.remote);
   return (
     <div>
-      <div>먼저, 슬랙에서 가져온 조원을 설정해 주세요.</div>
+      <h2>조원 설정</h2>
+      <hr />
       <div>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
@@ -111,61 +112,41 @@ export const MainGroupComopnent = ({
           />
         )}
       </div>
+      <h2>추가 설정</h2>
+      <hr />
+      <ExtraSettingViewer settingName="유저 가져오는 채널">
+        <CustomUsersFetcher
+          conversations={conversations}
+          setUsers={(users) =>
+            setMembers(
+              MemberConfig.initializeFromUsers(users).shuffleByTagMap(tagMap),
+            )
+          }
+        />
+      </ExtraSettingViewer>
+
+      <ExtraSettingViewer settingName="flex 연동 설정">
+        <FlexUserFetcher
+          hasUser
+          moveMembersByEmail={(
+            toExcludedEmails: string[],
+            toRemoteEmails: string[],
+          ) => {
+            setMembers(
+              members.moveMembersByEmail(toExcludedEmails, toRemoteEmails),
+            );
+          }}
+        />
+      </ExtraSettingViewer>
+      <CustomTagEditor users={allUsers} tagMap={tagMap} setTagMap={setTagMap} />
+
       <Button variant="contained" onClick={onStepIncrement} fullWidth>
         다음 단계로 {">"}
       </Button>
-      <div>
-        <div>추가 설정</div>
-        <div className="extra-setting-each-container">
-          <div className="extra-setting-title">유저 가져오는 채널</div>
-          <ExtraSettingViewer settingName="유저 가져오는 채널">
-            <CustomUsersFetcher
-              conversations={conversations}
-              setUsers={(users) =>
-                setMembers(
-                  MemberConfig.initializeFromUsers(users).shuffleByTagMap(
-                    tagMap,
-                  ),
-                )
-              }
-            />
-          </ExtraSettingViewer>
-        </div>
-        <div className="extra-setting-each-container">
-          <div className="extra-setting-title">flex 연동</div>
-          <ExtraSettingViewer settingName="flex 연동 설정">
-            <FlexUserFetcher
-              hasUser
-              moveMembersByEmail={(
-                toExcludedEmails: string[],
-                toRemoteEmails: string[],
-              ) => {
-                setMembers(
-                  members.moveMembersByEmail(toExcludedEmails, toRemoteEmails),
-                );
-              }}
-            />
-          </ExtraSettingViewer>
-        </div>
-        <div className="extra-setting-each-container">
-          <div className="extra-setting-title">같은 조 피하기 설정</div>
-          <CustomTagEditor
-            users={allUsers}
-            tagMap={tagMap}
-            setTagMap={setTagMap}
-          />
-        </div>
-      </div>
       <style jsx>
         {`
-          .extra-setting-title {
-            font-size: 1.2rem;
-          }
-          .extra-setting-each-container {
+          .extra-container {
             display: flex;
-            flex-direction: column;
-            padding: 0.5rem;
-            gap: 5px;
           }
         `}
       </style>
@@ -420,19 +401,31 @@ const ExtraSettingViewer = ({
 }) => {
   const [isOpened, setIsOpened] = useState(false);
   return (
-    <div className="root">
-      <Button variant="outlined" onClick={() => setIsOpened((open) => !open)}>
-        {settingName} {isOpened ? "숨기기" : "보기"}
-      </Button>
+    <>
+      <div className="root">
+        <div className="title">{settingName}</div>
+        <Button
+          className="button"
+          variant="outlined"
+          onClick={() => setIsOpened((open) => !open)}
+          fullWidth
+        >
+          {settingName} {isOpened ? "숨기기" : "보기"}
+        </Button>
+      </div>
       <Collapse in={isOpened}>{children}</Collapse>
       <style jsx>{`
         .root {
           display: flex;
-          flex-direction: column;
           gap: 10px;
+          align-items: center;
+          margin: 10px 0;
+        }
+        .title {
+          width: 175px;
         }
       `}</style>
-    </div>
+    </>
   );
 };
 
