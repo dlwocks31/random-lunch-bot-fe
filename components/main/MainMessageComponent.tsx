@@ -12,6 +12,7 @@ import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
 import { SlackServiceFactory } from "../../utils/slack/SlackServiceFactory";
+import { ExtraSettingViewer } from "../util/ExtraSettingViewer";
 
 const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:orange_heart: 조를 발표합니다!
 > 가장 앞에 있는 분이 이 채널에 조원들을 소환해서 스레드로 함께 메뉴를 정해주세요 :simple_smile:
@@ -28,9 +29,11 @@ export const MainMessageComponent = ({
   slackConversations: SlackConversation[];
 }) => {
   const [channel, setChannel] = useState<string>("");
+  const [prefixMessage, setPrefixMessage] = useState<string>(
+    DEFAULT_TEMPLATE_MESSAGE,
+  );
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false);
-  const message =
-    DEFAULT_TEMPLATE_MESSAGE + "\n" + customBuildSlackMessage(members);
+  const message = prefixMessage + "\n" + customBuildSlackMessage(members);
   const sendSlackMessage = async () => {
     const slackService = await SlackServiceFactory();
     const joinResult = await slackService.joinConversation(channel);
@@ -50,29 +53,37 @@ export const MainMessageComponent = ({
       <Button variant="contained" onClick={onStepDecrement}>
         {"<"} 이전 단계로
       </Button>
+      <h2>메세지 전송하기</h2>
       <div>
-        메세지:
-        <div>
-          <TextField
-            label="전송할 메세지"
-            disabled
-            multiline
-            fullWidth
-            rows={20}
-            value={message}
-          />
-          <div>전송할 채널:</div>
-          <Select
-            placeholder={`메세지를 전송할 채널을 선택해 주세요 (총 ${slackConversations.length}개)`}
-            options={slackConversations.map(({ id, name }) => ({
-              value: id,
-              label: name,
-            }))}
-            onChange={(e) => setChannel(e?.value || "")}
-          />{" "}
-        </div>
+        <TextField
+          label="전송할 메세지"
+          disabled
+          multiline
+          fullWidth
+          rows={20}
+          value={message}
+        />
       </div>
-      <div>추가 설정:</div>
+      <div className="channel-row">
+        <div>전송할 채널:</div>
+        <Select
+          placeholder={`메세지를 전송할 채널을 선택해 주세요 (총 ${slackConversations.length}개)`}
+          options={slackConversations.map(({ id, name }) => ({
+            value: id,
+            label: name,
+          }))}
+          onChange={(e) => setChannel(e?.value || "")}
+        />{" "}
+      </div>
+      <ExtraSettingViewer settingName="메세지 템플릿 설정">
+        <TextField
+          label="메세지 템플릿"
+          multiline
+          fullWidth
+          value={prefixMessage}
+          onChange={(e) => setPrefixMessage(e.target.value)}
+        />
+      </ExtraSettingViewer>
       <Button
         onClick={() => setIsConfirmDialogOpened(true)}
         variant="contained"
@@ -112,6 +123,16 @@ export const MainMessageComponent = ({
           </DialogActions>
         </DialogContent>
       </Dialog>
+      <style jsx>
+        {`
+          .channel-row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 5px 0;
+          }
+        `}
+      </style>
     </div>
   );
 };
