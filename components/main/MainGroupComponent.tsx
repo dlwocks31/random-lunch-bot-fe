@@ -1,6 +1,7 @@
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import {
+  Box,
   Button,
   Chip,
   Collapse,
@@ -10,6 +11,8 @@ import {
   IconButton,
   Radio,
   RadioGroup,
+  Tab,
+  Tabs,
   TextField,
 } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -23,7 +26,6 @@ import { SlackServiceFactory } from "../../utils/slack/SlackServiceFactory";
 import { generateTags } from "../../utils/tag/GenerateTags";
 import { FlexUserFetcher } from "../fetch/FlexUserFetcher";
 import { EachGroupSizeEditor } from "../group/EachGroupSizeEditor";
-import { CollapseContainer } from "../util/CollapseContainer";
 
 export const MainGroupComopnent = ({
   onStepIncrement,
@@ -38,7 +40,7 @@ export const MainGroupComopnent = ({
 }) => {
   const allUsers = members.allUsers();
   const [tagMap, setTagMap] = useState<TagMap>(new TagMap([]));
-
+  const [tabIndex, setTabIndex] = useState(0);
   useEffect(() => {
     if (!tagMap.tags.length) {
       const newTagMap = new TagMap(generateTags(allUsers));
@@ -53,38 +55,61 @@ export const MainGroupComopnent = ({
     <div>
       <div>먼저, 슬랙에서 가져온 조원을 설정해 주세요.</div>
       <div>
-        <MemberPartitionComponent
-          allUsers={allUsers}
-          partition={members.office}
-          groupTypeName="사무실"
-          onAddGroupUser={(user) =>
-            setMembers(members.moveMemberToOffice(user))
-          }
-          setPartition={(partition) =>
-            setMembers(members.setOfficePartition(partition))
-          }
-          onShuffle={() => setMembers(members.shuffleByTagMap(tagMap))}
-        />
-        <MemberPartitionComponent
-          allUsers={allUsers}
-          partition={members.remote}
-          groupTypeName="재택"
-          onAddGroupUser={(user) =>
-            setMembers(members.moveMemberToRemote(user))
-          }
-          setPartition={(partition) =>
-            setMembers(members.setRemotePartition(partition))
-          }
-          onShuffle={() => setMembers(members.shuffleByTagMap(tagMap))}
-        />
-        <UsersListComponent
-          users={members.excluded}
-          groupTypeName="제외"
-          allUsers={allUsers}
-          onAddGroupUser={(user) =>
-            setMembers(members.moveMemberToExcluded(user))
-          }
-        />
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <Tabs
+            value={tabIndex}
+            onChange={(event: React.SyntheticEvent, newValue: number) => {
+              setTabIndex(newValue);
+            }}
+            centered
+          >
+            <Tab
+              label={`사무실 - 총 ${members.office.userCount()}명 / ${members.office.groupCount()}조`}
+            />
+            <Tab
+              label={`재택 - 총 ${members.remote.userCount()}명 / ${members.remote.groupCount()}조`}
+            />
+            <Tab label={`제와 - 총 ${members.excluded.length}명`} />
+          </Tabs>
+        </Box>
+        {tabIndex === 0 && (
+          <MemberPartitionComponent
+            allUsers={allUsers}
+            partition={members.office}
+            groupTypeName="사무실"
+            onAddGroupUser={(user) =>
+              setMembers(members.moveMemberToOffice(user))
+            }
+            setPartition={(partition) =>
+              setMembers(members.setOfficePartition(partition))
+            }
+            onShuffle={() => setMembers(members.shuffleByTagMap(tagMap))}
+          />
+        )}
+        {tabIndex === 1 && (
+          <MemberPartitionComponent
+            allUsers={allUsers}
+            partition={members.remote}
+            groupTypeName="재택"
+            onAddGroupUser={(user) =>
+              setMembers(members.moveMemberToRemote(user))
+            }
+            setPartition={(partition) =>
+              setMembers(members.setRemotePartition(partition))
+            }
+            onShuffle={() => setMembers(members.shuffleByTagMap(tagMap))}
+          />
+        )}
+        {tabIndex === 2 && (
+          <UsersListComponent
+            users={members.excluded}
+            groupTypeName="제외"
+            allUsers={allUsers}
+            onAddGroupUser={(user) =>
+              setMembers(members.moveMemberToExcluded(user))
+            }
+          />
+        )}
       </div>
       <Button variant="contained" onClick={onStepIncrement} fullWidth>
         다음 단계로 {">"}
@@ -235,60 +260,56 @@ const MemberPartitionComponent = ({
   setPartition: (partition: MemberPartition) => void;
   onShuffle: () => void;
 }) => (
-  <CollapseContainer
-    title={`${groupTypeName} - 총 ${partition.userCount()}명 / ${partition.groupCount()}조`}
-  >
+  <div>
     <div>
-      <div>
-        조별 최소 인원 수:{" "}
-        <EachGroupSizeEditor
-          eachGroupSize={partition.defaultGroupSize}
-          setEachGroupSize={(eachGroupSize) => {
-            console.log("eachGroupSize is ", eachGroupSize);
-            setPartition(partition.changeDefaultGroupSize(eachGroupSize));
-          }}
-        />
-      </div>
-      <div>
-        조 개수:
-        <CustomGroupCountEditor
-          groupCount={partition.groupCount()}
-          setGroupCount={(groupCount) =>
-            setPartition(partition.changeGroupCount(groupCount))
-          }
-        />
-      </div>
-      <div>
-        {groupTypeName} 인원 추가:
-        <CustomUserGroupTypeSelector
-          allUsers={allUsers}
-          includedUsers={partition.users()}
-          addGroupUser={onAddGroupUser}
-        />
-      </div>
-      <div>
-        {partition.groups.map((group, i) => (
-          <div key={i} className="group-container">
-            <div>{i + 1}조:</div>
-            {group.map((user) => (
-              <Chip key={user.id} label={user.displayName} />
-            ))}
-          </div>
-        ))}
-      </div>
-      <Button variant="outlined" fullWidth onClick={onShuffle}>
-        재추첨
-      </Button>
-      <style jsx>{`
-        .group-container {
-          display: flex;
-          gap: 3px;
-          align-items: center;
-          padding: 2px 0;
-        }
-      `}</style>
+      조별 최소 인원 수:{" "}
+      <EachGroupSizeEditor
+        eachGroupSize={partition.defaultGroupSize}
+        setEachGroupSize={(eachGroupSize) => {
+          console.log("eachGroupSize is ", eachGroupSize);
+          setPartition(partition.changeDefaultGroupSize(eachGroupSize));
+        }}
+      />
     </div>
-  </CollapseContainer>
+    <div>
+      조 개수:
+      <CustomGroupCountEditor
+        groupCount={partition.groupCount()}
+        setGroupCount={(groupCount) =>
+          setPartition(partition.changeGroupCount(groupCount))
+        }
+      />
+    </div>
+    <div>
+      {groupTypeName} 인원 추가:
+      <CustomUserGroupTypeSelector
+        allUsers={allUsers}
+        includedUsers={partition.users()}
+        addGroupUser={onAddGroupUser}
+      />
+    </div>
+    <div>
+      {partition.groups.map((group, i) => (
+        <div key={i} className="group-container">
+          <div>{i + 1}조:</div>
+          {group.map((user) => (
+            <Chip key={user.id} label={user.displayName} />
+          ))}
+        </div>
+      ))}
+    </div>
+    <Button variant="outlined" fullWidth onClick={onShuffle}>
+      재추첨
+    </Button>
+    <style jsx>{`
+      .group-container {
+        display: flex;
+        gap: 3px;
+        align-items: center;
+        padding: 2px 0;
+      }
+    `}</style>
+  </div>
 );
 
 const UsersListComponent = ({
@@ -302,23 +323,21 @@ const UsersListComponent = ({
   groupTypeName: string;
   onAddGroupUser: (user: SlackUser) => void;
 }) => (
-  <CollapseContainer title={`${groupTypeName} - 총 ${users.length}명`}>
+  <div>
     <div>
-      <div>
-        {groupTypeName} 인원 추가:{" "}
-        <CustomUserGroupTypeSelector
-          allUsers={allUsers}
-          includedUsers={users}
-          addGroupUser={onAddGroupUser}
-        />
-      </div>
-      <div>
-        {users.map((user) => (
-          <Chip key={user.id} label={user.displayName} />
-        ))}
-      </div>
+      {groupTypeName} 인원 추가:{" "}
+      <CustomUserGroupTypeSelector
+        allUsers={allUsers}
+        includedUsers={users}
+        addGroupUser={onAddGroupUser}
+      />
     </div>
-  </CollapseContainer>
+    <div>
+      {users.map((user) => (
+        <Chip key={user.id} label={user.displayName} />
+      ))}
+    </div>
+  </div>
 );
 
 const CustomTagEditor = ({
