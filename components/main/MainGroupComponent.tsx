@@ -91,8 +91,8 @@ export const MainGroupComopnent = ({
       </Button>
       <div>
         <div>추가 설정</div>
-        <div>
-          <div>유저 가져오는 채널:</div>
+        <div className="extra-setting-each-container">
+          <div className="extra-setting-title">유저 가져오는 채널</div>
           <ExtraSettingViewer settingName="유저 가져오는 채널">
             <CustomUsersFetcher
               conversations={conversations}
