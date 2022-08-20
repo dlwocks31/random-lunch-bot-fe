@@ -1,10 +1,13 @@
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  FormControlLabel,
+  FormGroup,
   TextField,
 } from "@mui/material";
 import { useState } from "react";
@@ -32,8 +35,11 @@ export const MainMessageComponent = ({
   const [prefixMessage, setPrefixMessage] = useState<string>(
     DEFAULT_TEMPLATE_MESSAGE,
   );
+  const [shouldIgnoreMember, setShouldIgnoreMember] = useState<boolean>(false);
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false);
-  const message = prefixMessage + "\n" + customBuildSlackMessage(members);
+  const message = shouldIgnoreMember
+    ? prefixMessage
+    : prefixMessage + "\n" + customBuildSlackMessage(members);
   const sendSlackMessage = async () => {
     const slackService = await SlackServiceFactory();
     const joinResult = await slackService.joinConversation(channel);
@@ -83,6 +89,19 @@ export const MainMessageComponent = ({
           value={prefixMessage}
           onChange={(e) => setPrefixMessage(e.target.value)}
         />
+      </ExtraSettingViewer>
+      <ExtraSettingViewer settingName="조원 생략 여부 설정">
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={shouldIgnoreMember}
+                onChange={(e) => setShouldIgnoreMember(e.target.checked)}
+              />
+            }
+            label="조원을 생략하고 메세지를 전송합니다."
+          />
+        </FormGroup>
       </ExtraSettingViewer>
       <Button
         onClick={() => setIsConfirmDialogOpened(true)}
