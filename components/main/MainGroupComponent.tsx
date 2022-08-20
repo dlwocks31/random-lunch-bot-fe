@@ -241,9 +241,9 @@ const MemberPartitionComponent = ({
   setPartition: (partition: MemberPartition) => void;
   onShuffle: () => void;
 }) => (
-  <div>
-    <div>
-      조별 최소 인원 수:{" "}
+  <div className="root">
+    <div className="row">
+      <div> 조별 최소 인원 수: </div>
       <EachGroupSizeEditor
         eachGroupSize={partition.defaultGroupSize}
         setEachGroupSize={(eachGroupSize) => {
@@ -252,8 +252,8 @@ const MemberPartitionComponent = ({
         }}
       />
     </div>
-    <div>
-      조 개수:
+    <div className="row">
+      <div>조 개수:</div>
       <CustomGroupCountEditor
         groupCount={partition.groupCount()}
         setGroupCount={(groupCount) =>
@@ -261,8 +261,8 @@ const MemberPartitionComponent = ({
         }
       />
     </div>
-    <div>
-      {groupTypeName} 인원 추가:
+    <div className="row">
+      <div>{groupTypeName} 인원 추가:</div>
       <CustomUserGroupTypeSelector
         allUsers={allUsers}
         includedUsers={partition.users()}
@@ -288,6 +288,16 @@ const MemberPartitionComponent = ({
         gap: 3px;
         align-items: center;
         padding: 2px 0;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .root {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
       }
     `}</style>
   </div>
@@ -419,7 +429,7 @@ const ExtraSettingViewer = ({
           display: flex;
           gap: 10px;
           align-items: center;
-          margin: 10px 0;
+          margin: 5px 0;
         }
         .title {
           width: 175px;

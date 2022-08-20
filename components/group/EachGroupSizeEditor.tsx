@@ -1,4 +1,4 @@
-import { Button, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 export function EachGroupSizeEditor({
   eachGroupSize,
@@ -21,6 +21,7 @@ export function EachGroupSizeEditor({
         value={eachGroupSize}
         exclusive
         onChange={handleChange}
+        size="small"
       >
         {[3, 4, 5, 6].map((size) => (
           <ToggleButton key={size} value={size}>
@@ -38,6 +39,9 @@ export function EachGroupSizeEditor({
           padding: 0 10px;
           font-weight: bold;
           font-size: 1rem;
+        }
+        .toggle-button {
+          padding: 0;
         }
       `}</style>
     </div>
