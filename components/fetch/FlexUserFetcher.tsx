@@ -20,13 +20,18 @@ export function FlexUserFetcher({
   const [flexAid, setFlexAid] = useState("");
   const [date, setDate] = useState(dayjs().format("YYYY-MM-DD"));
   const [errorMessage, setErrorMessage] = useState("");
-  const { data, isLoading, refetch } = useQuery(
-    ["flex", { flexAid, date }],
+  const [fetchArgs, setFetchArgs] = useState({
+    flexAid,
+    date,
+    queryTime: new Date(), // 버튼 클릭 때마다, 그리고 버튼 클릭 떄만 새로운 query를 요청하기 위해 추가
+  });
+  const { data, isLoading } = useQuery(
+    ["flex", fetchArgs],
     () =>
-      fetch(`/api/flex-users?flexAid=${flexAid}&date=${date}`).then((res) =>
-        res.json(),
-      ),
-    { enabled: false },
+      fetch(
+        `/api/flex-users?flexAid=${fetchArgs.flexAid}&date=${fetchArgs.date}`,
+      ).then((res) => res.json()),
+    { enabled: !!fetchArgs.flexAid },
   );
   useEffect(() => {
     console.log({ data, isLoading });
@@ -72,7 +77,11 @@ export function FlexUserFetcher({
           Loading..
         </Button>
       ) : (
-        <Button variant="outlined" onClick={() => refetch()} size="small">
+        <Button
+          variant="outlined"
+          onClick={() => setFetchArgs({ flexAid, date, queryTime: new Date() })}
+          size="small"
+        >
           플렉스 설정 가져오기
         </Button>
       )}
