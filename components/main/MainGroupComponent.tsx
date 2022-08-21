@@ -14,7 +14,8 @@ import {
   Tabs,
   TextField,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
@@ -41,13 +42,15 @@ export const MainGroupComopnent = ({
   const allUsers = members.allUsers();
   const [tagMap, setTagMap] = useState<TagMap>(new TagMap([]));
   const [tabIndex, setTabIndex] = useState(0);
-  useEffect(() => {
-    if (!tagMap.tags.length) {
-      const newTagMap = new TagMap(generateTags(allUsers));
-      setTagMap(newTagMap);
-      setMembers(members.shuffleByTagMap(newTagMap));
-    }
-  }, [members.allUsers().length]); // 어떻게 더 잘 할 수 있을까..
+
+  const initializeFromNewUsers = useCallback((users: SlackUser[]) => {
+    console.log("initializeFromNewUsers", users);
+    const newTagMap = new TagMap(generateTags(allUsers));
+    setTagMap(newTagMap);
+    setMembers(
+      MemberConfig.initializeFromUsers(users).shuffleByTagMap(newTagMap),
+    );
+  }, []);
   return (
     <div>
       <h2>조원 설정</h2>
@@ -114,11 +117,7 @@ export const MainGroupComopnent = ({
       <ExtraSettingViewer settingName="유저 가져오는 채널">
         <CustomUsersFetcher
           conversations={conversations}
-          setUsers={(users) =>
-            setMembers(
-              MemberConfig.initializeFromUsers(users).shuffleByTagMap(tagMap),
-            )
-          }
+          setUsers={initializeFromNewUsers}
         />
       </ExtraSettingViewer>
 
@@ -407,18 +406,17 @@ const CustomUsersFetcher = ({
 }) => {
   const [fetchType, _setFetchType] = useState("all");
   const [allSlackUsers, setAllSlackUsers] = useState<SlackUser[]>([]);
+  const { data: allUsersFetched } = useQuery("allUsers", () => {
+    return SlackServiceFactory().then((service) =>
+      service.findAllValidSlackUsers(),
+    );
+  });
+
   const setFetchType = (fetchType: string) => {
     _setFetchType(fetchType);
     if (fetchType === "all") {
       setUsers(allSlackUsers);
     }
-  };
-
-  const setUsersByAll = async () => {
-    const slackService = await SlackServiceFactory();
-    const users = await slackService.findAllValidSlackUsers();
-    setUsers(users);
-    setAllSlackUsers(users);
   };
 
   const setUsersByChannel = async (channel: string) => {
@@ -431,8 +429,11 @@ const CustomUsersFetcher = ({
   };
 
   useEffect(() => {
-    setUsersByAll();
-  }, []);
+    if (allUsersFetched) {
+      setAllSlackUsers(allUsersFetched);
+      setUsers(allUsersFetched);
+    }
+  }, [allUsersFetched]);
   return (
     <div>
       <FormControl>
