@@ -1,5 +1,3 @@
-import { supabase } from "../../utils/supabase/supabaseClient";
-
 function encodeData(data: any) {
   return Object.keys(data)
     .map(function (key) {
@@ -14,13 +12,15 @@ export const SLACK_CALLBACK_BASE_QUERY = {
   client_id: "724758129958.3531603815618",
 };
 
-export function AddToSlackButton() {
+export function AddToSlackButton({
+  supabaseAccessToken,
+}: {
+  supabaseAccessToken: string;
+}) {
   function getCallbackUrl() {
     return `https://slack.com/oauth/v2/authorize?${encodeData({
       ...SLACK_CALLBACK_BASE_QUERY,
-      state: JSON.stringify({
-        supabaseAccessToken: supabase.auth.session()?.access_token,
-      }),
+      state: JSON.stringify({ supabaseAccessToken }),
     })}`;
   }
   return (

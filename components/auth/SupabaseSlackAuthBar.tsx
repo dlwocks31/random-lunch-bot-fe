@@ -12,6 +12,7 @@ export function SupabaseSlackAuthBar({
 }) {
   const [userEmail, setUserEmail] = useState("");
   const [oauthStatus, setOauthStatus] = useState<{ team: string } | null>(null);
+  const [supabaseAccessToken, setSupabaseAccessToken] = useState("");
   const isAnonUser = userEmail.endsWith("@anon-login.com");
   async function queryOauthStatus() {
     // TODO: API call로 변경 (oauth Token을 client에게 숨겨야 함)
@@ -38,10 +39,12 @@ export function SupabaseSlackAuthBar({
       const password = uuidv4();
       supabase.auth.signUp({ email, password }).then(({ user }) => {
         setUserEmail(user?.email || "");
+        setSupabaseAccessToken(supabase.auth.session()?.access_token || "");
         queryOauthStatus();
       });
     } else {
       setUserEmail(currentUser.email || "");
+      setSupabaseAccessToken(supabase.auth.session()?.access_token || "");
       if (oauthStatus === null) {
         queryOauthStatus();
       }
@@ -89,9 +92,9 @@ export function SupabaseSlackAuthBar({
           )}
           {isSlackAdded ? (
             <div>슬랙 워크스페이스: {oauthStatus.team}</div>
-          ) : (
-            <AddToSlackButton />
-          )}
+          ) : supabaseAccessToken ? (
+            <AddToSlackButton supabaseAccessToken={supabaseAccessToken} />
+          ) : null}
         </div>
       </Toolbar>
     </AppBar>
