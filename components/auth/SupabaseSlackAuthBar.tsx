@@ -61,7 +61,6 @@ export function SupabaseSlackAuthBar({
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           {isAnonUser ? (
             <>
-              <div>미로그인 상태입니다.</div>
               <div>
                 <LoginDialog
                   handleLogin={(email, password) => {
@@ -75,7 +74,7 @@ export function SupabaseSlackAuthBar({
             </>
           ) : (
             <>
-              <div>로그인 되었습니다. Email: {userEmail}</div>
+              <div>로그인 되었습니다. {userEmail}</div>
               <Button
                 color="inherit"
                 variant="outlined"
