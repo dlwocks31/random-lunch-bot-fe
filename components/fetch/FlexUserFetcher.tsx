@@ -1,8 +1,7 @@
 import { Alert, Button, TextField } from "@mui/material";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import useSWR, { useSWRConfig } from "swr";
-import { fetcher } from "../../utils/network/Fetcher";
+import { useQuery } from "react-query";
 
 export function FlexUserFetcher({
   hasUser,
@@ -21,11 +20,16 @@ export function FlexUserFetcher({
   const [flexAid, setFlexAid] = useState("");
   const [date, setDate] = useState(dayjs().format("YYYY-MM-DD"));
   const [errorMessage, setErrorMessage] = useState("");
-  const [flexFetchUrl, setFlexFetchUrl] = useState<string | null>(null);
-  const { data } = useSWR(flexFetchUrl, fetcher);
-  const { mutate } = useSWRConfig();
+  const { data, isLoading, refetch } = useQuery(
+    ["flex", { flexAid, date }],
+    () =>
+      fetch(`/api/flex-users?flexAid=${flexAid}&date=${date}`).then((res) =>
+        res.json(),
+      ),
+    { enabled: false },
+  );
   useEffect(() => {
-    console.log(data);
+    console.log({ data, isLoading });
     console.log("HIHI data changed");
     if (data) {
       try {
@@ -46,7 +50,7 @@ export function FlexUserFetcher({
         setErrorMessage("에러가 발생했습니다. 잠시 후 다시 시도해 주세요.");
       }
     }
-  }, [data]);
+  }, [data, isLoading]);
 
   return hasUser ? (
     <div className="root">
@@ -63,19 +67,12 @@ export function FlexUserFetcher({
         size="small"
       />
 
-      {!!flexFetchUrl && !data ? (
+      {isLoading ? (
         <Button disabled variant="outlined">
           Loading..
         </Button>
       ) : (
-        <Button
-          variant="outlined"
-          onClick={() => {
-            mutate(`/api/flex-users?flexAid=${flexAid}&date=${date}`);
-            setFlexFetchUrl(`/api/flex-users?flexAid=${flexAid}&date=${date}`);
-          }}
-          size="small"
-        >
+        <Button variant="outlined" onClick={() => refetch()} size="small">
           플렉스 설정 가져오기
         </Button>
       )}
