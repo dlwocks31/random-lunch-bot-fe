@@ -40,17 +40,20 @@ export const MainMessageComponent = ({
   const [shouldDisableMention, setShouldDisableMention] =
     useState<boolean>(false);
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const message = shouldIgnoreMember
     ? prefixMessage
     : prefixMessage +
       "\n" +
       customBuildSlackMessage(members, shouldDisableMention);
   const sendSlackMessage = async () => {
+    setIsSending(true);
     const slackService = await SlackServiceFactory();
     const joinResult = await slackService.joinConversation(channel);
     console.log(JSON.stringify(joinResult));
     const result = await slackService.send(message, channel);
     console.log(JSON.stringify(result));
+    setIsSending(false);
   };
   const channelDescription = () => {
     const conv = slackConversations.find((c) => c.id === channel);
@@ -146,10 +149,10 @@ export const MainMessageComponent = ({
             </Button>
             <Button
               onClick={() => {
-                setIsConfirmDialogOpened(false);
-                sendSlackMessage();
+                sendSlackMessage().then(() => setIsConfirmDialogOpened(false));
               }}
               variant="contained"
+              disabled={isSending}
             >
               메세지 전송
             </Button>
