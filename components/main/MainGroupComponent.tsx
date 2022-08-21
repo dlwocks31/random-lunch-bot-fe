@@ -48,9 +48,6 @@ export const MainGroupComopnent = ({
       setMembers(members.shuffleByTagMap(newTagMap));
     }
   }, [members.allUsers().length]); // 어떻게 더 잘 할 수 있을까..
-
-  console.log("XXX remoteUser:");
-  console.log(members.remote);
   return (
     <div>
       <h2>조원 설정</h2>
@@ -246,10 +243,9 @@ const MemberPartitionComponent = ({
       <div> 조별 최소 인원 수: </div>
       <EachGroupSizeEditor
         eachGroupSize={partition.defaultGroupSize}
-        setEachGroupSize={(eachGroupSize) => {
-          console.log("eachGroupSize is ", eachGroupSize);
-          setPartition(partition.changeDefaultGroupSize(eachGroupSize));
-        }}
+        setEachGroupSize={(eachGroupSize) =>
+          setPartition(partition.changeDefaultGroupSize(eachGroupSize))
+        }
       />
     </div>
     <div className="row">
@@ -421,7 +417,6 @@ const CustomUsersFetcher = ({
   const setUsersByAll = async () => {
     const slackService = await SlackServiceFactory();
     const users = await slackService.findAllValidSlackUsers();
-    console.log("AT setUsersByAll, users:", users);
     setUsers(users);
     setAllSlackUsers(users);
   };

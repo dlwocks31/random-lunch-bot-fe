@@ -43,8 +43,6 @@ export class SlackService {
       const onePageChannels: any = (
         await axios.post("https://slack.com/api/conversations.list", formData)
       ).data;
-      console.log("onePageChannels", onePageChannels);
-      console.log(onePageChannels);
       if (!onePageChannels.channels) break;
       channels.push(...onePageChannels.channels);
       cursor = onePageChannels.response_metadata?.next_cursor;

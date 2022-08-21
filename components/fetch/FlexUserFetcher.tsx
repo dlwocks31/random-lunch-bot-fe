@@ -32,13 +32,10 @@ export function FlexUserFetcher({
     { enabled: !!fetchArgs.flexAid },
   );
   useEffect(() => {
-    console.log({ data, isLoading });
-    console.log("HIHI data changed");
     if (data) {
       const userListDisplay = (list: any) => map(list, "name").join(", ");
       try {
         const { timeOff, remoteWork } = data;
-        console.log({ timeOff, remoteWork });
         const newInfoMessage = `제외에 추가됨: ${userListDisplay(
           timeOff,
         )} / 재택에 추가됨: ${userListDisplay(remoteWork)}`;

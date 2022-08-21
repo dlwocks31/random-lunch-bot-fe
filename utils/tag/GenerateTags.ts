@@ -48,7 +48,5 @@ export function generateTags(
       res.push({ userId, tag });
     }
   }
-  console.log("In generateTags:");
-  console.log(res);
   return res;
 }

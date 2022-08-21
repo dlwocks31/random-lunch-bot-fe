@@ -28,7 +28,6 @@ export class MemberPartition {
       return this;
     } else {
       flatUsers.push(user);
-      console.log("At add, flatUsers: ", flatUsers);
       return new MemberPartition(
         createStandardPartition(
           flatUsers,
