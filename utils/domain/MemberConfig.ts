@@ -16,7 +16,7 @@ export class MemberConfig {
       new MemberPartition(
         createStandardPartition(
           slackUser,
-          Math.floor(slackUser.length / DEFAULT_EACH_GROUP_USER),
+          Math.max(1, Math.floor(slackUser.length / DEFAULT_EACH_GROUP_USER)),
         ),
         DEFAULT_EACH_GROUP_USER,
       ),
