@@ -14,6 +14,7 @@ import { useState } from "react";
 import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
+import { SlackUser } from "../../utils/slack/slack-user";
 import { SlackServiceFactory } from "../../utils/slack/SlackServiceFactory";
 import { ExtraSettingViewer } from "../util/ExtraSettingViewer";
 
@@ -36,10 +37,14 @@ export const MainMessageComponent = ({
     DEFAULT_TEMPLATE_MESSAGE,
   );
   const [shouldIgnoreMember, setShouldIgnoreMember] = useState<boolean>(false);
+  const [shouldDisableMention, setShouldDisableMention] =
+    useState<boolean>(false);
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false);
   const message = shouldIgnoreMember
     ? prefixMessage
-    : prefixMessage + "\n" + customBuildSlackMessage(members);
+    : prefixMessage +
+      "\n" +
+      customBuildSlackMessage(members, shouldDisableMention);
   const sendSlackMessage = async () => {
     const slackService = await SlackServiceFactory();
     const joinResult = await slackService.joinConversation(channel);
@@ -90,7 +95,7 @@ export const MainMessageComponent = ({
           onChange={(e) => setPrefixMessage(e.target.value)}
         />
       </ExtraSettingViewer>
-      <ExtraSettingViewer settingName="조원 생략 여부 설정">
+      <ExtraSettingViewer settingName="기타 설정">
         <FormGroup>
           <FormControlLabel
             control={
@@ -100,6 +105,15 @@ export const MainMessageComponent = ({
               />
             }
             label="조원을 생략하고 메세지를 전송합니다."
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={shouldDisableMention}
+                onChange={(e) => setShouldDisableMention(e.target.checked)}
+              />
+            }
+            label="조원을 멘션하지 않습니다."
           />
         </FormGroup>
       </ExtraSettingViewer>
@@ -156,16 +170,21 @@ export const MainMessageComponent = ({
   );
 };
 
-const customBuildSlackMessage = (members: MemberConfig) => {
+const customBuildSlackMessage = (
+  members: MemberConfig,
+  shouldDisableMention: boolean,
+) => {
+  const userToStr = (u: SlackUser) =>
+    shouldDisableMention ? u.displayName : `<@${u.id}>`;
   const messageList = [];
   let groupNum = 1;
   for (const users of members.office.groups) {
-    const names = users.map((u) => `<@${u.id}>`).join(" ");
+    const names = users.map(userToStr).join(" ");
     messageList.push(`${groupNum}조: ${names}`);
     groupNum++;
   }
   for (const users of members.remote.groups) {
-    const names = users.map((u) => `<@${u.id}>`).join(" ");
+    const names = users.map(userToStr).join(" ");
     messageList.push(`${groupNum}조: ${names}`);
     groupNum++;
   }
