@@ -5,14 +5,10 @@ import { useQuery } from "react-query";
 
 export function FlexUserFetcher({
   hasUser,
-  addRemoteUsersByEmail,
-  addUnselectedUsersByEmail,
   moveMembersByEmail,
 }: {
   hasUser: boolean; // TODO: refactor: 도대체 component 노출 여부를 왜 여기서 제어..
-  addRemoteUsersByEmail?: (emails: string[]) => void;
-  addUnselectedUsersByEmail?: (emails: string[]) => void;
-  moveMembersByEmail?: (
+  moveMembersByEmail: (
     toExcludedEmails: string[],
     toRemoteEmails: string[],
   ) => void;
@@ -38,18 +34,10 @@ export function FlexUserFetcher({
     console.log("HIHI data changed");
     if (data) {
       try {
-        if (addRemoteUsersByEmail) {
-          addRemoteUsersByEmail(data.remoteWork.map((d: any) => d.email));
-        }
-        if (addUnselectedUsersByEmail) {
-          addUnselectedUsersByEmail(data.timeOff.map((d: any) => d.email));
-        }
-        if (moveMembersByEmail) {
-          moveMembersByEmail(
-            data.timeOff.map((d: any) => d.email),
-            data.remoteWork.map((d: any) => d.email),
-          );
-        }
+        moveMembersByEmail(
+          data.timeOff.map((d: any) => d.email),
+          data.remoteWork.map((d: any) => d.email),
+        );
         setErrorMessage("");
       } catch (e) {
         setErrorMessage("에러가 발생했습니다. 잠시 후 다시 시도해 주세요.");
