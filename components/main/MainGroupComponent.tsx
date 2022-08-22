@@ -14,8 +14,7 @@ import {
   Tabs,
   TextField,
 } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { useCallback, useState } from "react";
 import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
@@ -404,36 +403,23 @@ const CustomUsersFetcher = ({
   setUsers: (users: SlackUser[]) => void;
   conversations: SlackConversation[];
 }) => {
-  const [fetchType, _setFetchType] = useState("all");
-  const [allSlackUsers, setAllSlackUsers] = useState<SlackUser[]>([]);
-  const { data: allUsersFetched } = useQuery("allUsers", () => {
-    return SlackServiceFactory().then((service) =>
-      service.findAllValidSlackUsers(),
-    );
-  });
+  const [fetchType, setFetchType] = useState("all");
 
-  const setFetchType = (fetchType: string) => {
-    _setFetchType(fetchType);
-    if (fetchType === "all") {
-      setUsers(allSlackUsers);
-    }
+  const setUsersByAll = async () => {
+    const slackService = await SlackServiceFactory();
+    const allUsers = await slackService.findAllValidSlackUsers();
+    setUsers(allUsers);
   };
 
   const setUsersByChannel = async (channel: string) => {
     const slackService = await SlackServiceFactory();
     const memberIds = await slackService.getConversationMembers(channel);
+    const allUsers = await slackService.findAllValidSlackUsers();
     const members = memberIds
-      .map((id) => allSlackUsers.find((user) => user.id === id))
+      .map((id) => allUsers.find((user) => user.id === id))
       .filter((user): user is SlackUser => user !== undefined);
     setUsers(members);
   };
-
-  useEffect(() => {
-    if (allUsersFetched) {
-      setAllSlackUsers(allUsersFetched);
-      setUsers(allUsersFetched);
-    }
-  }, [allUsersFetched]);
   return (
     <div>
       <FormControl>
@@ -448,6 +434,7 @@ const CustomUsersFetcher = ({
             value="all"
             control={<Radio />}
             label="워크스페이스의 모든 유저 가져오기"
+            onClick={setUsersByAll}
           />
           <FormControlLabel
             value="from-channel"

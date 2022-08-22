@@ -20,9 +20,10 @@ export default function V2() {
       [],
     ),
   );
-  const getConversations = async () => {
+  const initializeFromSlack = async () => {
     const slackService = await SlackServiceFactory();
     const conversations = await slackService.listConversation();
+    const users = await slackService.findAllValidSlackUsers();
     setConversations(
       sortBy(
         conversations.filter((c) => c.membersCount > 0),
@@ -30,11 +31,12 @@ export default function V2() {
         "name",
       ),
     );
+    setMembers(MemberConfig.initializeFromUsers(users));
   };
 
   useEffect(() => {
     if (slackInstalled) {
-      getConversations();
+      initializeFromSlack();
     }
   }, [slackInstalled]);
   return (
