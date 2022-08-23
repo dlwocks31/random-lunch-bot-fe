@@ -105,4 +105,8 @@ export class MemberPartition {
       Math.min(6, Math.max(3, minGroupSize)),
     );
   }
+
+  hasUser(id: string): boolean {
+    return this.users().some((u) => u.id === id);
+  }
 }

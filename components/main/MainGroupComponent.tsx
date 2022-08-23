@@ -135,6 +135,38 @@ export const MainGroupComopnent = ({
       </ExtraSettingViewer>
       <CustomTagEditor users={allUsers} tagMap={tagMap} setTagMap={setTagMap} />
 
+      <ExtraSettingViewer settingName="유저 이모지 확인">
+        <div>
+          슬랙 이모지와 일치하지 않는 상태에 있는 유저는 빨간색으로 표시됩니다.
+        </div>
+        <div>
+          <span>🏡 상태 이모지를 가진 유저 - </span>
+          {allUsers
+            .filter((user) => user.statusEmoji === ":house_with_garden:")
+            .map((u) => (
+              <span
+                key={u.id}
+                className={members.isUserRemote(u.id) ? "" : "red"}
+              >
+                {u.displayName}
+              </span>
+            ))}
+        </div>
+        <div>
+          <span>🌴 상태 이모지를 가진 유저 - </span>
+          {allUsers
+            .filter((user) => user.statusEmoji === ":palm_tree:")
+            .map((u) => (
+              <span
+                key={u.id}
+                className={members.isUserExcluded(u.id) ? "" : "red"}
+              >
+                {u.displayName}
+              </span>
+            ))}
+        </div>
+      </ExtraSettingViewer>
+
       <Button variant="contained" onClick={onStepIncrement} fullWidth>
         다음 단계로 {">"}
       </Button>
@@ -142,6 +174,9 @@ export const MainGroupComopnent = ({
         {`
           .extra-container {
             display: flex;
+          }
+          .red {
+            color: red;
           }
         `}
       </style>

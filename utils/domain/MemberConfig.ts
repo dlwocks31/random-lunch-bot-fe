@@ -101,4 +101,12 @@ export class MemberConfig {
       .concat(this.remote.users())
       .concat(this.excluded);
   }
+
+  isUserExcluded(id: string) {
+    return this.excluded.some((user) => user.id === id);
+  }
+
+  isUserRemote(id: string) {
+    return this.remote.hasUser(id);
+  }
 }
