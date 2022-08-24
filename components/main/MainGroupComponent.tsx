@@ -141,29 +141,19 @@ export const MainGroupComopnent = ({
         </div>
         <div>
           <span>🏡 상태 이모지를 가진 유저 - </span>
-          {allUsers
-            .filter((user) => user.statusEmoji === ":house_with_garden:")
-            .map((u) => (
-              <span
-                key={u.id}
-                className={members.isUserRemote(u.id) ? "" : "red"}
-              >
-                {u.displayName}
-              </span>
-            ))}
+          {usersToNode(
+            allUsers.filter(
+              (user) => user.statusEmoji === ":house_with_garden:",
+            ),
+            (u) => !members.isUserRemote(u.id),
+          )}
         </div>
         <div>
           <span>🌴 상태 이모지를 가진 유저 - </span>
-          {allUsers
-            .filter((user) => user.statusEmoji === ":palm_tree:")
-            .map((u) => (
-              <span
-                key={u.id}
-                className={members.isUserExcluded(u.id) ? "" : "red"}
-              >
-                {u.displayName}
-              </span>
-            ))}
+          {usersToNode(
+            allUsers.filter((user) => user.statusEmoji === ":palm_tree:"),
+            (u) => !members.isUserExcluded(u.id),
+          )}
         </div>
       </ExtraSettingViewer>
 
@@ -175,13 +165,35 @@ export const MainGroupComopnent = ({
           .extra-container {
             display: flex;
           }
-          .red {
-            color: red;
-          }
         `}
       </style>
     </div>
   );
+};
+
+const usersToNode = (
+  users: SlackUser[],
+  isHighlighted: (u: SlackUser) => boolean,
+) => {
+  if (users.length === 0) {
+    return <span>없음</span>;
+  }
+  return users
+    .map<React.ReactNode>((u) => (
+      <>
+        <span key={u.id} className={isHighlighted(u) ? "red" : ""}>
+          {u.displayName}
+        </span>
+        <style jsx>
+          {`
+            .red {
+              color: red;
+            }
+          `}
+        </style>
+      </>
+    ))
+    .reduce((prev, curr) => [prev, " ", curr]);
 };
 
 const CustomGroupCountEditor = ({
