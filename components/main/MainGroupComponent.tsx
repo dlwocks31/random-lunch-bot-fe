@@ -32,14 +32,17 @@ export const MainGroupComopnent = ({
   members,
   setMembers,
   conversations,
+  tagMap,
+  setTagMap,
 }: {
   onStepIncrement: () => void;
   members: MemberConfig;
   setMembers: (members: MemberConfig) => void;
   conversations: SlackConversation[];
+  tagMap: TagMap;
+  setTagMap: (tagMap: TagMap) => void;
 }) => {
   const allUsers = members.allUsers();
-  const [tagMap, setTagMap] = useState<TagMap>(new TagMap([]));
   const [tabIndex, setTabIndex] = useState(0);
 
   const initializeFromNewUsers = useCallback((users: SlackUser[]) => {
