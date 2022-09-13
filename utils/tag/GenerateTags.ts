@@ -1,14 +1,14 @@
-import { SlackUser } from "../slack/slack-user";
+import { NormalUser } from "../slack/NormalUser";
 import { createCommonTokens } from "./CreateCommonTokens";
 import { createTagsFromSlackName } from "./CreateTagsFromSlackName";
 
 export function generateTags(
-  users: SlackUser[],
+  users: NormalUser[],
 ): { userId: string; tag: string }[] {
   const newTagMap: Map<string, string[]> = new Map();
   const allRawTags = [];
   for (const user of users) {
-    allRawTags.push(...createTagsFromSlackName(user.displayName));
+    allRawTags.push(...createTagsFromSlackName(user.name));
   }
   const commonTokens = createCommonTokens(allRawTags);
   const allTags = allRawTags
@@ -20,7 +20,7 @@ export function generateTags(
   }
 
   for (const user of users) {
-    const rawTags = createTagsFromSlackName(user.displayName);
+    const rawTags = createTagsFromSlackName(user.name);
     for (const tag of rawTags) {
       for (const addToTags of allTags) {
         if (tag.includes(addToTags)) {

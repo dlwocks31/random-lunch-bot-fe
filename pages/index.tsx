@@ -7,6 +7,7 @@ import { MemberConfig } from "../utils/domain/MemberConfig";
 import { MemberPartition } from "../utils/domain/MemberPartition";
 import { SlackConversation } from "../utils/domain/SlackConversation";
 import { TagMap } from "../utils/domain/TagMap";
+import { NormalUser } from "../utils/slack/NormalUser";
 import { SlackServiceFactory } from "../utils/slack/SlackServiceFactory";
 import { generateTags } from "../utils/tag/GenerateTags";
 const DEFAULT_EACH_GROUP_USER = 4;
@@ -27,7 +28,8 @@ export default function V2() {
   const initializeFromSlack = async () => {
     const slackService = await SlackServiceFactory();
     const conversations = await slackService.listConversation();
-    const users = await slackService.findAllValidSlackUsers();
+    const slackUsers = await slackService.findAllValidSlackUsers();
+    const users = slackUsers.map(NormalUser.fromSlackUser);
     const newTagMap = new TagMap(generateTags(users));
     setTagMap(newTagMap);
     setMembers(

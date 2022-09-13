@@ -1,5 +1,5 @@
 import { createStandardPartition } from "../group/CreateStandardPartition";
-import { SlackUser } from "../slack/slack-user";
+import { NormalUser } from "../slack/NormalUser";
 import { MemberPartition } from "./MemberPartition";
 import { TagMap } from "./TagMap";
 
@@ -8,15 +8,15 @@ export class MemberConfig {
   constructor(
     public readonly office: MemberPartition,
     public readonly remote: MemberPartition,
-    public readonly excluded: SlackUser[],
+    public readonly excluded: NormalUser[],
   ) {}
 
-  static initializeFromUsers(slackUser: SlackUser[]): MemberConfig {
+  static initializeFromUsers(users: NormalUser[]): MemberConfig {
     return new MemberConfig(
       new MemberPartition(
         createStandardPartition(
-          slackUser,
-          Math.max(1, Math.floor(slackUser.length / DEFAULT_EACH_GROUP_USER)),
+          users,
+          Math.max(1, Math.floor(users.length / DEFAULT_EACH_GROUP_USER)),
         ),
         DEFAULT_EACH_GROUP_USER,
       ),
@@ -39,7 +39,7 @@ export class MemberConfig {
     return new MemberConfig(office, remote, this.excluded);
   }
 
-  moveMemberToOffice(member: SlackUser): MemberConfig {
+  moveMemberToOffice(member: NormalUser): MemberConfig {
     return new MemberConfig(
       this.office.add(member),
       this.remote.remove(member),
@@ -47,7 +47,7 @@ export class MemberConfig {
     );
   }
 
-  moveMemberToRemote(member: SlackUser): MemberConfig {
+  moveMemberToRemote(member: NormalUser): MemberConfig {
     return new MemberConfig(
       this.office.remove(member),
       this.remote.add(member),
@@ -55,7 +55,7 @@ export class MemberConfig {
     );
   }
 
-  moveMemberToExcluded(member: SlackUser): MemberConfig {
+  moveMemberToExcluded(member: NormalUser): MemberConfig {
     const newExcluded = this.excluded.includes(member)
       ? this.excluded
       : this.excluded.concat(member);
@@ -95,7 +95,7 @@ export class MemberConfig {
     ).moveMembersToRemoteByEmail(toRemoteEmails);
   }
 
-  allUsers(): SlackUser[] {
+  allUsers(): NormalUser[] {
     return this.office
       .users()
       .concat(this.remote.users())

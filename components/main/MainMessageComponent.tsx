@@ -14,7 +14,7 @@ import { useState } from "react";
 import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
-import { SlackUser } from "../../utils/slack/slack-user";
+import { NormalUser } from "../../utils/slack/NormalUser";
 import { SlackServiceFactory } from "../../utils/slack/SlackServiceFactory";
 import { ExtraSettingViewer } from "../util/ExtraSettingViewer";
 
@@ -177,8 +177,8 @@ const customBuildSlackMessage = (
   members: MemberConfig,
   shouldDisableMention: boolean,
 ) => {
-  const userToStr = (u: SlackUser) =>
-    shouldDisableMention ? u.displayName : `<@${u.id}>`;
+  const userToStr = (u: NormalUser) =>
+    shouldDisableMention ? u.name : `<@${u.id}>`;
   const messageList = [];
   let groupNum = 1;
   for (const users of members.office.groups) {

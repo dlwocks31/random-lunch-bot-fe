@@ -20,6 +20,7 @@ import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
 import { TagMap } from "../../utils/domain/TagMap";
+import { NormalUser } from "../../utils/slack/NormalUser";
 import { SlackUser } from "../../utils/slack/slack-user";
 import { SlackServiceFactory } from "../../utils/slack/SlackServiceFactory";
 import { generateTags } from "../../utils/tag/GenerateTags";
@@ -45,7 +46,7 @@ export const MainGroupComopnent = ({
   const allUsers = members.allUsers();
   const [tabIndex, setTabIndex] = useState(0);
 
-  const initializeFromNewUsers = useCallback((users: SlackUser[]) => {
+  const initializeFromNewUsers = useCallback((users: NormalUser[]) => {
     console.log("initializeFromNewUsers", users);
     const newTagMap = new TagMap(generateTags(allUsers));
     setTagMap(newTagMap);
@@ -146,7 +147,7 @@ export const MainGroupComopnent = ({
           <span>🏡 상태 이모지를 가진 유저 - </span>
           {usersToNode(
             allUsers.filter(
-              (user) => user.statusEmoji === ":house_with_garden:",
+              (user) => user.slackUser?.statusEmoji === ":house_with_garden:",
             ),
             (u) => !members.isUserRemote(u.id),
           )}
@@ -154,7 +155,9 @@ export const MainGroupComopnent = ({
         <div>
           <span>🌴 상태 이모지를 가진 유저 - </span>
           {usersToNode(
-            allUsers.filter((user) => user.statusEmoji === ":palm_tree:"),
+            allUsers.filter(
+              (user) => user.slackUser?.statusEmoji === ":palm_tree:",
+            ),
             (u) => !members.isUserExcluded(u.id),
           )}
         </div>
@@ -175,8 +178,8 @@ export const MainGroupComopnent = ({
 };
 
 const usersToNode = (
-  users: SlackUser[],
-  isHighlighted: (u: SlackUser) => boolean,
+  users: NormalUser[],
+  isHighlighted: (u: NormalUser) => boolean,
 ) => {
   if (users.length === 0) {
     return <span>없음</span>;
@@ -185,7 +188,7 @@ const usersToNode = (
     .map<React.ReactNode>((u) => (
       <>
         <span key={u.id} className={isHighlighted(u) ? "red" : ""}>
-          {u.displayName}
+          {u.name}
         </span>
         <style jsx>
           {`
@@ -242,9 +245,9 @@ const CustomUserGroupTypeSelector = ({
   includedUsers,
   addGroupUser,
 }: {
-  allUsers: SlackUser[];
-  includedUsers: SlackUser[];
-  addGroupUser: (user: SlackUser) => void;
+  allUsers: NormalUser[];
+  includedUsers: NormalUser[];
+  addGroupUser: (user: NormalUser) => void;
 }) => {
   const unselectedUsers = allUsers.filter(
     (u) => !includedUsers.some((su) => su.id === u.id),
@@ -253,9 +256,9 @@ const CustomUserGroupTypeSelector = ({
     <div>
       <Select
         placeholder="유저 이름을 검색하세요"
-        options={unselectedUsers.map(({ id, displayName }) => ({
+        options={unselectedUsers.map(({ id, name }) => ({
           value: id,
-          label: displayName,
+          label: name,
         }))}
         value={null}
         onChange={(e) => {
@@ -280,9 +283,9 @@ const MemberPartitionComponent = ({
   onShuffle,
 }: {
   partition: MemberPartition;
-  allUsers: SlackUser[];
+  allUsers: NormalUser[];
   groupTypeName: string;
-  onAddGroupUser: (user: SlackUser) => void;
+  onAddGroupUser: (user: NormalUser) => void;
   setPartition: (partition: MemberPartition) => void;
   onShuffle: () => void;
 }) => (
@@ -318,7 +321,7 @@ const MemberPartitionComponent = ({
         <div key={i} className="group-container">
           <div>{i + 1}조:</div>
           {group.map((user) => (
-            <Chip key={user.id} label={user.displayName} />
+            <Chip key={user.id} label={user.name} />
           ))}
         </div>
       ))}
@@ -353,10 +356,10 @@ const UsersListComponent = ({
   groupTypeName,
   onAddGroupUser,
 }: {
-  users: SlackUser[];
-  allUsers: SlackUser[];
+  users: NormalUser[];
+  allUsers: NormalUser[];
   groupTypeName: string;
-  onAddGroupUser: (user: SlackUser) => void;
+  onAddGroupUser: (user: NormalUser) => void;
 }) => (
   <div>
     <div>
@@ -369,7 +372,7 @@ const UsersListComponent = ({
     </div>
     <div>
       {users.map((user) => (
-        <Chip key={user.id} label={user.displayName} />
+        <Chip key={user.id} label={user.name} />
       ))}
     </div>
   </div>
@@ -380,7 +383,7 @@ const CustomTagEditor = ({
   tagMap,
   setTagMap,
 }: {
-  users: SlackUser[];
+  users: NormalUser[];
   tagMap: TagMap;
   setTagMap: (tagMap: TagMap) => void;
 }) => {
@@ -394,15 +397,15 @@ const CustomTagEditor = ({
             <Chip label={tag} />
             <Select
               isMulti
-              options={users.map(({ id, displayName }) => ({
+              options={users.map(({ id, name }) => ({
                 value: id,
-                label: displayName,
+                label: name,
               }))}
               value={userIds.map((id) => {
                 const user = users.find((u) => u.id === id);
                 return {
                   value: id,
-                  label: user?.displayName || "",
+                  label: user?.name || "",
                 };
               })}
               onChange={(e) => {
@@ -450,14 +453,15 @@ const CustomUsersFetcher = ({
   setUsers,
   conversations,
 }: {
-  setUsers: (users: SlackUser[]) => void;
+  setUsers: (users: NormalUser[]) => void;
   conversations: SlackConversation[];
 }) => {
   const [fetchType, setFetchType] = useState("all");
 
   const setUsersByAll = async () => {
     const slackService = await SlackServiceFactory();
-    const allUsers = await slackService.findAllValidSlackUsers();
+    const allSlackUsers = await slackService.findAllValidSlackUsers();
+    const allUsers = allSlackUsers.map(NormalUser.fromSlackUser);
     setUsers(allUsers);
   };
 
@@ -465,10 +469,11 @@ const CustomUsersFetcher = ({
     const slackService = await SlackServiceFactory();
     const memberIds = await slackService.getConversationMembers(channel);
     const allUsers = await slackService.findAllValidSlackUsers();
-    const members = memberIds
+    const slackUsers: SlackUser[] = memberIds
       .map((id) => allUsers.find((user) => user.id === id))
       .filter((user): user is SlackUser => user !== undefined);
-    setUsers(members);
+    const users = slackUsers.map(NormalUser.fromSlackUser);
+    setUsers(users);
   };
   return (
     <div>

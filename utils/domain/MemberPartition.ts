@@ -1,12 +1,12 @@
 import { shuffle } from "lodash";
 import { createStandardPartition } from "../group/CreateStandardPartition";
 import { optimizePartition } from "../group/OptimizePartition";
-import { SlackUser } from "../slack/slack-user";
+import { NormalUser } from "../slack/NormalUser";
 import { TagMap } from "./TagMap";
 
 export class MemberPartition {
   constructor(
-    public readonly groups: SlackUser[][],
+    public readonly groups: NormalUser[][],
     public readonly defaultGroupSize: number,
   ) {}
 
@@ -18,11 +18,11 @@ export class MemberPartition {
     return this.groups.length;
   }
 
-  users(): SlackUser[] {
+  users(): NormalUser[] {
     return this.groups.reduce((acc, group) => acc.concat(group), []);
   }
 
-  add(user: SlackUser): MemberPartition {
+  add(user: NormalUser): MemberPartition {
     const flatUsers = this.users();
     if (flatUsers.includes(user)) {
       return this;
@@ -38,7 +38,7 @@ export class MemberPartition {
     }
   }
 
-  remove(user: SlackUser): MemberPartition {
+  remove(user: NormalUser): MemberPartition {
     const flatUsers = this.users();
     if (flatUsers.includes(user)) {
       flatUsers.splice(flatUsers.indexOf(user), 1);
@@ -60,7 +60,7 @@ export class MemberPartition {
     const newGroups = optimizePartition(
       createStandardPartition(shuffledUsers, this.groupCount()),
       1000,
-      (team: SlackUser[]) => {
+      (team: NormalUser[]) => {
         let sumScore = 0;
         for (let i = 0; i < team.length; i++) {
           for (let j = i + 1; j < team.length; j++) {
