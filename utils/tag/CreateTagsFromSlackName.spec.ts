@@ -9,6 +9,10 @@ describe("CreateTagsFromSlackName", () => {
     ["이상범 COO/[LEAD PO]/운영개선 TF", ["COO", "LEADPO", "운영개선TF"]],
     ["이정희[BE]운영개선TF", ["BE", "운영개선TF"]],
     ["가은 [교육상품기획]", ["교육상품기획"]],
+    [
+      "손현태[CTO/시터정산_데이터드리븐파트]",
+      ["CTO", "시터정산", "데이터드리븐파트"],
+    ],
   ])('이름 "%s" 은 %s 부서에 해당한다.', (input: string, output) => {
     const actual = createTagsFromSlackName(input);
     expect(actual).toEqual(output);

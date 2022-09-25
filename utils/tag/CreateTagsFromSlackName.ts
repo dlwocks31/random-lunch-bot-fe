@@ -1,5 +1,3 @@
-import { replace } from "lodash";
-
 export function createTagsFromSlackName(name: string): string[] {
   const pattern = /[ \[]+/;
   const matched = name.match(pattern);
@@ -7,7 +5,7 @@ export function createTagsFromSlackName(name: string): string[] {
   // take string after the matched pattern
   const str = name.substring(matched.index + matched[0].length);
   return str
-    .split(/[\[\]//]/)
+    .split(/[\[\]//_]/)
     .filter((s) => s !== "")
     .map((s) => s.trim().replaceAll(" ", "").toUpperCase());
 }
