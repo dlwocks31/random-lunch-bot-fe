@@ -48,7 +48,7 @@ export const MainGroupComopnent = ({
 
   const initializeFromNewUsers = useCallback((users: NormalUser[]) => {
     console.log("initializeFromNewUsers", users);
-    const newTagMap = new TagMap(generateTags(allUsers));
+    const newTagMap = new TagMap(generateTags(users));
     setTagMap(newTagMap);
     setMembers(
       MemberConfig.initializeFromUsers(users).shuffleByTagMap(newTagMap),
