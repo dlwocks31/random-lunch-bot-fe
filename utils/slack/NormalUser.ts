@@ -17,4 +17,17 @@ export class NormalUser {
   get id(): string {
     return this.slackUser?.id || this.name;
   }
+
+  get nameWithStatus(): string {
+    const emojiMap: { [key: string]: string } = {
+      ":palm_tree:": "🌴",
+      ":house_with_garden:": "🏡",
+    };
+    const statusEmoji = emojiMap[this.slackUser?.statusEmoji || ""];
+    if (statusEmoji) {
+      return `${this.name} ${statusEmoji}`;
+    } else {
+      return this.name;
+    }
+  }
 }

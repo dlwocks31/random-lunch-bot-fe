@@ -321,7 +321,7 @@ const MemberPartitionComponent = ({
         <div key={i} className="group-container">
           <div>{i + 1}조:</div>
           {group.map((user) => (
-            <Chip key={user.id} label={user.name} />
+            <Chip key={user.id} label={user.nameWithStatus} />
           ))}
         </div>
       ))}
