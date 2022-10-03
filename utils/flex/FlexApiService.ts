@@ -18,10 +18,10 @@ export class FlexApiService {
       }
       const result: string[] = [];
       for (const item of data) {
-        match(item.department)
-          .with({ idHash: P.select(P.string) }, (idHash) => result.push(idHash))
-          .run();
-
+        const idHash = match(item.department)
+          .with({ idHash: P.select(P.string) }, (idHash) => idHash)
+          .otherwise(() => undefined);
+        if (idHash) result.push(idHash);
         result.push(...parseDepartmentRecursive(item.children));
       }
       return result;
