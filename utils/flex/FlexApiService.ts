@@ -1,5 +1,6 @@
 import axios from "axios";
 import { DateTime } from "luxon";
+import { match, P } from "ts-pattern";
 import { FlexTimeSlotType } from "./FlexTimeSlotType";
 
 // Flex API 각각에 대해, 처리하기 쉽도록 얇게 래핑하는 것을 목표로 한다. 복잡한 비즈니스 로직 / 여러개의 API를 엮어서 처리해아 하는 로직은 여기서 수행하지 않는다.
@@ -17,13 +18,11 @@ export class FlexApiService {
       }
       const result: string[] = [];
       for (const item of data) {
-        const department = item.department;
-        if (typeof department?.idHash === "string") {
-          result.push(department.idHash);
-        }
-        if (Array.isArray(item.children)) {
-          result.push(...parseDepartmentRecursive(item.children));
-        }
+        match(item.department)
+          .with({ idHash: P.select(P.string) }, (idHash) => result.push(idHash))
+          .run();
+
+        result.push(...parseDepartmentRecursive(item.children));
       }
       return result;
     };
@@ -57,7 +56,7 @@ export class FlexApiService {
     var continuationToken: string | undefined = undefined;
     while (true) {
       var url =
-        "https://flex.team/action/v2/search/customers/bqzoep28a4/search-simple-users?size=50";
+        "https://flex.team/action/v2/search/customers/bqzoep28a4/search-users?size=50";
       if (continuationToken) {
         url += `&continuationToken=${encodeURIComponent(continuationToken)}`;
       }

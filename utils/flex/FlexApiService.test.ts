@@ -1,19 +1,28 @@
 import { FlexApiService } from "./FlexApiService";
 
-describe("FlexApiService", () => {
-  it.skip("api test", async () => {
-    const flexUid = "795e317a-7816-4f04-8ea7-616753c67204";
+const flexUid = "6c4b88a2-314f-4957-8fa1-3d584264ff4f";
+describe.skip("FlexApiService", () => {
+  it("모든 부서 id를 가져올 수 있다", async () => {
     const sut = new FlexApiService(flexUid);
     const ids = await sut.getDepartmentIds();
-    console.log(`ids: ${ids}`);
-    const result = await sut.searchSimpleUsers(ids);
-    console.log(`result: ${result.map((r) => [r.flexId])}`);
+    console.log(ids);
+    expect(ids).not.toHaveLength(0);
+  });
 
-    const users = result.filter((r) => ["구민정"].includes(r.name));
-    const secondResult = await sut.getWorkSchedules(
-      users.map((u) => u.flexId),
-      "2022-06-23",
+  it("부서 id를 통해 유저를 가져올 수 있다", async () => {
+    const sut = new FlexApiService(flexUid);
+    const users = await sut.searchSimpleUsers(["WkzWrOp50y"]); // 제품 그룹
+    console.log(users);
+    expect(users).not.toHaveLength(0);
+  });
+
+  it("유저의 id를 통해 특정 날짜의 근무시간을 가져올 수 있다", async () => {
+    const sut = new FlexApiService(flexUid);
+    const result = await sut.getWorkSchedules(
+      ["jkEgKaeEpw"], // 이재찬
+      "2022-10-04",
     );
-    console.log(`secondResult: ${JSON.stringify(secondResult)}`);
-  }, 10000);
+    console.log(JSON.stringify(result, null, 2));
+    expect(result).not.toHaveLength(0);
+  });
 });
