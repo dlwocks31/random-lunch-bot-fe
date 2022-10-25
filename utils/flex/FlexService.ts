@@ -1,5 +1,5 @@
 import { chunk } from "lodash";
-import { determineTimeslotOfTime } from "./DetermineTimeslotOfTime";
+import { determineUserTypeFromSlots } from "./DetermineUserTypeFromSlots";
 import { FlexApiService } from "./FlexApiService";
 import { FlexTimeSlot } from "./FlexTimeSlot";
 import { FlexTimeSlotType } from "./FlexTimeSlotType";
@@ -29,6 +29,7 @@ export class FlexService {
     const workSchedules: {
       flexId: string;
       timeslots: FlexTimeSlot[];
+      workStarts: { type: FlexTimeSlotType; start: string }[];
     }[] = [];
     for (const userChunk of chunk(flexUsers, 20)) {
       workSchedules.push(
@@ -44,13 +45,14 @@ export class FlexService {
     for (const schedule of workSchedules) {
       const flexUser = flexUsers.find((u) => u.flexId === schedule.flexId);
       if (!flexUser) continue;
-      const timeslotOfTarget = determineTimeslotOfTime(
+      const userType = determineUserTypeFromSlots(
         schedule.timeslots,
+        schedule.workStarts,
         time,
       );
-      if (timeslotOfTarget === FlexTimeSlotType.TIME_OFF) {
+      if (userType === FlexTimeSlotType.TIME_OFF) {
         timeOff.push(flexUser);
-      } else if (timeslotOfTarget === FlexTimeSlotType.REMOTE_WORK) {
+      } else if (userType === FlexTimeSlotType.REMOTE_WORK) {
         remoteWork.push(flexUser);
       } else {
         officeWork.push(flexUser);
