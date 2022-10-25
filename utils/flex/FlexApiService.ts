@@ -106,6 +106,7 @@ export class FlexApiService {
     {
       flexId: string;
       timeslots: { type: FlexTimeSlotType; start: string; end: string }[];
+      workStarts: { type: FlexTimeSlotType; start: string }[];
     }[]
   > {
     const timeStampFrom = Date.parse(date) - 9 * 60 * 60 * 1000; // 9 hours before
@@ -126,7 +127,7 @@ export class FlexApiService {
           workFormIdToTypeMap.set(form.customerWorkFormId, form.name);
         }
         const desiredDayRecords = item.days.find((a: any) => a.date === date);
-        const { workRecords, timeOffs } = desiredDayRecords;
+        const { workRecords, timeOffs, workStartRecords } = desiredDayRecords;
 
         const workRecordTimeSlots: {
           type: string;
@@ -175,9 +176,28 @@ export class FlexApiService {
               .toFormat("HH:mm"),
           };
         });
+
+        const workStarts: { type: FlexTimeSlotType; start: string }[] =
+          workStartRecords.map((start: any) => {
+            const rawType = workFormIdToTypeMap.get(start.customerWorkFormId);
+            const type =
+              rawType === "재택근무"
+                ? FlexTimeSlotType.REMOTE_WORK
+                : rawType === "근무"
+                ? FlexTimeSlotType.OFFICE_WORK
+                : FlexTimeSlotType.TIME_OFF; // ..?
+            return {
+              type,
+              start: DateTime.fromMillis(start.blockTimeFrom.timeStamp)
+                .setZone("Asia/Seoul")
+                .toFormat("HH:mm"),
+            };
+          });
+
         return {
           flexId: item.userIdHash,
-          timeslots: workRecordTimeSlots.concat(timeOffTimeSlots),
+          timeslots: [...workRecordTimeSlots, ...timeOffTimeSlots],
+          workStarts,
         };
       })
       .filter((a: any) => !!a);
