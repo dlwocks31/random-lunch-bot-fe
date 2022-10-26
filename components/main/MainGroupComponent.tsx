@@ -73,7 +73,7 @@ export const MainGroupComopnent = ({
             <Tab
               label={`재택 - 총 ${members.remote.userCount()}명 / ${members.remote.groupCount()}조`}
             />
-            <Tab label={`제와 - 총 ${members.excluded.length}명`} />
+            <Tab label={`제외 - 총 ${members.excluded.length}명`} />
           </Tabs>
         </Box>
         {tabIndex === 0 && (
