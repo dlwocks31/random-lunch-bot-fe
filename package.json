@@ -20,7 +20,7 @@
     "dayjs": "^1.11.2",
     "lodash": "^4.17.21",
     "luxon": "^2.4.0",
-    "next": "12.1.6",
+    "next": "^13.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-query": "^3.39.2",
@@ -37,7 +37,7 @@
     "@types/react-dom": "^18.0.5",
     "@types/uuid": "^8.3.4",
     "eslint": "8.15.0",
-    "eslint-config-next": "12.1.6",
+    "eslint-config-next": "^13.0.0",
     "jest": "^28.1.0",
     "ts-jest": "^28.0.2",
     "typescript": "4.6.4"
