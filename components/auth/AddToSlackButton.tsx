@@ -9,7 +9,7 @@ const SLACK_CALLBACK_HOST = process.env.NEXT_PUBLIC_SLACK_OAUTH_CALLBACK_HOST;
 export const SLACK_CALLBACK_BASE_QUERY = {
   scope: "channels:join,chat:write,users:read,users:read.email,channels:read",
   redirect_uri: `${SLACK_CALLBACK_HOST}/api/slack/callback`,
-  client_id: "724758129958.3531603815618",
+  client_id: process.env.NEXT_PUBLIC_SLACK_BOT_CLIENT_ID,
 };
 
 export function AddToSlackButton({

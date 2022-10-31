@@ -11,7 +11,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
   const oauthResponseData = (
     await axios.post(
       "https://slack.com/api/oauth.v2.access",
-      `client_id=724758129958.3531603815618&client_secret=${
+      `client_id=${process.env.NEXT_PUBLIC_SLACK_BOT_CLIENT_ID}&client_secret=${
         process.env.SLACK_BOT_CLIENT_SECRET
       }&code=${code}&redirect_uri=${encodeURIComponent(
         SLACK_CALLBACK_BASE_QUERY.redirect_uri,
