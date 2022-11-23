@@ -1,4 +1,4 @@
-import { cloneDeep, min, random, sum } from "lodash";
+import { cloneDeep, random, sum } from "lodash";
 
 export function optimizePartition<T>(
   initialParition: T[][],
@@ -13,7 +13,8 @@ export function optimizePartition<T>(
   let bestPartition = initialParition;
   let bestPenalty = getPartitionPenalty(bestPartition);
   const loggedOptimizeHistory = [[-1, bestPenalty]];
-  // simulated annealing technique
+  // trialCount 번 만큼 랜덤으로 셔플하고, penalty 가 낮아지면 그걸로 업데이트
+  // 현재 penalty가 높을수록 더 많이 셔플하도록 함 (temperature 변수에서 반영됨)
   for (let i = 0; i < trialCount; i++) {
     const temperature = bestPenalty + 1;
     const mutatedPartition = cloneDeep(bestPartition);

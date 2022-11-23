@@ -43,9 +43,10 @@ export const MainMessageComponent = ({
   const [isSending, setIsSending] = useState(false);
   const message = shouldIgnoreMember
     ? prefixMessage
-    : prefixMessage +
-      "\n" +
-      customBuildSlackMessage(members, shouldDisableMention);
+    : [
+        prefixMessage,
+        customBuildSlackMessage(members, shouldDisableMention),
+      ].join("\n");
   const sendSlackMessage = async () => {
     setIsSending(true);
     const slackService = await SlackServiceFactory();

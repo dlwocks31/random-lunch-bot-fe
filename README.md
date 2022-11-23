@@ -7,7 +7,12 @@
 
 현재는 https://random-lunch-bot-fe.vercel.app/ 을 통해 Vercel에 호스팅되어 있습니다. 아직 이 웹페이지를 통해서는 다른 조직에서의 사용이 불가능하며, 추후 확장될 계획입니다.
 
-# 필요한 서비스
+# 기술 스택
+
+- 프론트엔드 + 백엔드: Next.js
+- 데이터베이스: Supabase
+
+# 필요한 SaaS 서비스
 
 - Vercel: Vercel을 통해 배포되는 것을 가정합니다.
 - Supabase: 계정 인증과 계정별로 Slack Oauth Token을 저장하기 위해 Supabase를 사용합니다.
