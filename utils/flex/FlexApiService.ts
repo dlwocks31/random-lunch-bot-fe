@@ -1,7 +1,8 @@
 import axios from "axios";
-import { DateTime } from "luxon";
 import { match, P } from "ts-pattern";
+import { notEmpty } from "../ts/NotEmpty";
 import { FlexTimeSlotType } from "./FlexTimeSlotType";
+import { parseSingleWorkScheduleResult } from "./ParseSingleWorkScheduleResult";
 
 // Flex API 각각에 대해, 처리하기 쉽도록 얇게 래핑하는 것을 목표로 한다. 복잡한 비즈니스 로직 / 여러개의 API를 엮어서 처리해아 하는 로직은 여기서 수행하지 않는다.
 // 유닛 테스트 단계에서는 이 클래스를 mocking하여도 핵심 비즈니스 로직을 테스트할 수 있는 것을 목표로 한다.
@@ -111,7 +112,7 @@ export class FlexApiService {
   > {
     const timeStampFrom = Date.parse(date) - 9 * 60 * 60 * 1000; // 9 hours before
     const timeStampTo = timeStampFrom;
-    const response = await axios.get(
+    const response = await axios.get<{ workScheduleResults: unknown[] }>(
       `https://flex.team/api/v2/time-tracking/users/work-schedules?timeStampFrom=${timeStampFrom}&timeStampTo=${timeStampTo}&` +
         flexIds.map((id) => `userIdHashes=${id}`).join("&"),
       {
@@ -120,86 +121,10 @@ export class FlexApiService {
         },
       },
     );
-    return response.data.workScheduleResults
-      .map((item: any) => {
-        const workFormIdToTypeMap: Map<string, string> = new Map();
-        for (const form of item.workFormSummary.workFormResults) {
-          workFormIdToTypeMap.set(form.customerWorkFormId, form.name);
-        }
-        const desiredDayRecords = item.days.find((a: any) => a.date === date);
-        const { workRecords, timeOffs, workStartRecords } = desiredDayRecords;
+    const parsed = response.data.workScheduleResults.map((item: unknown) =>
+      parseSingleWorkScheduleResult(item, date),
+    );
 
-        const workRecordTimeSlots: {
-          type: string;
-          start: string;
-          end: string;
-        }[] = workRecords
-          .map((record: any) => {
-            const rawType = workFormIdToTypeMap.get(record.customerWorkFormId);
-            const type =
-              rawType === "재택근무"
-                ? FlexTimeSlotType.REMOTE_WORK
-                : rawType === "근무"
-                ? FlexTimeSlotType.OFFICE_WORK
-                : undefined;
-            if (!type) return null;
-            return {
-              type,
-              start: DateTime.fromMillis(record.blockTimeFrom.timeStamp)
-                .setZone("Asia/Seoul")
-                .toFormat("HH:mm"),
-              end: DateTime.fromMillis(record.blockTimeTo.timeStamp)
-                .setZone("Asia/Seoul")
-                .toFormat("HH:mm"),
-            };
-          })
-          .filter((a: any) => !!a);
-        const timeOffTimeSlots: {
-          type: string;
-          start: string;
-          end: string;
-        }[] = timeOffs.map((timeOff: any) => {
-          if (timeOff.timeOffRegisterUnit === "DAY") {
-            return {
-              type: FlexTimeSlotType.TIME_OFF,
-              start: "00:00",
-              end: "23:59",
-            };
-          }
-          return {
-            type: FlexTimeSlotType.TIME_OFF,
-            start: DateTime.fromMillis(timeOff.blockTimeFrom.timeStamp)
-              .setZone("Asia/Seoul")
-              .toFormat("HH:mm"),
-            end: DateTime.fromMillis(timeOff.blockTimeTo.timeStamp)
-              .setZone("Asia/Seoul")
-              .toFormat("HH:mm"),
-          };
-        });
-
-        const workStarts: { type: FlexTimeSlotType; start: string }[] =
-          workStartRecords.map((start: any) => {
-            const rawType = workFormIdToTypeMap.get(start.customerWorkFormId);
-            const type =
-              rawType === "재택근무"
-                ? FlexTimeSlotType.REMOTE_WORK
-                : rawType === "근무"
-                ? FlexTimeSlotType.OFFICE_WORK
-                : FlexTimeSlotType.TIME_OFF; // ..?
-            return {
-              type,
-              start: DateTime.fromMillis(start.blockTimeFrom.timeStamp)
-                .setZone("Asia/Seoul")
-                .toFormat("HH:mm"),
-            };
-          });
-
-        return {
-          flexId: item.userIdHash,
-          timeslots: [...workRecordTimeSlots, ...timeOffTimeSlots],
-          workStarts,
-        };
-      })
-      .filter((a: any) => !!a);
+    return parsed.filter(notEmpty);
   }
 }
