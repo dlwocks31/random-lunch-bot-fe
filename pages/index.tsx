@@ -65,7 +65,10 @@ export default function V2() {
         ) : (
           <MainMessageComponent
             onStepDecrement={() => setStep(0)}
-            slackConversations={conversations}
+            slackConfig={{
+              slackInstalled,
+              slackConversations: conversations,
+            }}
             members={members}
           />
         )}

@@ -26,27 +26,98 @@ const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:oran
 export const MainMessageComponent = ({
   onStepDecrement,
   members,
-  slackConversations,
+  slackConfig: { slackInstalled, slackConversations },
 }: {
   onStepDecrement: () => void;
   members: MemberConfig;
-  slackConversations: SlackConversation[];
+  slackConfig: {
+    slackInstalled: boolean;
+    slackConversations: SlackConversation[];
+  };
 }) => {
-  const [channel, setChannel] = useState<string>("");
   const [prefixMessage, setPrefixMessage] = useState<string>(
     DEFAULT_TEMPLATE_MESSAGE,
   );
   const [shouldIgnoreMember, setShouldIgnoreMember] = useState<boolean>(false);
-  const [shouldDisableMention, setShouldDisableMention] =
-    useState<boolean>(false);
-  const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false);
-  const [isSending, setIsSending] = useState(false);
+  const [shouldDisableMention, setShouldDisableMention] = useState<boolean>(
+    !slackInstalled,
+  );
   const message = shouldIgnoreMember
     ? prefixMessage
     : [
         prefixMessage,
         customBuildSlackMessage(members, shouldDisableMention),
       ].join("\n");
+
+  return (
+    <div>
+      <Button variant="contained" onClick={onStepDecrement}>
+        {"<"} 이전 단계로
+      </Button>
+      <h2>메세지 전송하기</h2>
+      <div>
+        <TextField
+          label="전송할 메세지"
+          disabled
+          multiline
+          fullWidth
+          rows={20}
+          value={message}
+        />
+      </div>
+
+      <ExtraSettingViewer settingName="기타 설정">
+        <TextField
+          label="메세지 템플릿"
+          multiline
+          fullWidth
+          value={prefixMessage}
+          onChange={(e) => setPrefixMessage(e.target.value)}
+        />
+        <FormGroup>
+          {slackInstalled && (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={shouldIgnoreMember}
+                  onChange={(e) => setShouldIgnoreMember(e.target.checked)}
+                />
+              }
+              label="조원을 생략하고 메세지를 전송합니다."
+            />
+          )}
+          {slackInstalled && (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={shouldDisableMention}
+                  onChange={(e) => setShouldDisableMention(e.target.checked)}
+                />
+              }
+              label="조원을 멘션하지 않습니다."
+            />
+          )}
+        </FormGroup>
+      </ExtraSettingViewer>
+      {slackInstalled && (
+        <MessageSender
+          message={message}
+          slackConversations={slackConversations}
+        />
+      )}
+    </div>
+  );
+};
+const MessageSender = ({
+  message,
+  slackConversations,
+}: {
+  message: string;
+  slackConversations: SlackConversation[];
+}) => {
+  const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false);
+  const [channel, setChannel] = useState<string>("");
+  const [isSending, setIsSending] = useState(false);
   const sendSlackMessage = async () => {
     setIsSending(true);
     const slackService = await SlackServiceFactory();
@@ -64,71 +135,37 @@ export const MainMessageComponent = ({
     return "";
   };
   return (
-    <div>
-      <Button variant="contained" onClick={onStepDecrement}>
-        {"<"} 이전 단계로
-      </Button>
-      <h2>메세지 전송하기</h2>
-      <div>
-        <TextField
-          label="전송할 메세지"
-          disabled
-          multiline
-          fullWidth
-          rows={20}
-          value={message}
-        />
-      </div>
-      <div className="channel-row">
-        <div>전송할 채널:</div>
-        <Select
-          placeholder={`메세지를 전송할 채널을 선택해 주세요 (총 ${slackConversations.length}개)`}
-          options={slackConversations.map(({ id, name }) => ({
-            value: id,
-            label: name,
-          }))}
-          onChange={(e) => setChannel(e?.value || "")}
-        />{" "}
-      </div>
-      <ExtraSettingViewer settingName="메세지 템플릿 설정">
-        <TextField
-          label="메세지 템플릿"
-          multiline
-          fullWidth
-          value={prefixMessage}
-          onChange={(e) => setPrefixMessage(e.target.value)}
-        />
-      </ExtraSettingViewer>
-      <ExtraSettingViewer settingName="기타 설정">
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={shouldIgnoreMember}
-                onChange={(e) => setShouldIgnoreMember(e.target.checked)}
-              />
-            }
-            label="조원을 생략하고 메세지를 전송합니다."
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={shouldDisableMention}
-                onChange={(e) => setShouldDisableMention(e.target.checked)}
-              />
-            }
-            label="조원을 멘션하지 않습니다."
-          />
-        </FormGroup>
-      </ExtraSettingViewer>
-      <Button
-        onClick={() => setIsConfirmDialogOpened(true)}
-        variant="contained"
-        fullWidth
-        disabled={!channel}
+    <>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "1rem",
+        }}
       >
-        {channel ? "메세지 전송하기" : "메세지를 전송할 채널을 선택해 주세요."}
-      </Button>
+        <div>
+          <div>전송할 채널:</div>
+          <Select
+            placeholder={`메세지를 전송할 채널을 선택해 주세요 (총 ${slackConversations.length}개)`}
+            options={slackConversations.map(({ id, name }) => ({
+              value: id,
+              label: name,
+            }))}
+            onChange={(e) => setChannel(e?.value || "")}
+          />{" "}
+        </div>
+        <Button
+          onClick={() => setIsConfirmDialogOpened(true)}
+          variant="contained"
+          fullWidth
+          disabled={!channel}
+        >
+          {channel
+            ? "메세지 전송하기"
+            : "메세지를 전송할 채널을 선택해 주세요."}
+        </Button>
+      </div>
+
       <Dialog
         open={isConfirmDialogOpened}
         onClose={() => setIsConfirmDialogOpened(false)}
@@ -160,17 +197,7 @@ export const MainMessageComponent = ({
           </DialogActions>
         </DialogContent>
       </Dialog>
-      <style jsx>
-        {`
-          .channel-row {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin: 5px 0;
-          }
-        `}
-      </style>
-    </div>
+    </>
   );
 };
 
