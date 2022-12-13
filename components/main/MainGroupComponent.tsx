@@ -44,6 +44,7 @@ export const MainGroupComopnent = ({
   tagMap: TagMap;
   setTagMap: (tagMap: TagMap) => void;
 }) => {
+  const slackInstalled = conversations.length > 0;
   const allUsers = members.allUsers();
   const [tabIndex, setTabIndex] = useState(0);
 
@@ -89,6 +90,7 @@ export const MainGroupComopnent = ({
               setMembers(members.setOfficePartition(partition))
             }
             onShuffle={() => setMembers(members.shuffleByTagMap(tagMap))}
+            slackInstalled={slackInstalled}
           />
         )}
         {tabIndex === 1 && (
@@ -103,6 +105,7 @@ export const MainGroupComopnent = ({
               setMembers(members.setRemotePartition(partition))
             }
             onShuffle={() => setMembers(members.shuffleByTagMap(tagMap))}
+            slackInstalled={slackInstalled}
           />
         )}
         {tabIndex === 2 && (
@@ -319,6 +322,7 @@ const MemberPartitionComponent = ({
   onAddGroupUser,
   setPartition,
   onShuffle,
+  slackInstalled,
 }: {
   partition: MemberPartition;
   allUsers: NormalUser[];
@@ -326,6 +330,7 @@ const MemberPartitionComponent = ({
   onAddGroupUser: (user: NormalUser) => void;
   setPartition: (partition: MemberPartition) => void;
   onShuffle: () => void;
+  slackInstalled: boolean;
 }) => (
   <div className="root">
     <div className="row">
@@ -348,14 +353,22 @@ const MemberPartitionComponent = ({
     </div>
     <div className="row">
       <div>{groupTypeName} 인원 추가:</div>
-      <CreatableUserGroupTypeSelector
-        allUsers={allUsers}
-        includedUsers={partition.users()}
-        addGroupUser={onAddGroupUser}
-        createGroupUser={(name: string) =>
-          setPartition(partition.add(new NormalUser(name)))
-        }
-      />
+      {slackInstalled ? (
+        <CustomUserGroupTypeSelector
+          allUsers={allUsers}
+          includedUsers={partition.users()}
+          addGroupUser={onAddGroupUser}
+        />
+      ) : (
+        <CreatableUserGroupTypeSelector
+          allUsers={allUsers}
+          includedUsers={partition.users()}
+          addGroupUser={onAddGroupUser}
+          createGroupUser={(name: string) =>
+            setPartition(partition.add(new NormalUser(name)))
+          }
+        />
+      )}
     </div>
     <div>
       {partition.groups.map((group, i) => (
