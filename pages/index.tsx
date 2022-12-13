@@ -53,25 +53,21 @@ export default function V2() {
     <>
       <SupabaseSlackAuthBar setSlackInstalled={setSlackInstalled} />
       <div className="content-container">
-        {slackInstalled ? (
-          step === 0 ? (
-            <MainGroupComopnent
-              onStepIncrement={() => setStep(1)}
-              members={members}
-              setMembers={setMembers}
-              conversations={conversations}
-              tagMap={tagMap}
-              setTagMap={setTagMap}
-            />
-          ) : (
-            <MainMessageComponent
-              onStepDecrement={() => setStep(0)}
-              slackConversations={conversations}
-              members={members}
-            />
-          )
+        {step === 0 ? (
+          <MainGroupComopnent
+            onStepIncrement={() => setStep(1)}
+            members={members}
+            setMembers={setMembers}
+            conversations={conversations}
+            tagMap={tagMap}
+            setTagMap={setTagMap}
+          />
         ) : (
-          <div>슬랙 설치가 필요합니다.</div>
+          <MainMessageComponent
+            onStepDecrement={() => setStep(0)}
+            slackConversations={conversations}
+            members={members}
+          />
         )}
       </div>
       <style jsx>{`

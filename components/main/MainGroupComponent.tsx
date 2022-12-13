@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { useCallback, useState } from "react";
 import Select from "react-select";
+import Creatable from "react-select/creatable";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
@@ -274,6 +275,43 @@ const CustomUserGroupTypeSelector = ({
   );
 };
 
+const CreatableUserGroupTypeSelector = ({
+  allUsers,
+  includedUsers,
+  addGroupUser,
+  createGroupUser,
+}: {
+  allUsers: NormalUser[];
+  includedUsers: NormalUser[];
+  addGroupUser: (user: NormalUser) => void;
+  createGroupUser: (name: string) => void;
+}) => {
+  const unselectedUsers = allUsers.filter(
+    (u) => !includedUsers.some((su) => su.id === u.id),
+  );
+  return (
+    <div>
+      <Creatable
+        placeholder="유저 이름을 검색하세요"
+        options={unselectedUsers.map(({ id, name }) => ({
+          value: id,
+          label: name,
+        }))}
+        value={null}
+        onChange={(e) => {
+          if (e) {
+            const user = allUsers.find((u) => u.id === e.value);
+            if (user) {
+              addGroupUser(user);
+            }
+          }
+        }}
+        onCreateOption={createGroupUser}
+      />
+    </div>
+  );
+};
+
 const MemberPartitionComponent = ({
   partition,
   allUsers,
@@ -310,10 +348,13 @@ const MemberPartitionComponent = ({
     </div>
     <div className="row">
       <div>{groupTypeName} 인원 추가:</div>
-      <CustomUserGroupTypeSelector
+      <CreatableUserGroupTypeSelector
         allUsers={allUsers}
         includedUsers={partition.users()}
         addGroupUser={onAddGroupUser}
+        createGroupUser={(name: string) =>
+          setPartition(partition.add(new NormalUser(name)))
+        }
       />
     </div>
     <div>
