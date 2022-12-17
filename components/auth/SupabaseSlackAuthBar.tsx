@@ -57,7 +57,7 @@ export function SupabaseSlackAuthBar({
   return (
     <AppBar position="static">
       <Toolbar>
-        <Typography sx={{ flexGrow: 1 }}>My Lunch Bot</Typography>
+        <Typography sx={{ flexGrow: 1 }}>두런두런치 봇</Typography>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           {isAnonUser ? (
             <>
