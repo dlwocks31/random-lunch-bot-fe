@@ -5,10 +5,8 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 
 export function FlexUserFetcher({
-  hasUser,
   moveMembersByEmail,
 }: {
-  hasUser: boolean; // TODO: refactor: 도대체 component 노출 여부를 왜 여기서 제어..
   moveMembersByEmail: (
     toExcludedEmails: string[],
     toRemoteEmails: string[],
@@ -51,7 +49,7 @@ export function FlexUserFetcher({
     }
   }, [data, isLoading]);
 
-  return hasUser ? (
+  return (
     <div className="root">
       <div className="form">
         <TextField
@@ -108,5 +106,5 @@ export function FlexUserFetcher({
         }
       `}</style>
     </div>
-  ) : null;
+  );
 }

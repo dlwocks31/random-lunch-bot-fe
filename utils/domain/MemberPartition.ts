@@ -22,6 +22,21 @@ export class MemberPartition {
     return this.groups.reduce((acc, group) => acc.concat(group), []);
   }
 
+  groupSizeStat(): { size: number; numberOfGroups: number }[] {
+    const stat = this.groups.reduce((acc, group) => {
+      const size = group.length;
+      if (acc[size] === undefined) {
+        acc[size] = 1;
+      } else {
+        acc[size] += 1;
+      }
+      return acc;
+    }, {} as { [size: number]: number });
+    return Object.keys(stat)
+      .map((size) => ({ size: +size, numberOfGroups: stat[+size] }))
+      .sort((a, b) => a.size - b.size);
+  }
+
   add(user: NormalUser): MemberPartition {
     const flatUsers = this.users();
     if (flatUsers.includes(user)) {

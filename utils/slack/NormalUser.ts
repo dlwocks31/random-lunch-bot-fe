@@ -25,7 +25,7 @@ export class NormalUser {
     };
     const statusEmoji = emojiMap[this.slackUser?.statusEmoji || ""];
     if (statusEmoji) {
-      return `${this.name} ${statusEmoji}`;
+      return `${statusEmoji} ${this.name}`;
     } else {
       return this.name;
     }

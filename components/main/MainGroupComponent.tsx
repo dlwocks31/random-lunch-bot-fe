@@ -1,24 +1,16 @@
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
 import {
-  Box,
   Button,
   Chip,
   FormControl,
   FormControlLabel,
   FormLabel,
-  IconButton,
   Radio,
   RadioGroup,
-  Tab,
-  Tabs,
   TextField,
 } from "@mui/material";
 import { useCallback, useState } from "react";
 import Select from "react-select";
-import Creatable from "react-select/creatable";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
-import { MemberPartition } from "../../utils/domain/MemberPartition";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
 import { TagMap } from "../../utils/domain/TagMap";
 import { NormalUser } from "../../utils/slack/NormalUser";
@@ -26,8 +18,8 @@ import { SlackUser } from "../../utils/slack/slack-user";
 import { SlackServiceFactory } from "../../utils/slack/SlackServiceFactory";
 import { generateTags } from "../../utils/tag/GenerateTags";
 import { FlexUserFetcher } from "../fetch/FlexUserFetcher";
-import { EachGroupSizeEditor } from "../group/EachGroupSizeEditor";
 import { ExtraSettingViewer } from "../util/ExtraSettingViewer";
+import { RootComponent } from "./RootComponent";
 
 export const MainGroupComopnent = ({
   onStepIncrement,
@@ -60,65 +52,11 @@ export const MainGroupComopnent = ({
     <div>
       <h2>조원 설정</h2>
       <hr />
-      <div>
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs
-            value={tabIndex}
-            onChange={(event: React.SyntheticEvent, newValue: number) => {
-              setTabIndex(newValue);
-            }}
-            centered
-          >
-            <Tab
-              label={`사무실 - 총 ${members.office.userCount()}명 / ${members.office.groupCount()}조`}
-            />
-            <Tab
-              label={`재택 - 총 ${members.remote.userCount()}명 / ${members.remote.groupCount()}조`}
-            />
-            <Tab label={`제외 - 총 ${members.excluded.length}명`} />
-          </Tabs>
-        </Box>
-        {tabIndex === 0 && (
-          <MemberPartitionComponent
-            allUsers={allUsers}
-            partition={members.office}
-            groupTypeName="사무실"
-            onAddGroupUser={(user) =>
-              setMembers(members.moveMemberToOffice(user))
-            }
-            setPartition={(partition) =>
-              setMembers(members.setOfficePartition(partition))
-            }
-            onShuffle={() => setMembers(members.shuffleByTagMap(tagMap))}
-            slackInstalled={slackInstalled}
-          />
-        )}
-        {tabIndex === 1 && (
-          <MemberPartitionComponent
-            allUsers={allUsers}
-            partition={members.remote}
-            groupTypeName="재택"
-            onAddGroupUser={(user) =>
-              setMembers(members.moveMemberToRemote(user))
-            }
-            setPartition={(partition) =>
-              setMembers(members.setRemotePartition(partition))
-            }
-            onShuffle={() => setMembers(members.shuffleByTagMap(tagMap))}
-            slackInstalled={slackInstalled}
-          />
-        )}
-        {tabIndex === 2 && (
-          <UsersListComponent
-            users={members.excluded}
-            groupTypeName="제외"
-            allUsers={allUsers}
-            onAddGroupUser={(user) =>
-              setMembers(members.moveMemberToExcluded(user))
-            }
-          />
-        )}
-      </div>
+      <RootComponent
+        members={members}
+        setMembers={setMembers}
+        tagMap={tagMap}
+      />
       <h2>추가 설정</h2>
       <hr />
       <ExtraSettingViewer settingName="유저 가져오는 채널">
@@ -130,7 +68,6 @@ export const MainGroupComopnent = ({
 
       <ExtraSettingViewer settingName="flex 연동 설정">
         <FlexUserFetcher
-          hasUser
           moveMembersByEmail={(
             toExcludedEmails: string[],
             toRemoteEmails: string[],
@@ -205,232 +142,6 @@ const usersToNode = (
     ))
     .reduce((prev, curr) => [prev, " ", curr]);
 };
-
-const CustomGroupCountEditor = ({
-  groupCount,
-  setGroupCount,
-}: {
-  groupCount: number;
-  setGroupCount: (groupCount: number) => void;
-}) => {
-  return (
-    <div className="root">
-      <div className="edit-root">
-        <IconButton onClick={() => setGroupCount(groupCount - 1)} size="small">
-          <RemoveIcon />
-        </IconButton>
-        <div>{groupCount}</div>
-        <IconButton onClick={() => setGroupCount(groupCount + 1)} size="small">
-          <AddIcon />
-        </IconButton>
-      </div>
-
-      <style jsx>{`
-        .edit-root {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          border: 1px solid #1976d2;
-          border-radius: 5px;
-        }
-        .root {
-          display: flex;
-          gap: 10px;
-          align-items: center;
-          margin: 5px 0;
-        }
-      `}</style>
-    </div>
-  );
-};
-
-const CustomUserGroupTypeSelector = ({
-  allUsers,
-  includedUsers,
-  addGroupUser,
-}: {
-  allUsers: NormalUser[];
-  includedUsers: NormalUser[];
-  addGroupUser: (user: NormalUser) => void;
-}) => {
-  const unselectedUsers = allUsers.filter(
-    (u) => !includedUsers.some((su) => su.id === u.id),
-  );
-  return (
-    <div>
-      <Select
-        placeholder="유저 이름을 검색하세요"
-        options={unselectedUsers.map(({ id, name }) => ({
-          value: id,
-          label: name,
-        }))}
-        value={null}
-        onChange={(e) => {
-          if (e) {
-            const user = allUsers.find((u) => u.id === e.value);
-            if (user) {
-              addGroupUser(user);
-            }
-          }
-        }}
-      />
-    </div>
-  );
-};
-
-const CreatableUserGroupTypeSelector = ({
-  allUsers,
-  includedUsers,
-  addGroupUser,
-  createGroupUser,
-}: {
-  allUsers: NormalUser[];
-  includedUsers: NormalUser[];
-  addGroupUser: (user: NormalUser) => void;
-  createGroupUser: (name: string) => void;
-}) => {
-  const unselectedUsers = allUsers.filter(
-    (u) => !includedUsers.some((su) => su.id === u.id),
-  );
-  return (
-    <div>
-      <Creatable
-        placeholder="유저 이름을 검색하세요"
-        options={unselectedUsers.map(({ id, name }) => ({
-          value: id,
-          label: name,
-        }))}
-        value={null}
-        onChange={(e) => {
-          if (e) {
-            const user = allUsers.find((u) => u.id === e.value);
-            if (user) {
-              addGroupUser(user);
-            }
-          }
-        }}
-        onCreateOption={createGroupUser}
-      />
-    </div>
-  );
-};
-
-const MemberPartitionComponent = ({
-  partition,
-  allUsers,
-  groupTypeName,
-  onAddGroupUser,
-  setPartition,
-  onShuffle,
-  slackInstalled,
-}: {
-  partition: MemberPartition;
-  allUsers: NormalUser[];
-  groupTypeName: string;
-  onAddGroupUser: (user: NormalUser) => void;
-  setPartition: (partition: MemberPartition) => void;
-  onShuffle: () => void;
-  slackInstalled: boolean;
-}) => (
-  <div className="root">
-    <div className="row">
-      <div> 조별 최소 인원 수: </div>
-      <EachGroupSizeEditor
-        eachGroupSize={partition.defaultGroupSize}
-        setEachGroupSize={(eachGroupSize) =>
-          setPartition(partition.changeDefaultGroupSize(eachGroupSize))
-        }
-      />
-    </div>
-    <div className="row">
-      <div>조 개수:</div>
-      <CustomGroupCountEditor
-        groupCount={partition.groupCount()}
-        setGroupCount={(groupCount) =>
-          setPartition(partition.changeGroupCount(groupCount))
-        }
-      />
-    </div>
-    <div className="row">
-      <div>{groupTypeName} 인원 추가:</div>
-      {slackInstalled ? (
-        <CustomUserGroupTypeSelector
-          allUsers={allUsers}
-          includedUsers={partition.users()}
-          addGroupUser={onAddGroupUser}
-        />
-      ) : (
-        <CreatableUserGroupTypeSelector
-          allUsers={allUsers}
-          includedUsers={partition.users()}
-          addGroupUser={onAddGroupUser}
-          createGroupUser={(name: string) =>
-            setPartition(partition.add(new NormalUser(name)))
-          }
-        />
-      )}
-    </div>
-    <div>
-      {partition.groups.map((group, i) => (
-        <div key={i} className="group-container">
-          <div>{i + 1}조:</div>
-          {group.map((user) => (
-            <Chip key={user.id} label={user.nameWithStatus} />
-          ))}
-        </div>
-      ))}
-    </div>
-    <Button variant="outlined" fullWidth onClick={onShuffle}>
-      재추첨
-    </Button>
-    <style jsx>{`
-      .group-container {
-        display: flex;
-        gap: 3px;
-        align-items: center;
-        padding: 2px 0;
-      }
-      .row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .root {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-      }
-    `}</style>
-  </div>
-);
-
-const UsersListComponent = ({
-  users,
-  allUsers,
-  groupTypeName,
-  onAddGroupUser,
-}: {
-  users: NormalUser[];
-  allUsers: NormalUser[];
-  groupTypeName: string;
-  onAddGroupUser: (user: NormalUser) => void;
-}) => (
-  <div>
-    <div>
-      {groupTypeName} 인원 추가:{" "}
-      <CustomUserGroupTypeSelector
-        allUsers={allUsers}
-        includedUsers={users}
-        addGroupUser={onAddGroupUser}
-      />
-    </div>
-    <div>
-      {users.map((user) => (
-        <Chip key={user.id} label={user.name} />
-      ))}
-    </div>
-  </div>
-);
 
 const CustomTagEditor = ({
   users,

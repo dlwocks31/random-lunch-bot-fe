@@ -95,6 +95,38 @@ export class MemberConfig {
     ).moveMembersToRemoteByEmail(toRemoteEmails);
   }
 
+  setOfficeGroupCount(count: number): MemberConfig {
+    return new MemberConfig(
+      this.office.changeGroupCount(count),
+      this.remote,
+      this.excluded,
+    );
+  }
+
+  setRemoteGroupCount(count: number): MemberConfig {
+    return new MemberConfig(
+      this.office,
+      this.remote.changeGroupCount(count),
+      this.excluded,
+    );
+  }
+
+  addOfficeUser(user: NormalUser): MemberConfig {
+    return new MemberConfig(this.office.add(user), this.remote, this.excluded);
+  }
+
+  addRemoteUser(user: NormalUser): MemberConfig {
+    return new MemberConfig(this.office, this.remote.add(user), this.excluded);
+  }
+
+  addExcludedUser(user: NormalUser): MemberConfig {
+    return new MemberConfig(
+      this.office,
+      this.remote,
+      this.excluded.concat(user),
+    );
+  }
+
   allUsers(): NormalUser[] {
     return this.office
       .users()
