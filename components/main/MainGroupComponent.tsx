@@ -10,17 +10,16 @@ import { FlexUserFetcher } from "../extra-settings/FlexUserFetcher";
 import { SlackUserFetcher } from "../extra-settings/SlackUserFetcher";
 import { TagEditor } from "../extra-settings/TagEditor";
 import { BorderedBox } from "../util/BorderedBox";
+import { MainMessageComponent } from "./MainMessageComponent";
 import { RootComponent } from "./RootComponent";
 
 export const MainGroupComopnent = ({
-  onStepIncrement,
   members,
   setMembers,
   conversations,
   tagMap,
   setTagMap,
 }: {
-  onStepIncrement: () => void;
   members: MemberConfig;
   setMembers: (members: MemberConfig) => void;
   conversations: SlackConversation[];
@@ -128,16 +127,15 @@ export const MainGroupComopnent = ({
         </Collapse>
       </div>
 
-      <Button variant="contained" onClick={onStepIncrement} fullWidth>
-        다음 단계로 {">"}
-      </Button>
-      <style jsx>
-        {`
-          .extra-container {
-            display: flex;
-          }
-        `}
-      </style>
+      <h2>메세지 전송하기</h2>
+      <hr />
+      <MainMessageComponent
+        members={members}
+        slackConfig={{
+          slackInstalled: conversations.length > 0,
+          slackConversations: conversations,
+        }}
+      />
     </div>
   );
 };

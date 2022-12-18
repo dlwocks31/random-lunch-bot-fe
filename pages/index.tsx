@@ -2,7 +2,6 @@ import { sortBy } from "lodash";
 import { useEffect, useState } from "react";
 import { SupabaseSlackAuthBar } from "../components/auth/SupabaseSlackAuthBar";
 import { MainGroupComopnent } from "../components/main/MainGroupComponent";
-import { MainMessageComponent } from "../components/main/MainMessageComponent";
 import { MemberConfig } from "../utils/domain/MemberConfig";
 import { MemberPartition } from "../utils/domain/MemberPartition";
 import { SlackConversation } from "../utils/domain/SlackConversation";
@@ -12,8 +11,6 @@ import { SlackServiceFactory } from "../utils/slack/SlackServiceFactory";
 import { generateTags } from "../utils/tag/GenerateTags";
 const DEFAULT_EACH_GROUP_USER = 4;
 export default function V2() {
-  const [step, setStep] = useState(0);
-
   const [slackInstalled, setSlackInstalled] = useState(false);
   const [conversations, setConversations] = useState<SlackConversation[]>([]);
   const [members, setMembers] = useState<MemberConfig>(
@@ -53,25 +50,13 @@ export default function V2() {
     <>
       <SupabaseSlackAuthBar setSlackInstalled={setSlackInstalled} />
       <div className="content-container">
-        {step === 0 ? (
-          <MainGroupComopnent
-            onStepIncrement={() => setStep(1)}
-            members={members}
-            setMembers={setMembers}
-            conversations={conversations}
-            tagMap={tagMap}
-            setTagMap={setTagMap}
-          />
-        ) : (
-          <MainMessageComponent
-            onStepDecrement={() => setStep(0)}
-            slackConfig={{
-              slackInstalled,
-              slackConversations: conversations,
-            }}
-            members={members}
-          />
-        )}
+        <MainGroupComopnent
+          members={members}
+          setMembers={setMembers}
+          conversations={conversations}
+          tagMap={tagMap}
+          setTagMap={setTagMap}
+        />
       </div>
       <style jsx>{`
         .content-container {

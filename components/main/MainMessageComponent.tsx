@@ -24,11 +24,9 @@ const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:oran
 `;
 
 export const MainMessageComponent = ({
-  onStepDecrement,
   members,
   slackConfig: { slackInstalled, slackConversations },
 }: {
-  onStepDecrement: () => void;
   members: MemberConfig;
   slackConfig: {
     slackInstalled: boolean;
@@ -51,10 +49,6 @@ export const MainMessageComponent = ({
 
   return (
     <div>
-      <Button variant="contained" onClick={onStepDecrement}>
-        {"<"} 이전 단계로
-      </Button>
-      <h2>메세지 전송하기</h2>
       <div>
         <TextField
           label="전송할 메세지"
