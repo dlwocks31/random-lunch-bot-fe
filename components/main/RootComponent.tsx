@@ -36,6 +36,10 @@ export const RootComponent = ({
       : members.excluded;
   const allUsers = members.allUsers();
 
+  const onShuffle = () => {
+    setMembers(members.shuffleByTagMap(tagMap));
+  };
+
   const currentDisplayComponent =
     currentPartitionLabel === "office" ? (
       <DisplayMemberPartitionComponent
@@ -43,6 +47,7 @@ export const RootComponent = ({
         setGroupCount={(count) =>
           setMembers(members.setOfficeGroupCount(count))
         }
+        onShuffle={onShuffle}
       />
     ) : currentPartitionLabel === "remote" ? (
       <DisplayMemberPartitionComponent
@@ -50,6 +55,7 @@ export const RootComponent = ({
         setGroupCount={(count) =>
           setMembers(members.setRemoteGroupCount(count))
         }
+        onShuffle={onShuffle}
       />
     ) : (
       <DisplayExcludedComponent users={members.excluded} />
@@ -126,13 +132,6 @@ export const RootComponent = ({
           />
         </div>
         <BorderedBox>{currentDisplayComponent}</BorderedBox>
-        <Button
-          variant="outlined"
-          fullWidth
-          onClick={() => setMembers(members.shuffleByTagMap(tagMap))}
-        >
-          재추첨
-        </Button>
       </Box>
     </div>
   );
@@ -141,9 +140,11 @@ export const RootComponent = ({
 const DisplayMemberPartitionComponent = ({
   memberPartition,
   setGroupCount,
+  onShuffle,
 }: {
   memberPartition: MemberPartition;
   setGroupCount: (count: number) => void;
+  onShuffle: () => void;
 }) => {
   if (memberPartition.userCount() === 0) {
     return <div>유저가 없습니다.</div>;
@@ -189,6 +190,9 @@ const DisplayMemberPartitionComponent = ({
         {groupSizeStat.length !== 0 && (
           <Alert severity="info">{groupSizeStatLabel}를 만듭니다.</Alert>
         )}
+        <Button variant="outlined" onClick={onShuffle}>
+          재추첨
+        </Button>
       </div>
     </Box>
   );
