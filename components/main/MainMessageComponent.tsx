@@ -52,7 +52,10 @@ export const MainMessageComponent = ({
       <div>
         <TextField
           label="전송할 메세지"
-          disabled
+          focused={false}
+          InputProps={{
+            readOnly: true,
+          }}
           multiline
           fullWidth
           rows={20}
