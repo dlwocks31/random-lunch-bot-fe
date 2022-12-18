@@ -13,6 +13,7 @@ import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
 import { TagMap } from "../../utils/domain/TagMap";
 import { NormalUser } from "../../utils/slack/NormalUser";
+import { BorderedBox } from "../util/BorderedBox";
 import { StepInput } from "../util/StepInput";
 
 type PartitionType = "office" | "remote" | "excluded";
@@ -124,16 +125,7 @@ export const RootComponent = ({
             }}
           />
         </div>
-        <Box
-          sx={{
-            border: 1,
-            borderColor: "rgba(0,0,0,0.12)",
-            borderRadius: 1,
-            padding: "10px",
-          }}
-        >
-          {currentDisplayComponent}
-        </Box>
+        <BorderedBox>{currentDisplayComponent}</BorderedBox>
         <Button
           variant="outlined"
           fullWidth
