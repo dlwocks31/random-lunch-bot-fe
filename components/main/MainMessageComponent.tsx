@@ -36,16 +36,13 @@ export const MainMessageComponent = ({
   const [prefixMessage, setPrefixMessage] = useState<string>(
     DEFAULT_TEMPLATE_MESSAGE,
   );
-  const [shouldIgnoreMember, setShouldIgnoreMember] = useState<boolean>(false);
   const [shouldDisableMention, setShouldDisableMention] = useState<boolean>(
     !slackInstalled,
   );
-  const message = shouldIgnoreMember
-    ? prefixMessage
-    : [
-        prefixMessage,
-        customBuildSlackMessage(members, shouldDisableMention),
-      ].join("\n");
+  const message = [
+    prefixMessage,
+    customBuildSlackMessage(members, shouldDisableMention),
+  ].join("\n");
 
   return (
     <div>
@@ -72,17 +69,6 @@ export const MainMessageComponent = ({
           onChange={(e) => setPrefixMessage(e.target.value)}
         />
         <FormGroup>
-          {slackInstalled && (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={shouldIgnoreMember}
-                  onChange={(e) => setShouldIgnoreMember(e.target.checked)}
-                />
-              }
-              label="조원을 생략하고 메세지를 전송합니다."
-            />
-          )}
           {slackInstalled && (
             <FormControlLabel
               control={
