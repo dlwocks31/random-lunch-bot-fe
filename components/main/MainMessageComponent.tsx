@@ -10,7 +10,7 @@ import {
   FormGroup,
   TextField,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
@@ -43,6 +43,12 @@ export const MainMessageComponent = ({
     prefixMessage,
     customBuildSlackMessage(members, shouldDisableMention),
   ].join("\n");
+
+  useEffect(() => {
+    if (slackInstalled) {
+      setShouldDisableMention(false);
+    }
+  }, [slackInstalled]);
 
   return (
     <div>
