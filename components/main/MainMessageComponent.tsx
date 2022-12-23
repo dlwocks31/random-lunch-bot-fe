@@ -54,26 +54,26 @@ export const MainMessageComponent = ({
     <div>
       <div>
         <TextField
-          label="전송할 메세지"
-          focused={false}
-          InputProps={{
-            readOnly: true,
-          }}
-          multiline
-          fullWidth
-          rows={20}
-          value={message}
-        />
-      </div>
-
-      <ExtraSettingViewer settingName="기타 설정">
-        <TextField
           label="메세지 템플릿"
           multiline
           fullWidth
           value={prefixMessage}
           onChange={(e) => setPrefixMessage(e.target.value)}
         />
+        <TextField
+          focused={false}
+          disabled
+          multiline
+          fullWidth
+          rows={5.5}
+          sx={{
+            overflowY: "scroll",
+          }}
+          value={customBuildSlackMessage(members, shouldDisableMention)}
+        />
+      </div>
+
+      <ExtraSettingViewer settingName="기타 설정">
         <FormGroup>
           {slackInstalled && (
             <FormControlLabel
@@ -132,27 +132,31 @@ const MessageSender = ({
           gap: "1rem",
         }}
       >
-        <div>
-          <div>전송할 채널:</div>
-          <Select
-            placeholder={`메세지를 전송할 채널을 선택해 주세요 (총 ${slackConversations.length}개)`}
-            options={slackConversations.map(({ id, name }) => ({
-              value: id,
-              label: name,
-            }))}
-            onChange={(e) => setChannel(e?.value || "")}
-          />{" "}
+        <div style={{ display: "flex", gap: "10px", flexDirection: "column" }}>
+          <div style={{ flex: "1 0 0" }}>
+            <Select
+              placeholder={`메세지를 전송할 채널을 선택해 주세요 (총 ${slackConversations.length}개)`}
+              options={slackConversations.map(({ id, name }) => ({
+                value: id,
+                label: name,
+              }))}
+              onChange={(e) => setChannel(e?.value || "")}
+              menuPlacement="auto"
+            />{" "}
+          </div>
+
+          {channel && (
+            <div style={{ flex: "1 0 0" }}>
+              <Button
+                onClick={() => setIsConfirmDialogOpened(true)}
+                variant="contained"
+                fullWidth
+              >
+                위 채널로 메세지 전송
+              </Button>
+            </div>
+          )}
         </div>
-        <Button
-          onClick={() => setIsConfirmDialogOpened(true)}
-          variant="contained"
-          fullWidth
-          disabled={!channel}
-        >
-          {channel
-            ? "메세지 전송하기"
-            : "메세지를 전송할 채널을 선택해 주세요."}
-        </Button>
       </div>
 
       <Dialog
