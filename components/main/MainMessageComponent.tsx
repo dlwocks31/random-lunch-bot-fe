@@ -39,10 +39,12 @@ export const MainMessageComponent = ({
   const [shouldDisableMention, setShouldDisableMention] = useState<boolean>(
     !slackInstalled,
   );
-  const message = [
-    prefixMessage,
-    customBuildSlackMessage(members, shouldDisableMention),
-  ].join("\n");
+
+  const membersSlackMessage = customBuildSlackMessage(
+    members,
+    shouldDisableMention,
+  );
+  const message = [prefixMessage, membersSlackMessage].join("\n");
 
   useEffect(() => {
     if (slackInstalled) {
@@ -53,13 +55,15 @@ export const MainMessageComponent = ({
   return (
     <div>
       <div>
-        <TextField
-          label="메세지 템플릿"
-          multiline
-          fullWidth
-          value={prefixMessage}
-          onChange={(e) => setPrefixMessage(e.target.value)}
-        />
+        {slackInstalled && (
+          <TextField
+            label="메세지 템플릿"
+            multiline
+            fullWidth
+            value={prefixMessage}
+            onChange={(e) => setPrefixMessage(e.target.value)}
+          />
+        )}
         <TextField
           focused={false}
           disabled
@@ -69,13 +73,28 @@ export const MainMessageComponent = ({
           sx={{
             overflowY: "scroll",
           }}
-          value={customBuildSlackMessage(members, shouldDisableMention)}
+          value={
+            membersSlackMessage ? membersSlackMessage : "조원을 추가해 보세요."
+          }
         />
+        {!slackInstalled && (
+          <Button
+            variant="contained"
+            onClick={() => {
+              navigator.clipboard.writeText(membersSlackMessage);
+              alert("메세지가 복사되었습니다.");
+            }}
+            fullWidth
+            sx={{ marginTop: 1 }}
+          >
+            메세지 복사하기
+          </Button>
+        )}
       </div>
 
-      <ExtraSettingViewer settingName="기타 설정">
-        <FormGroup>
-          {slackInstalled && (
+      {slackInstalled && (
+        <ExtraSettingViewer settingName="기타 설정">
+          <FormGroup>
             <FormControlLabel
               control={
                 <Checkbox
@@ -85,9 +104,10 @@ export const MainMessageComponent = ({
               }
               label="조원을 멘션하지 않습니다."
             />
-          )}
-        </FormGroup>
-      </ExtraSettingViewer>
+          </FormGroup>
+        </ExtraSettingViewer>
+      )}
+
       {slackInstalled && (
         <MessageSender
           message={message}
