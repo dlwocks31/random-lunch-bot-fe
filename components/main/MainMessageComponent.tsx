@@ -1,22 +1,19 @@
 import {
   Button,
-  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  FormControlLabel,
-  FormGroup,
   TextField,
 } from "@mui/material";
+import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
 import { NormalUser } from "../../utils/slack/NormalUser";
 import { SlackServiceFactory } from "../../utils/slack/SlackServiceFactory";
-import { ExtraSettingViewer } from "../util/ExtraSettingViewer";
 
 const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:orange_heart: 조를 발표합니다!
 > 가장 앞에 있는 분이 이 채널에 조원들을 소환해서 스레드로 함께 메뉴를 정해주세요 :simple_smile:
@@ -53,67 +50,64 @@ export const MainMessageComponent = ({
   }, [slackInstalled]);
 
   return (
-    <div>
-      <div>
-        {slackInstalled && (
-          <TextField
-            label="메세지 템플릿"
-            multiline
-            fullWidth
-            value={prefixMessage}
-            onChange={(e) => setPrefixMessage(e.target.value)}
+    <Box display="flex" gap={1}>
+      <Box flexGrow={2} flexBasis={0}>
+        <MessageDisplayer
+          prefixMessage={prefixMessage}
+          setPrefixMessage={setPrefixMessage}
+          mainMessage={membersSlackMessage}
+        />
+      </Box>
+
+      <Box
+        flexGrow={1}
+        flexBasis={0}
+        display="flex"
+        flexDirection="column"
+        justifyContent="end"
+      >
+        <div>
+          <MessageSender
+            message={message}
+            slackConversations={slackConversations}
           />
-        )}
+        </div>
+      </Box>
+    </Box>
+  );
+};
+
+const MessageDisplayer = ({
+  prefixMessage,
+  setPrefixMessage,
+  mainMessage,
+}: {
+  prefixMessage?: string;
+  setPrefixMessage?: (prefixMessage: string) => void;
+  mainMessage: string;
+}) => {
+  return (
+    <div>
+      {prefixMessage && (
         <TextField
-          focused={false}
-          disabled
+          label="메세지 템플릿"
           multiline
           fullWidth
-          rows={5.5}
-          sx={{
-            overflowY: "scroll",
-          }}
-          value={
-            membersSlackMessage ? membersSlackMessage : "조원을 추가해 보세요."
-          }
-        />
-        {!slackInstalled && (
-          <Button
-            variant="contained"
-            onClick={() => {
-              navigator.clipboard.writeText(membersSlackMessage);
-              alert("메세지가 복사되었습니다.");
-            }}
-            fullWidth
-            sx={{ marginTop: 1 }}
-          >
-            메세지 복사하기
-          </Button>
-        )}
-      </div>
-
-      {slackInstalled && (
-        <ExtraSettingViewer settingName="기타 설정">
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={shouldDisableMention}
-                  onChange={(e) => setShouldDisableMention(e.target.checked)}
-                />
-              }
-              label="조원을 멘션하지 않습니다."
-            />
-          </FormGroup>
-        </ExtraSettingViewer>
-      )}
-
-      {slackInstalled && (
-        <MessageSender
-          message={message}
-          slackConversations={slackConversations}
+          value={prefixMessage}
+          onChange={(e) => setPrefixMessage?.(e.target.value)}
         />
       )}
+      <TextField
+        focused={false}
+        disabled
+        multiline
+        fullWidth
+        rows={5.5}
+        sx={{
+          overflowY: "scroll",
+        }}
+        value={mainMessage ? mainMessage : "조원을 추가해 보세요."}
+      />
     </div>
   );
 };
@@ -155,7 +149,7 @@ const MessageSender = ({
         <div style={{ display: "flex", gap: "10px", flexDirection: "column" }}>
           <div style={{ flex: "1 0 0" }}>
             <Select
-              placeholder={`메세지를 전송할 채널을 선택해 주세요 (총 ${slackConversations.length}개)`}
+              placeholder={`메세지를 전송할 채널을 선택하세요 (총 ${slackConversations.length}개)`}
               options={slackConversations.map(({ id, name }) => ({
                 value: id,
                 label: name,
@@ -165,17 +159,16 @@ const MessageSender = ({
             />{" "}
           </div>
 
-          {channel && (
-            <div style={{ flex: "1 0 0" }}>
-              <Button
-                onClick={() => setIsConfirmDialogOpened(true)}
-                variant="contained"
-                fullWidth
-              >
-                위 채널로 메세지 전송
-              </Button>
-            </div>
-          )}
+          <div style={{ flex: "1 0 0" }}>
+            <Button
+              onClick={() => setIsConfirmDialogOpened(true)}
+              variant="contained"
+              fullWidth
+              disabled={isSending || channel === ""}
+            >
+              위 채널로 메세지 전송
+            </Button>
+          </div>
         </div>
       </div>
 
