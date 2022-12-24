@@ -37,7 +37,11 @@ export const MainGroupComopnent = ({
     );
   }, []);
 
-  const extraSettings: { name: string; component: JSX.Element }[] = [
+  const extraSettings: {
+    name: string;
+    component: JSX.Element;
+    onlyOnSlackInstalled: boolean;
+  }[] = [
     {
       name: "유저 가져오는 채널 설정",
       component: (
@@ -46,6 +50,7 @@ export const MainGroupComopnent = ({
           setUsers={initializeFromNewUsers}
         />
       ),
+      onlyOnSlackInstalled: true,
     },
     {
       name: "flex 연동 설정",
@@ -61,18 +66,28 @@ export const MainGroupComopnent = ({
           }}
         />
       ),
+      onlyOnSlackInstalled: true,
     },
     {
       name: "같은 조 피하기 설정",
       component: (
         <TagEditor users={allUsers} tagMap={tagMap} setTagMap={setTagMap} />
       ),
+      onlyOnSlackInstalled: false,
     },
     {
       name: "유저 이모지 확인",
       component: <CheckSlackUserEmoji members={members} />,
+      onlyOnSlackInstalled: true,
     },
   ];
+
+  const extraSettingsDisplayed = extraSettings.filter((e) => {
+    if (e.onlyOnSlackInstalled) {
+      return conversations.length > 0;
+    }
+    return true;
+  });
 
   const [extraSettingName, setExtraSettingName] = useState<string>(
     extraSettings[0].name,
@@ -92,7 +107,7 @@ export const MainGroupComopnent = ({
       <div>
         <Box display="flex" alignItems="center" gap={1} paddingTop={1}>
           <div>추가 설정:</div>
-          {extraSettings.map((setting) => (
+          {extraSettingsDisplayed.map((setting) => (
             <Button
               sx={{ flexGrow: 1, maxWidth: "200px" }}
               key={setting.name}
