@@ -1,5 +1,5 @@
-import { sortBy } from "lodash";
 import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { SupabaseSlackAuthBar } from "../components/auth/SupabaseSlackAuthBar";
 import { MainGroupComopnent } from "../components/main/MainGroupComponent";
 import { MemberConfig } from "../utils/domain/MemberConfig";
@@ -7,7 +7,7 @@ import { MemberPartition } from "../utils/domain/MemberPartition";
 import { SlackConversation } from "../utils/domain/SlackConversation";
 import { TagMap } from "../utils/domain/TagMap";
 import { NormalUser } from "../utils/slack/NormalUser";
-import { SlackServiceFactory } from "../utils/slack/SlackServiceFactory";
+import { supabase } from "../utils/supabase/supabaseClient";
 import { generateTags } from "../utils/tag/GenerateTags";
 const DEFAULT_EACH_GROUP_USER = 4;
 export default function V2() {
@@ -22,30 +22,57 @@ export default function V2() {
   );
   const [tagMap, setTagMap] = useState<TagMap>(new TagMap([]));
 
-  const initializeFromSlack = async () => {
-    const slackService = await SlackServiceFactory();
-    const conversations = await slackService.listConversation();
-    const slackUsers = await slackService.findAllValidSlackUsers();
-    const users = slackUsers.map(NormalUser.fromSlackUser);
-    const newTagMap = new TagMap(generateTags(users));
-    setTagMap(newTagMap);
-    setMembers(
-      MemberConfig.initializeFromUsers(users).shuffleByTagMap(newTagMap),
-    );
-    setConversations(
-      sortBy(
-        conversations.filter((c) => c.membersCount > 0),
-        (c) => -c.membersCount,
-        "name",
-      ),
-    );
-  };
+  const { data: usersData } = useQuery(
+    ["slack", "users"],
+    async () =>
+      fetch("/api/slack/users", {
+        headers: {
+          Authorization: `Bearer ${supabase.auth.session()?.access_token}`,
+        },
+      }).then((res) => res.json()),
+    {
+      enabled: slackInstalled,
+      refetchInterval: false,
+    },
+  );
 
   useEffect(() => {
-    if (slackInstalled) {
-      initializeFromSlack();
+    if (usersData) {
+      const slackUsers = usersData.map(NormalUser.fromSlackUser);
+      const newTagMap = new TagMap(generateTags(slackUsers));
+      setTagMap(newTagMap);
+      setMembers(
+        MemberConfig.initializeFromUsers(slackUsers).shuffleByTagMap(newTagMap),
+      );
     }
-  }, [slackInstalled]);
+  }, [usersData]);
+
+  const { data: conversationData } = useQuery(
+    ["slack", "conversations"],
+    async () =>
+      fetch("/api/slack/conversations", {
+        headers: {
+          Authorization: `Bearer ${supabase.auth.session()?.access_token}`,
+        },
+      }).then((res) => res.json()),
+    {
+      enabled: slackInstalled,
+      refetchInterval: false,
+    },
+  );
+
+  useEffect(() => {
+    if (conversationData) {
+      setConversations(
+        conversationData
+          .filter((c: { membersCount: number }) => c.membersCount > 0)
+          .sort((a: { membersCount: number }, b: { membersCount: number }) => {
+            return b.membersCount - a.membersCount;
+          }),
+      );
+    }
+  }, [conversationData]);
+
   return (
     <>
       <SupabaseSlackAuthBar setSlackInstalled={setSlackInstalled} />
