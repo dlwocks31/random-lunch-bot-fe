@@ -107,11 +107,22 @@ const MessageDisplayer = ({
         disabled
         multiline
         fullWidth
-        rows={5.5}
         sx={{
           overflowY: "scroll",
         }}
         value={mainMessage ? mainMessage : "조원을 추가해 보세요."}
+        InputProps={{
+          endAdornment: (
+            <Button
+              disabled={!mainMessage}
+              onClick={() => {
+                navigator.clipboard.writeText(mainMessage);
+              }}
+            >
+              Copy
+            </Button>
+          ),
+        }}
       />
     </div>
   );
