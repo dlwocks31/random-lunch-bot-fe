@@ -137,7 +137,7 @@ const MessageSender = ({
   const sendSlackMessage = async () => {
     setIsSending(true);
 
-    await fetch("/api/slack/send", {
+    await fetch("/api/slack/message", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${supabase.auth.session()?.access_token}`,
