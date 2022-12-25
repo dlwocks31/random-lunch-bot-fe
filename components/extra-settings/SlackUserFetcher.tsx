@@ -9,32 +9,34 @@ import { useState } from "react";
 import Select from "react-select";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
 import { NormalUser } from "../../utils/slack/NormalUser";
-import { SlackServiceFactory } from "../../utils/slack/SlackServiceFactory";
-import { SlackUser } from "../../utils/slack/slack-user";
+import { supabase } from "../../utils/supabase/supabaseClient";
 export const SlackUserFetcher = ({
+  initialUsers,
   setUsers,
   conversations,
 }: {
+  initialUsers: NormalUser[];
   setUsers: (users: NormalUser[]) => void;
   conversations: SlackConversation[];
 }) => {
   const [fetchType, setFetchType] = useState("all");
 
   const setUsersByAll = async () => {
-    const slackService = await SlackServiceFactory();
-    const allSlackUsers = await slackService.findAllValidSlackUsers();
-    const allUsers = allSlackUsers.map(NormalUser.fromSlackUser);
-    setUsers(allUsers);
+    setUsers(initialUsers);
   };
 
   const setUsersByChannel = async (channel: string) => {
-    const slackService = await SlackServiceFactory();
-    const memberIds = await slackService.getConversationMembers(channel);
-    const allUsers = await slackService.findAllValidSlackUsers();
-    const slackUsers: SlackUser[] = memberIds
-      .map((id) => allUsers.find((user) => user.id === id))
-      .filter((user): user is SlackUser => user !== undefined);
-    const users = slackUsers.map(NormalUser.fromSlackUser);
+    const memberIds: string[] = await fetch(
+      `api/slack/conversation-members?channel=${channel}`,
+      {
+        headers: {
+          Authorization: `Bearer ${supabase.auth.session()?.access_token}`,
+        },
+      },
+    ).then((res) => res.json());
+    const users: NormalUser[] = memberIds
+      .map((id) => initialUsers.find((user) => user.id === id))
+      .filter((user): user is NormalUser => user !== undefined);
     setUsers(users);
   };
   return (

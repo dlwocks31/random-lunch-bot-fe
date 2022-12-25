@@ -32,17 +32,21 @@ export default function V2() {
       }).then((res) => res.json()),
     {
       enabled: slackInstalled,
-      refetchInterval: false,
+      staleTime: Infinity,
     },
   );
 
+  const initialUsers = usersData?.map(NormalUser.fromSlackUser);
+
   useEffect(() => {
     if (usersData) {
-      const slackUsers = usersData.map(NormalUser.fromSlackUser);
-      const newTagMap = new TagMap(generateTags(slackUsers));
+      const normalUsers = usersData.map(NormalUser.fromSlackUser);
+      const newTagMap = new TagMap(generateTags(normalUsers));
       setTagMap(newTagMap);
       setMembers(
-        MemberConfig.initializeFromUsers(slackUsers).shuffleByTagMap(newTagMap),
+        MemberConfig.initializeFromUsers(normalUsers).shuffleByTagMap(
+          newTagMap,
+        ),
       );
     }
   }, [usersData]);
@@ -57,7 +61,7 @@ export default function V2() {
       }).then((res) => res.json()),
     {
       enabled: slackInstalled,
-      refetchInterval: false,
+      staleTime: Infinity,
     },
   );
 
@@ -78,6 +82,7 @@ export default function V2() {
       <SupabaseSlackAuthBar setSlackInstalled={setSlackInstalled} />
       <div className="content-container">
         <MainGroupComopnent
+          initialUsers={initialUsers}
           members={members}
           setMembers={setMembers}
           conversations={conversations}

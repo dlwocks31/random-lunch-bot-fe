@@ -16,6 +16,7 @@ import { RootComponent } from "./RootComponent";
 export const MainGroupComopnent = ({
   members,
   setMembers,
+  initialUsers,
   conversations,
   tagMap,
   setTagMap,
@@ -25,6 +26,7 @@ export const MainGroupComopnent = ({
   conversations: SlackConversation[];
   tagMap: TagMap;
   setTagMap: (tagMap: TagMap) => void;
+  initialUsers: NormalUser[];
 }) => {
   const allUsers = members.allUsers();
 
@@ -47,6 +49,7 @@ export const MainGroupComopnent = ({
       component: (
         <SlackUserFetcher
           conversations={conversations}
+          initialUsers={initialUsers}
           setUsers={initializeFromNewUsers}
         />
       ),
