@@ -48,6 +48,7 @@ export const RootComponent = ({
           setMembers(members.setOfficeGroupCount(count))
         }
         onShuffle={onShuffle}
+        indexOffset={1}
       />
     ) : currentPartitionLabel === "remote" ? (
       <DisplayMemberPartitionComponent
@@ -56,6 +57,7 @@ export const RootComponent = ({
           setMembers(members.setRemoteGroupCount(count))
         }
         onShuffle={onShuffle}
+        indexOffset={members.office.groupCount() + 1}
       />
     ) : (
       <DisplayExcludedComponent users={members.excluded} />
@@ -141,10 +143,12 @@ const DisplayMemberPartitionComponent = ({
   memberPartition,
   setGroupCount,
   onShuffle,
+  indexOffset,
 }: {
   memberPartition: MemberPartition;
   setGroupCount: (count: number) => void;
   onShuffle: () => void;
+  indexOffset: number;
 }) => {
   if (memberPartition.userCount() === 0) {
     return <div>유저가 없습니다.</div>;
@@ -165,7 +169,7 @@ const DisplayMemberPartitionComponent = ({
       >
         {memberPartition.groups.map((users, index) => (
           <SingleGroupComponent
-            groupIndex={index + 1}
+            groupIndex={index + indexOffset}
             users={users}
             key={index}
           />
