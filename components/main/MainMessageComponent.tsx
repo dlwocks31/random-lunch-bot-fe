@@ -13,7 +13,7 @@ import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
 import { NormalUser } from "../../utils/slack/NormalUser";
-import { SlackServiceFactory } from "../../utils/slack/SlackServiceFactory";
+import { supabase } from "../../utils/supabase/supabaseClient";
 
 const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:orange_heart: 조를 발표합니다!
 > 가장 앞에 있는 분이 이 채널에 조원들을 소환해서 스레드로 함께 메뉴를 정해주세요 :simple_smile:
@@ -136,11 +136,17 @@ const MessageSender = ({
   const [isSending, setIsSending] = useState(false);
   const sendSlackMessage = async () => {
     setIsSending(true);
-    const slackService = await SlackServiceFactory();
-    const joinResult = await slackService.joinConversation(channel);
-    console.log(JSON.stringify(joinResult));
-    const result = await slackService.send(message, channel);
-    console.log(JSON.stringify(result));
+
+    await fetch("/api/slack/send", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${supabase.auth.session()?.access_token}`,
+      },
+      body: JSON.stringify({
+        message,
+        channel,
+      }),
+    });
     setIsSending(false);
   };
   const channelDescription = () => {
