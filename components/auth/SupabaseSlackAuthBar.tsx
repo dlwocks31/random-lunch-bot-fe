@@ -14,21 +14,22 @@ export function SupabaseSlackAuthBar({
   const [oauthStatus, setOauthStatus] = useState<{ team: string } | null>(null);
   const [supabaseAccessToken, setSupabaseAccessToken] = useState("");
   const isAnonUser = userEmail.endsWith("@anon-login.com");
-  async function queryOauthStatus() {
-    // TODO: API call로 변경 (oauth Token을 client에게 숨겨야 함)
-    const { data } = await supabase
-      .from("slack_oauth_tokens")
-      .select()
-      .single();
-
-    const teamName = data?.raw_oauth_response?.team.name;
-    if (teamName) {
-      setOauthStatus({ team: teamName });
-      setSlackInstalled(true);
-    } else {
-      setOauthStatus(null);
-      setSlackInstalled(false);
-    }
+  async function queryOauthStatus(accessToken: string) {
+    fetch("/api/slack/oauth", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+      .then((res) => res.json())
+      .then(({ teamName }: { teamName: string }) => {
+        if (teamName) {
+          setOauthStatus({ team: teamName });
+          setSlackInstalled(true);
+        } else {
+          setOauthStatus(null);
+          setSlackInstalled(false);
+        }
+      });
   }
 
   function signUpAnonUser() {
@@ -40,13 +41,13 @@ export function SupabaseSlackAuthBar({
       supabase.auth.signUp({ email, password }).then(({ user }) => {
         setUserEmail(user?.email || "");
         setSupabaseAccessToken(supabase.auth.session()?.access_token || "");
-        queryOauthStatus();
+        queryOauthStatus(supabase.auth.session()?.access_token || "");
       });
     } else {
       setUserEmail(currentUser.email || "");
       setSupabaseAccessToken(supabase.auth.session()?.access_token || "");
       if (oauthStatus === null) {
-        queryOauthStatus();
+        queryOauthStatus(supabase.auth.session()?.access_token || "");
       }
     }
   }
@@ -66,7 +67,9 @@ export function SupabaseSlackAuthBar({
                   handleLogin={(email, password) => {
                     supabase.auth.signIn({ email, password }).then(() => {
                       setUserEmail(email);
-                      queryOauthStatus();
+                      queryOauthStatus(
+                        supabase.auth.session()?.access_token || "",
+                      );
                     });
                   }}
                 />
