@@ -53,48 +53,53 @@ export const MainMessageComponent = ({
     <Box display="flex" gap={1}>
       <Box flexGrow={2} flexBasis={0}>
         <MessageDisplayer
+          slackInstalled={slackInstalled}
           prefixMessage={prefixMessage}
           setPrefixMessage={setPrefixMessage}
           mainMessage={membersSlackMessage}
         />
       </Box>
 
-      <Box
-        flexGrow={1}
-        flexBasis={0}
-        display="flex"
-        flexDirection="column"
-        justifyContent="end"
-      >
-        <div>
-          <MessageSender
-            message={message}
-            slackConversations={slackConversations}
-          />
-        </div>
-      </Box>
+      {slackInstalled && (
+        <Box
+          flexGrow={1}
+          flexBasis={0}
+          display="flex"
+          flexDirection="column"
+          justifyContent="end"
+        >
+          <div>
+            <MessageSender
+              message={message}
+              slackConversations={slackConversations}
+            />
+          </div>
+        </Box>
+      )}
     </Box>
   );
 };
 
 const MessageDisplayer = ({
+  slackInstalled,
   prefixMessage,
   setPrefixMessage,
   mainMessage,
 }: {
-  prefixMessage?: string;
-  setPrefixMessage?: (prefixMessage: string) => void;
+  slackInstalled: boolean;
+  prefixMessage: string;
+  setPrefixMessage: (prefixMessage: string) => void;
   mainMessage: string;
 }) => {
   return (
     <div>
-      {prefixMessage && (
+      {slackInstalled && (
         <TextField
           label="메세지 템플릿"
           multiline
           fullWidth
           value={prefixMessage}
-          onChange={(e) => setPrefixMessage?.(e.target.value)}
+          onChange={(e) => setPrefixMessage(e.target.value)}
         />
       )}
       <TextField
