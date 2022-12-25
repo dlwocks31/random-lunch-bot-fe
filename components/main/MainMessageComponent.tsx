@@ -107,9 +107,6 @@ const MessageDisplayer = ({
         disabled
         multiline
         fullWidth
-        sx={{
-          overflowY: "scroll",
-        }}
         value={mainMessage ? mainMessage : "조원을 추가해 보세요."}
         InputProps={{
           endAdornment: (
