@@ -61,42 +61,42 @@ export const RootComponent = ({
       <DisplayExcludedComponent users={members.excluded} />
     );
   return (
-    <div>
-      <Box
-        sx={{
+    <>
+      <div
+        style={{
           display: "flex",
-          flexDirection: "column",
+          alignItems: "center",
           gap: "10px",
+          justifyContent: "center",
+          marginBottom: "1rem",
+          maxWidth: "1200px",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            justifyContent: "center",
+        <ToggleButtonGroup
+          color="primary"
+          value={currentPartitionLabel}
+          exclusive
+          onChange={(event, newPartition: PartitionType) => {
+            setCurrentPartitionLabel(newPartition);
           }}
+          size="small"
+          sx={{ display: "flex", flex: "3 0 0" }}
         >
-          <ToggleButtonGroup
-            color="primary"
-            value={currentPartitionLabel}
-            exclusive
-            onChange={(event, newPartition: PartitionType) => {
-              setCurrentPartitionLabel(newPartition);
-            }}
-          >
-            <ToggleButton value="office">
-              사무실 - {members.office.userCount()}명
-            </ToggleButton>
-            <ToggleButton value="remote">
-              재택 - {members.remote.userCount()}명
-            </ToggleButton>
-            <ToggleButton value="excluded">
-              제외 - {members.excluded.length}명
-            </ToggleButton>
-          </ToggleButtonGroup>
-          <div>그룹에 추가:</div>
+          <ToggleButton value="office" sx={{ flex: "1 0 0" }}>
+            사무실 - {members.office.userCount()}명/
+            {members.office.groupCount()}조
+          </ToggleButton>
+          <ToggleButton value="remote" sx={{ flex: "1 0 0" }}>
+            재택 - {members.remote.userCount()}명/
+            {members.remote.groupCount()}조
+          </ToggleButton>
+          <ToggleButton value="excluded" sx={{ flex: "1 0 0" }}>
+            제외 - {members.excluded.length}명
+          </ToggleButton>
+        </ToggleButtonGroup>
+        <Box flex="0 0 auto">그룹에 추가:</Box>
 
+        <Box flex="2 0 0">
           <CreatableSelect
             placeholder="유저 이름을 검색하세요"
             options={allUsers
@@ -130,10 +130,10 @@ export const RootComponent = ({
               }
             }}
           />
-        </div>
-        <BorderedBox>{currentDisplayComponent}</BorderedBox>
-      </Box>
-    </div>
+        </Box>
+      </div>
+      <BorderedBox>{currentDisplayComponent}</BorderedBox>
+    </>
   );
 };
 
@@ -187,9 +187,7 @@ const DisplayMemberPartitionComponent = ({
           setCount={setGroupCount}
         />
         <div>개</div>
-        {groupSizeStat.length !== 0 && (
-          <Alert severity="info">{groupSizeStatLabel}를 만듭니다.</Alert>
-        )}
+        <Alert severity="info">{groupSizeStatLabel}를 만듭니다.</Alert>
         <Button variant="outlined" onClick={onShuffle}>
           재추첨
         </Button>
