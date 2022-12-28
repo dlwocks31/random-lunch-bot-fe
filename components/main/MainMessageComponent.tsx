@@ -141,7 +141,6 @@ const MessageSender = ({
     await fetch("/api/slack/message", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${session?.access_token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

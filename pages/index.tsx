@@ -23,12 +23,7 @@ export default function V2() {
 
   const { data: usersData } = useQuery(
     ["slack", "users"],
-    async () =>
-      fetch("/api/slack/users", {
-        headers: {
-          Authorization: `Bearer TODO`,
-        },
-      }).then((res) => res.json()),
+    async () => fetch("/api/slack/users").then((res) => res.json()),
     {
       enabled: slackInstalled,
       staleTime: Infinity,
@@ -52,12 +47,7 @@ export default function V2() {
 
   const { data: conversationData } = useQuery(
     ["slack", "conversations"],
-    async () =>
-      fetch("/api/slack/conversations", {
-        headers: {
-          Authorization: `Bearer TODO`,
-        },
-      }).then((res) => res.json()),
+    async () => fetch("/api/slack/conversations").then((res) => res.json()),
     {
       enabled: slackInstalled,
       staleTime: Infinity,

@@ -13,11 +13,7 @@ export function SupabaseSlackAuthBar({
   const [oauthStatus, setOauthStatus] = useState<{ team: string } | null>(null);
   const isAnonUser = !userEmail;
   async function queryOauthStatus(accessToken: string) {
-    fetch("/api/slack/oauth", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
+    fetch("/api/slack/oauth")
       .then((res) => res.json())
       .then(({ teamName }: { teamName: string }) => {
         if (teamName) {

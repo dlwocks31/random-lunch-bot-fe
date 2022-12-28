@@ -30,11 +30,6 @@ export const SlackUserFetcher = ({
   const setUsersByChannel = async (channel: string) => {
     const memberIds: string[] = await fetch(
       `api/slack/conversation-members?channel=${channel}`,
-      {
-        headers: {
-          Authorization: `Bearer ${session?.access_token}`,
-        },
-      },
     ).then((res) => res.json());
     const users: NormalUser[] = memberIds
       .map((id) => initialUsers.find((user) => user.id === id))
