@@ -12,6 +12,7 @@ export default async function handler(
   } = await supabase.auth.getUser();
   if (!user) {
     res.status(401).json({ error: "Unauthorized" });
+    return;
   }
 
   const slackService = await SlackServiceFactory(supabase);

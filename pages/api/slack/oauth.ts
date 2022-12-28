@@ -11,6 +11,7 @@ export default async function handler(
   } = await supabase.auth.getUser();
   if (!user) {
     res.status(401).json({ error: "Unauthorized" });
+    return;
   }
   console.log("user", JSON.stringify(user, null, 2));
   const { data } = await supabase.from("slack_oauth_tokens").select().single();

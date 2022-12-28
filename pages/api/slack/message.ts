@@ -8,6 +8,7 @@ export default async function handler(
 ) {
   if (req.method !== "POST") {
     res.status(405).json({ message: "Method Not Allowed" });
+    return;
   }
   const supabase = createServerSupabaseClient({ req, res });
   const {
