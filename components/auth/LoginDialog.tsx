@@ -35,7 +35,7 @@ export function LoginDialog({
           variant="contained"
           sx={{ margin: "0 24px" }}
           onClick={() => {
-            supabase.auth.signIn({
+            supabase.auth.signInWithOAuth({
               provider: "slack",
             });
           }}

@@ -13,7 +13,6 @@ import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
 import { NormalUser } from "../../utils/slack/NormalUser";
-import { supabase } from "../../utils/supabase/supabaseClient";
 
 const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:orange_heart: 조를 발표합니다!
 > 가장 앞에 있는 분이 이 채널에 조원들을 소환해서 스레드로 함께 메뉴를 정해주세요 :simple_smile:
@@ -140,7 +139,7 @@ const MessageSender = ({
     await fetch("/api/slack/message", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${supabase.auth.session()?.access_token}`,
+        Authorization: `Bearer TODO`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

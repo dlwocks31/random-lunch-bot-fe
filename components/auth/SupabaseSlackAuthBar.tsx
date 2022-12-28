@@ -42,12 +42,15 @@ export function SupabaseSlackAuthBar({
               <div>
                 <LoginDialog
                   handleLogin={(email, password) => {
-                    supabase.auth.signIn({ email, password }).then(() => {
-                      setUserEmail(email);
-                      queryOauthStatus(
-                        supabase.auth.session()?.access_token || "",
-                      );
-                    });
+                    supabase.auth
+                      .signInWithPassword({ email, password })
+                      .then(() => supabase.auth.getSession())
+                      .then((session) => {
+                        setUserEmail(email);
+                        queryOauthStatus(
+                          session.data.session?.access_token || "",
+                        );
+                      });
                   }}
                 />
               </div>

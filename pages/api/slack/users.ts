@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { SlackServiceFactory } from "../../../utils/slack/SlackServiceFactory";
-import { supabase } from "../../../utils/supabase/supabaseClient";
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,7 +10,7 @@ export default async function handler(
     res.status(401).json({ message: "Unauthorized" });
     return;
   }
-  supabase.auth.setAuth(accessToken);
+  // TODO set session
   const slackService = await SlackServiceFactory();
   const users = await slackService.findAllValidSlackUsers();
   res.status(200).json(users);

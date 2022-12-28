@@ -6,7 +6,7 @@ import { supabase } from "../../../utils/supabase/supabaseClient";
 export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
   const state = JSON.parse(req.query.state as string);
   const code = req.query.code as string;
-  supabase.auth.setAuth(state.supabaseAccessToken);
+  // TODO set session
 
   const oauthResponseData = (
     await axios.post(

@@ -10,7 +10,7 @@ export default async function handler(
     res.status(401).json({ message: "Unauthorized" });
     return;
   }
-  supabase.auth.setAuth(accessToken);
+  // TODO set session
 
   const { data } = await supabase.from("slack_oauth_tokens").select().single();
 

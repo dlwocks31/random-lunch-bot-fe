@@ -7,7 +7,6 @@ import { MemberPartition } from "../utils/domain/MemberPartition";
 import { SlackConversation } from "../utils/domain/SlackConversation";
 import { TagMap } from "../utils/domain/TagMap";
 import { NormalUser } from "../utils/slack/NormalUser";
-import { supabase } from "../utils/supabase/supabaseClient";
 import { generateTags } from "../utils/tag/GenerateTags";
 const DEFAULT_EACH_GROUP_USER = 4;
 export default function V2() {
@@ -27,7 +26,7 @@ export default function V2() {
     async () =>
       fetch("/api/slack/users", {
         headers: {
-          Authorization: `Bearer ${supabase.auth.session()?.access_token}`,
+          Authorization: `Bearer TODO`,
         },
       }).then((res) => res.json()),
     {
@@ -56,7 +55,7 @@ export default function V2() {
     async () =>
       fetch("/api/slack/conversations", {
         headers: {
-          Authorization: `Bearer ${supabase.auth.session()?.access_token}`,
+          Authorization: `Bearer TODO`,
         },
       }).then((res) => res.json()),
     {

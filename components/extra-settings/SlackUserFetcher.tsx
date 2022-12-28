@@ -9,7 +9,6 @@ import { useState } from "react";
 import Select from "react-select";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
 import { NormalUser } from "../../utils/slack/NormalUser";
-import { supabase } from "../../utils/supabase/supabaseClient";
 export const SlackUserFetcher = ({
   initialUsers,
   setUsers,
@@ -30,7 +29,7 @@ export const SlackUserFetcher = ({
       `api/slack/conversation-members?channel=${channel}`,
       {
         headers: {
-          Authorization: `Bearer ${supabase.auth.session()?.access_token}`,
+          Authorization: `Bearer TODO`,
         },
       },
     ).then((res) => res.json());

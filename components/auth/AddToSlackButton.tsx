@@ -1,5 +1,3 @@
-import { supabase } from "../../utils/supabase/supabaseClient";
-
 function encodeData(data: any) {
   return Object.keys(data)
     .map(function (key) {
@@ -15,17 +13,10 @@ export const SLACK_CALLBACK_BASE_QUERY = {
 };
 
 export function AddToSlackButton() {
-  function getCallbackUrl() {
-    return `https://slack.com/oauth/v2/authorize?${encodeData({
-      ...SLACK_CALLBACK_BASE_QUERY,
-      state: JSON.stringify({
-        supabaseAccessToken: supabase.auth.session()?.access_token,
-      }),
-    })}`;
-  }
+  // TODO fix button
   return (
     <>
-      <a href={getCallbackUrl()} className="slack-a-button">
+      <a href="" className="slack-a-button">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="slack-svg"
