@@ -1,5 +1,4 @@
 import { AppBar, Button, Toolbar, Typography } from "@mui/material";
-import { useUser } from "@supabase/auth-helpers-react";
 import { useState } from "react";
 import { supabase } from "../../utils/supabase/supabaseClient";
 import { AddToSlackButton } from "./AddToSlackButton";
@@ -10,10 +9,9 @@ export function SupabaseSlackAuthBar({
 }: {
   setSlackInstalled: (slackInstalled: boolean) => void;
 }) {
+  const [userEmail, setUserEmail] = useState("");
   const [oauthStatus, setOauthStatus] = useState<{ team: string } | null>(null);
-  const user = useUser();
-  console.log(JSON.stringify(user, null, 2));
-  const isAnonUser = !user;
+  const isAnonUser = !userEmail;
   async function queryOauthStatus(accessToken: string) {
     fetch("/api/slack/oauth", {
       headers: {
@@ -40,20 +38,23 @@ export function SupabaseSlackAuthBar({
         <Typography sx={{ flexGrow: 1 }}>두런두런치 봇</Typography>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           {isAnonUser ? (
-            <div>
-              <LoginDialog
-                handleLogin={(email, password) => {
-                  supabase.auth.signIn({ email, password }).then(() => {
-                    queryOauthStatus(
-                      supabase.auth.session()?.access_token || "",
-                    );
-                  });
-                }}
-              />
-            </div>
+            <>
+              <div>
+                <LoginDialog
+                  handleLogin={(email, password) => {
+                    supabase.auth.signIn({ email, password }).then(() => {
+                      setUserEmail(email);
+                      queryOauthStatus(
+                        supabase.auth.session()?.access_token || "",
+                      );
+                    });
+                  }}
+                />
+              </div>
+            </>
           ) : (
             <>
-              <div>로그인 되었습니다. {user.email}</div>
+              <div>로그인 되었습니다. {userEmail}</div>
               <Button
                 color="inherit"
                 variant="outlined"
