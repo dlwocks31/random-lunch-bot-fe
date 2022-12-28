@@ -8,6 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 import { Box } from "@mui/system";
+import { useSession } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
@@ -133,13 +134,14 @@ const MessageSender = ({
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false);
   const [channel, setChannel] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
+  const session = useSession();
   const sendSlackMessage = async () => {
     setIsSending(true);
 
     await fetch("/api/slack/message", {
       method: "POST",
       headers: {
-        Authorization: `Bearer TODO`,
+        Authorization: `Bearer ${session?.access_token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

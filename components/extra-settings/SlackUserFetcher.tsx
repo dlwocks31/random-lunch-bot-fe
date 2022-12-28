@@ -5,6 +5,7 @@ import {
   Radio,
   RadioGroup,
 } from "@mui/material";
+import { useSession } from "@supabase/auth-helpers-react";
 import { useState } from "react";
 import Select from "react-select";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
@@ -20,6 +21,8 @@ export const SlackUserFetcher = ({
 }) => {
   const [fetchType, setFetchType] = useState("all");
 
+  const session = useSession();
+
   const setUsersByAll = async () => {
     setUsers(initialUsers);
   };
@@ -29,7 +32,7 @@ export const SlackUserFetcher = ({
       `api/slack/conversation-members?channel=${channel}`,
       {
         headers: {
-          Authorization: `Bearer TODO`,
+          Authorization: `Bearer ${session?.access_token}`,
         },
       },
     ).then((res) => res.json());

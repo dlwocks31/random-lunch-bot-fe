@@ -35,9 +35,18 @@ export function LoginDialog({
           variant="contained"
           sx={{ margin: "0 24px" }}
           onClick={() => {
-            supabase.auth.signInWithOAuth({
-              provider: "slack",
-            });
+            supabase.auth
+              .signInWithOAuth({
+                provider: "slack",
+              })
+              .then(({ data, error }) => {
+                if (error) {
+                  console.log("error", error);
+                }
+                if (data) {
+                  console.log("data", data);
+                }
+              });
           }}
         >
           슬랙으로 로그인

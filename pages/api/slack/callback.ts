@@ -1,12 +1,12 @@
 import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import { SLACK_CALLBACK_BASE_QUERY } from "../../../components/auth/AddToSlackButton";
-import { supabase } from "../../../utils/supabase/supabaseClient";
 
 export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
   const state = JSON.parse(req.query.state as string);
+  // TODO 이 엔드포인트가 아직 필요한지 확인 필요
+
   const code = req.query.code as string;
-  // TODO set session
 
   const oauthResponseData = (
     await axios.post(

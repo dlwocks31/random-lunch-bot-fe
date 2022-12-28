@@ -1,16 +1,17 @@
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { NextApiRequest, NextApiResponse } from "next";
-import { supabase } from "../../../utils/supabase/supabaseClient";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>,
 ) {
-  const accessToken = req.headers.authorization?.split(" ")[1];
-  if (accessToken === undefined) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
+  const supabase = createServerSupabaseClient({ req, res });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    res.status(401).json({ error: "Unauthorized" });
   }
-  // TODO set session
 
   const { data } = await supabase.from("slack_oauth_tokens").select().single();
 
