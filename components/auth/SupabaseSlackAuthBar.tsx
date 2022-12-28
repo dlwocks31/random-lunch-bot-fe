@@ -1,6 +1,10 @@
 import { AppBar, Button, Toolbar, Typography } from "@mui/material";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useState } from "react";
+import {
+  useSession,
+  useSupabaseClient,
+  useUser,
+} from "@supabase/auth-helpers-react";
+import { useEffect, useState } from "react";
 import { AddToSlackButton } from "./AddToSlackButton";
 import { LoginDialog } from "./LoginDialog";
 
@@ -9,10 +13,12 @@ export function SupabaseSlackAuthBar({
 }: {
   setSlackInstalled: (slackInstalled: boolean) => void;
 }) {
-  const [userEmail, setUserEmail] = useState("");
   const [oauthStatus, setOauthStatus] = useState<{ team: string } | null>(null);
-  const isAnonUser = !userEmail;
-  async function queryOauthStatus(accessToken: string) {
+  const session = useSession();
+
+  const user = useUser();
+  const isAnonUser = !user;
+  async function queryOauthStatus() {
     fetch("/api/slack/oauth")
       .then((res) => res.json())
       .then(({ teamName }: { teamName: string }) => {
@@ -26,6 +32,12 @@ export function SupabaseSlackAuthBar({
       });
   }
 
+  useEffect(() => {
+    if (session) {
+      queryOauthStatus();
+    }
+  }, [session]);
+
   const isSlackAdded = oauthStatus !== null;
   const supabaseClient = useSupabaseClient();
   return (
@@ -33,27 +45,9 @@ export function SupabaseSlackAuthBar({
       <Toolbar>
         <Typography sx={{ flexGrow: 1 }}>두런두런치 봇</Typography>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {isAnonUser ? (
+          {user ? (
             <>
-              <div>
-                <LoginDialog
-                  handleLogin={(email, password) => {
-                    supabaseClient.auth
-                      .signInWithPassword({ email, password })
-                      .then(() => supabaseClient.auth.getSession())
-                      .then((session) => {
-                        setUserEmail(email);
-                        queryOauthStatus(
-                          session.data.session?.access_token || "",
-                        );
-                      });
-                  }}
-                />
-              </div>
-            </>
-          ) : (
-            <>
-              <div>로그인 되었습니다. {userEmail}</div>
+              <div>로그인 되었습니다. {user?.email}</div>
               <Button
                 color="inherit"
                 variant="outlined"
@@ -65,6 +59,18 @@ export function SupabaseSlackAuthBar({
               >
                 로그아웃
               </Button>
+            </>
+          ) : (
+            <>
+              <div>
+                <LoginDialog
+                  handleLogin={(email, password) => {
+                    supabaseClient.auth
+                      .signInWithPassword({ email, password })
+                      .then(queryOauthStatus);
+                  }}
+                />
+              </div>
             </>
           )}
           {isSlackAdded ? (
