@@ -7,6 +7,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useState } from "react";
+import { supabase } from "../../utils/supabase/supabaseClient";
 
 export function LoginDialog({
   handleLogin,
@@ -30,6 +31,17 @@ export function LoginDialog({
         onClose={() => setIsLoginDialogOpen(false)}
       >
         <DialogTitle>로그인</DialogTitle>
+        <Button
+          variant="contained"
+          sx={{ margin: "0 24px" }}
+          onClick={() => {
+            supabase.auth.signIn({
+              provider: "slack",
+            });
+          }}
+        >
+          슬랙으로 로그인
+        </Button>
         <DialogContent>
           <TextField
             label="이메일"
