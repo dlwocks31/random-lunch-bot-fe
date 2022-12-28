@@ -6,8 +6,8 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useState } from "react";
-import { supabase } from "../../utils/supabase/supabaseClient";
 
 export function LoginDialog({
   handleLogin,
@@ -17,6 +17,8 @@ export function LoginDialog({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
+
+  const supabaseClient = useSupabaseClient();
   return (
     <>
       <Button
@@ -35,7 +37,7 @@ export function LoginDialog({
           variant="contained"
           sx={{ margin: "0 24px" }}
           onClick={() => {
-            supabase.auth
+            supabaseClient.auth
               .signInWithOAuth({
                 provider: "slack",
               })

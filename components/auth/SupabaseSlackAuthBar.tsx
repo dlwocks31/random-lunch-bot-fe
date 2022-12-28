@@ -1,6 +1,6 @@
 import { AppBar, Button, Toolbar, Typography } from "@mui/material";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useState } from "react";
-import { supabase } from "../../utils/supabase/supabaseClient";
 import { AddToSlackButton } from "./AddToSlackButton";
 import { LoginDialog } from "./LoginDialog";
 
@@ -27,7 +27,7 @@ export function SupabaseSlackAuthBar({
   }
 
   const isSlackAdded = oauthStatus !== null;
-
+  const supabaseClient = useSupabaseClient();
   return (
     <AppBar position="static">
       <Toolbar>
@@ -38,9 +38,9 @@ export function SupabaseSlackAuthBar({
               <div>
                 <LoginDialog
                   handleLogin={(email, password) => {
-                    supabase.auth
+                    supabaseClient.auth
                       .signInWithPassword({ email, password })
-                      .then(() => supabase.auth.getSession())
+                      .then(() => supabaseClient.auth.getSession())
                       .then((session) => {
                         setUserEmail(email);
                         queryOauthStatus(
@@ -58,7 +58,7 @@ export function SupabaseSlackAuthBar({
                 color="inherit"
                 variant="outlined"
                 onClick={() =>
-                  supabase.auth.signOut().then(() => {
+                  supabaseClient.auth.signOut().then(() => {
                     setOauthStatus(null);
                   })
                 }
