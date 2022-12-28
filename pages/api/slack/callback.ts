@@ -20,11 +20,6 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
   ).data;
   console.log(oauthResponseData);
   const botAccessToken = oauthResponseData.access_token;
-  const t = await supabase
-    .from("slack_oauth_tokens")
-    .upsert(
-      { access_token: botAccessToken, raw_oauth_response: oauthResponseData },
-      { onConflict: "user_id" },
-    );
+
   res.redirect(process.env.REDIRECT_BACK_HOST || "http://localhost:3000");
 };
