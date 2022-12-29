@@ -7,6 +7,7 @@ import {
 import { useEffect, useState } from "react";
 import { AddToSlackButton } from "./AddToSlackButton";
 import { LoginDialog } from "./LoginDialog";
+import { SlackAppInstallDialog } from "./SlackAppInstallDialog";
 
 export function SupabaseSlackAuthBar({
   setSlackInstalled,
@@ -17,7 +18,6 @@ export function SupabaseSlackAuthBar({
   const session = useSession();
 
   const user = useUser();
-  const isAnonUser = !user;
   async function queryOauthStatus() {
     fetch("/api/slack/oauth")
       .then((res) => res.json())
@@ -48,6 +48,7 @@ export function SupabaseSlackAuthBar({
           {user ? (
             <>
               <div>로그인 되었습니다. {user?.email}</div>
+              {!isSlackAdded && <SlackAppInstallDialog />}
               <Button
                 color="inherit"
                 variant="outlined"

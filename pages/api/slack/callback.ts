@@ -1,10 +1,17 @@
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import { SLACK_CALLBACK_BASE_QUERY } from "../../../components/auth/AddToSlackButton";
 
 export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
-  const state = JSON.parse(req.query.state as string);
-  // TODO 이 엔드포인트가 아직 필요한지 확인 필요
+  const supabase = createServerSupabaseClient({ req, res });
+  await supabase.auth.setSession(JSON.parse(req.query.state as string).session);
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  console.log(user);
 
   const code = req.query.code as string;
 
@@ -20,6 +27,13 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
   ).data;
   console.log(oauthResponseData);
   const botAccessToken = oauthResponseData.access_token;
+
+  await supabase
+    .from("slack_oauth_tokens")
+    .upsert(
+      { access_token: botAccessToken, raw_oauth_response: oauthResponseData },
+      { onConflict: "user_id" },
+    );
 
   res.redirect(process.env.REDIRECT_BACK_HOST || "http://localhost:3000");
 };

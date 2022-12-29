@@ -1,3 +1,5 @@
+import { useSession } from "@supabase/auth-helpers-react";
+
 function encodeData(data: any) {
   return Object.keys(data)
     .map(function (key) {
@@ -7,16 +9,28 @@ function encodeData(data: any) {
 }
 const SLACK_CALLBACK_HOST = process.env.NEXT_PUBLIC_SLACK_OAUTH_CALLBACK_HOST;
 export const SLACK_CALLBACK_BASE_QUERY = {
-  scope: "channels:join,chat:write,users:read,users:read.email,channels:read",
+  scope:
+    "channels:read,chat:write,chat:write.public,users:read,users:read.email",
   redirect_uri: `${SLACK_CALLBACK_HOST}/api/slack/callback`,
   client_id: process.env.NEXT_PUBLIC_SLACK_BOT_CLIENT_ID,
 };
 
 export function AddToSlackButton() {
-  // TODO fix button
+  const session = useSession();
+  function getCallbackUrl() {
+    return `https://slack.com/oauth/v2/authorize?${encodeData({
+      ...SLACK_CALLBACK_BASE_QUERY,
+      state: JSON.stringify({
+        session: {
+          access_token: session?.access_token,
+          refresh_token: session?.refresh_token,
+        },
+      }),
+    })}`;
+  }
   return (
     <>
-      <a href="" className="slack-a-button">
+      <a href={getCallbackUrl()} className="slack-a-button">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="slack-svg"
