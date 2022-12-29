@@ -40,13 +40,6 @@ export function LoginDialog({
             supabaseClient.auth
               .signInWithOAuth({
                 provider: "slack",
-                options: {
-                  queryParams: {
-                    scope:
-                      "channels:join,chat:write,users:read,users:read.email,channels:read",
-                    granular_bot_scope: "1",
-                  },
-                },
               })
               .then(({ data, error }) => {
                 if (error) {
