@@ -9,11 +9,7 @@ import { AddToSlackButton } from "./AddToSlackButton";
 import { LoginDialog } from "./LoginDialog";
 import { SlackAppInstallDialog } from "./SlackAppInstallDialog";
 
-export function SupabaseSlackAuthBar({
-  setSlackInstalled,
-}: {
-  setSlackInstalled: (slackInstalled: boolean) => void;
-}) {
+export function SupabaseSlackAuthBar() {
   const session = useSession();
   const user = useUser();
 

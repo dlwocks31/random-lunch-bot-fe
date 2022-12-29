@@ -1,3 +1,4 @@
+import { useSession } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { SupabaseSlackAuthBar } from "../components/auth/SupabaseSlackAuthBar";
@@ -10,7 +11,16 @@ import { NormalUser } from "../utils/slack/NormalUser";
 import { generateTags } from "../utils/tag/GenerateTags";
 const DEFAULT_EACH_GROUP_USER = 4;
 export default function V2() {
-  const [slackInstalled, setSlackInstalled] = useState(false);
+  const session = useSession();
+  const { data: oauthStatusResponse } = useQuery(
+    "oauth-status-response",
+    () => fetch("/api/slack/oauth").then((res) => res.json()),
+    {
+      enabled: !!session,
+    },
+  );
+  const slackTeamName = oauthStatusResponse?.teamName;
+
   const [conversations, setConversations] = useState<SlackConversation[]>([]);
   const [members, setMembers] = useState<MemberConfig>(
     new MemberConfig(
@@ -25,7 +35,7 @@ export default function V2() {
     ["slack", "users"],
     async () => fetch("/api/slack/users").then((res) => res.json()),
     {
-      enabled: slackInstalled,
+      enabled: !!slackTeamName,
       staleTime: Infinity,
     },
   );
@@ -49,7 +59,7 @@ export default function V2() {
     ["slack", "conversations"],
     async () => fetch("/api/slack/conversations").then((res) => res.json()),
     {
-      enabled: slackInstalled,
+      enabled: !!slackTeamName,
       staleTime: Infinity,
     },
   );
@@ -68,7 +78,7 @@ export default function V2() {
 
   return (
     <>
-      <SupabaseSlackAuthBar setSlackInstalled={setSlackInstalled} />
+      <SupabaseSlackAuthBar />
       <div className="content-container">
         <MainGroupComopnent
           initialUsers={initialUsers}
