@@ -1,4 +1,3 @@
-import { useSession } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { SupabaseSlackAuthBar } from "../components/auth/SupabaseSlackAuthBar";
@@ -7,19 +6,12 @@ import { MemberConfig } from "../utils/domain/MemberConfig";
 import { MemberPartition } from "../utils/domain/MemberPartition";
 import { SlackConversation } from "../utils/domain/SlackConversation";
 import { TagMap } from "../utils/domain/TagMap";
+import { useSlackOauthStatus } from "../utils/hooks/UseSlackOauthStatus";
 import { NormalUser } from "../utils/slack/NormalUser";
 import { generateTags } from "../utils/tag/GenerateTags";
 const DEFAULT_EACH_GROUP_USER = 4;
 export default function V2() {
-  const session = useSession();
-  const { data: oauthStatusResponse } = useQuery(
-    "oauth-status-response",
-    () => fetch("/api/slack/oauth").then((res) => res.json()),
-    {
-      enabled: !!session,
-    },
-  );
-  const slackTeamName = oauthStatusResponse?.teamName;
+  const { slackTeamName } = useSlackOauthStatus();
 
   const [conversations, setConversations] = useState<SlackConversation[]>([]);
   const [members, setMembers] = useState<MemberConfig>(

@@ -1,27 +1,14 @@
 import { AppBar, Button, Toolbar, Typography } from "@mui/material";
-import {
-  useSession,
-  useSupabaseClient,
-  useUser,
-} from "@supabase/auth-helpers-react";
-import { useQuery } from "react-query";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { useSlackOauthStatus } from "../../utils/hooks/UseSlackOauthStatus";
 import { AddToSlackButton } from "./AddToSlackButton";
 import { LoginDialog } from "./LoginDialog";
 import { SlackAppInstallDialog } from "./SlackAppInstallDialog";
 
 export function SupabaseSlackAuthBar() {
-  const session = useSession();
   const user = useUser();
 
-  const { data: oauthStatusResponse, isLoading } = useQuery(
-    "oauth-status-response",
-    () => fetch("/api/slack/oauth").then((res) => res.json()),
-    {
-      enabled: !!session,
-    },
-  );
-
-  const slackTeamName = oauthStatusResponse?.teamName;
+  const { slackTeamName, isLoading } = useSlackOauthStatus();
 
   const supabaseClient = useSupabaseClient();
   return (
