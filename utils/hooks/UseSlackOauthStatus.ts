@@ -8,6 +8,7 @@ export function useSlackOauthStatus() {
     () => fetch("/api/slack/oauth").then((res) => res.json()),
     {
       enabled: !!session,
+      staleTime: Infinity,
     },
   );
   return { slackTeamName: data?.teamName, isLoading };
