@@ -35,5 +35,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
       { onConflict: "user_id" },
     );
 
-  res.redirect(process.env.REDIRECT_BACK_HOST || "http://localhost:3000");
+  res.redirect(
+    process.env.NEXT_PUBLIC_REDIRECT_BACK_HOST || "http://localhost:3000",
+  );
 };

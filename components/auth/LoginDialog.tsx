@@ -40,6 +40,9 @@ export function LoginDialog({
             supabaseClient.auth
               .signInWithOAuth({
                 provider: "slack",
+                options: {
+                  redirectTo: process.env.NEXT_PUBLIC_REDIRECT_BACK_HOST,
+                },
               })
               .then(({ data, error }) => {
                 if (error) {

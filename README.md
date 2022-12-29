@@ -26,4 +26,4 @@
 - `NEXT_PUBLIC_SLACK_BOT_CLIENT_ID`: 메세지를 전송하는 슬랙 봇의 Client ID
 - `SLACK_BOT_CLIENT_SECRET`: 메세지를 전송하는 슬랙 봇의 Client Secret
 - `NEXT_PUBLIC_SLACK_OAUTH_CALLBACK_HOST`: 슬랙 봇 연동 시, Slack Oauth Callback 요청을 받을 Host ( `https://random-lunch-bot-fe.vercel.app` 까지만 입력하면, Path는 어플리케이션에서 처리 )
-- `REDIRECT_BACK_HOST`: 슬랙 봇 연동 시, 연동 완료 후 슬랙 다시 돌아올 페이지
+- `NEXT_PUBLIC_REDIRECT_BACK_HOST`: 슬랙 봇 연동 시, 연동 완료 후 슬랙 다시 돌아올 페이지

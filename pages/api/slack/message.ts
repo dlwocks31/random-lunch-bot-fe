@@ -22,8 +22,6 @@ export default async function handler(
   const message = req.body.message;
   const channel = req.body.channel;
   console.log(`Sending message to channel ${channel}: ${message}`);
-  const joinResult = await slackService.joinConversation(channel);
-  console.log(JSON.stringify(joinResult));
   const response = await slackService.send(message, channel);
   console.log(JSON.stringify(response));
   res.status(200).json(response);
