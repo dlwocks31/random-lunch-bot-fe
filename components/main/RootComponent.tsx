@@ -5,6 +5,7 @@ import {
   Divider,
   ToggleButton,
   ToggleButtonGroup,
+  useMediaQuery,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { useState } from "react";
@@ -62,12 +63,15 @@ export const RootComponent = ({
     ) : (
       <DisplayExcludedComponent users={members.excluded} />
     );
+
+  const isMobile = useMediaQuery("(max-width: 600px)");
+
   return (
     <>
       <div
         style={{
           display: "flex",
-          alignItems: "center",
+          flexDirection: isMobile ? "column" : "row",
           gap: "10px",
           justifyContent: "center",
           marginBottom: "1rem",
@@ -84,21 +88,30 @@ export const RootComponent = ({
           size="small"
           sx={{ display: "flex", flex: "3 0 0" }}
         >
-          <ToggleButton value="office" sx={{ flex: "1 0 0" }}>
+          <ToggleButton
+            value="office"
+            sx={{ flex: "1 0 0", wordBreak: "keep-all" }}
+          >
             사무실 - {members.office.userCount()}명/
             {members.office.groupCount()}조
           </ToggleButton>
-          <ToggleButton value="remote" sx={{ flex: "1 0 0" }}>
+          <ToggleButton
+            value="remote"
+            sx={{ flex: "1 0 0", wordBreak: "keep-all" }}
+          >
             재택 - {members.remote.userCount()}명/
             {members.remote.groupCount()}조
           </ToggleButton>
-          <ToggleButton value="excluded" sx={{ flex: "1 0 0" }}>
+          <ToggleButton
+            value="excluded"
+            sx={{ flex: "1 0 0", wordBreak: "keep-all" }}
+          >
             제외 - {members.excluded.length}명
           </ToggleButton>
         </ToggleButtonGroup>
-        <Box flex="0 0 auto">그룹에 추가:</Box>
 
-        <Box flex="2 0 0">
+        <Box flex="2 0 0" display="flex" alignItems="center" gap={1}>
+          <Box>그룹에 추가:</Box>
           <CreatableSelect
             placeholder="유저 이름을 검색하세요"
             options={allUsers
