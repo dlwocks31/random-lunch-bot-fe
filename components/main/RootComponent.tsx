@@ -41,6 +41,8 @@ export const RootComponent = ({
     setMembers(members.shuffleByTagMap(tagMap));
   };
 
+  const isMobile = useMediaQuery("(max-width: 600px)");
+
   const currentDisplayComponent =
     currentPartitionLabel === "office" ? (
       <DisplayMemberPartitionComponent
@@ -50,6 +52,7 @@ export const RootComponent = ({
         }
         onShuffle={onShuffle}
         indexOffset={1}
+        isMobile={isMobile}
       />
     ) : currentPartitionLabel === "remote" ? (
       <DisplayMemberPartitionComponent
@@ -59,12 +62,11 @@ export const RootComponent = ({
         }
         onShuffle={onShuffle}
         indexOffset={members.office.groupCount() + 1}
+        isMobile={isMobile}
       />
     ) : (
       <DisplayExcludedComponent users={members.excluded} />
     );
-
-  const isMobile = useMediaQuery("(max-width: 600px)");
 
   return (
     <>
@@ -157,11 +159,13 @@ const DisplayMemberPartitionComponent = ({
   setGroupCount,
   onShuffle,
   indexOffset,
+  isMobile,
 }: {
   memberPartition: MemberPartition;
   setGroupCount: (count: number) => void;
   onShuffle: () => void;
   indexOffset: number;
+  isMobile: boolean;
 }) => {
   if (memberPartition.userCount() === 0) {
     return <div>유저가 없습니다.</div>;
@@ -171,7 +175,6 @@ const DisplayMemberPartitionComponent = ({
     .map((stat) => `${stat.size}인조 ${stat.numberOfGroups}개`)
     .join(" / ");
 
-  const isMobile = useMediaQuery("(max-width: 600px)");
   return (
     <Box
       sx={{
