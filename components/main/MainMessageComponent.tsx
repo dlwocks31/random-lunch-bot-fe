@@ -9,7 +9,6 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { useSession } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
@@ -137,7 +136,6 @@ const MessageSender = ({
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false);
   const [channel, setChannel] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
-  const session = useSession();
   const sendSlackMessage = async () => {
     setIsSending(true);
 

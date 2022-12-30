@@ -118,30 +118,30 @@ export const MainGroupComopnent = ({
         >
           <div>추가 설정:</div>
           {extraSettingsDisplayed.map((setting) => (
-            <Button
-              sx={{
-                flexGrow: 1,
-                maxWidth: "200px",
-                flexBasis: 0,
-                wordBreak: "keep-all",
-              }}
-              key={setting.name}
-              variant={
-                setting.name === extraSettingName && isExtraSettingOpened
-                  ? "contained"
-                  : "outlined"
-              }
-              onClick={() => {
-                if (setting.name === extraSettingName) {
-                  setIsExtraSettingOpened(!isExtraSettingOpened);
-                } else {
-                  setExtraSettingName(setting.name);
-                  setIsExtraSettingOpened(true);
+            <Box flexGrow={1} width={isMobile ? "100%" : undefined}>
+              <Button
+                sx={{
+                  wordBreak: "keep-all",
+                }}
+                fullWidth
+                key={setting.name}
+                variant={
+                  setting.name === extraSettingName && isExtraSettingOpened
+                    ? "contained"
+                    : "outlined"
                 }
-              }}
-            >
-              {setting.name}
-            </Button>
+                onClick={() => {
+                  if (setting.name === extraSettingName) {
+                    setIsExtraSettingOpened(!isExtraSettingOpened);
+                  } else {
+                    setExtraSettingName(setting.name);
+                    setIsExtraSettingOpened(true);
+                  }
+                }}
+              >
+                {setting.name}
+              </Button>
+            </Box>
           ))}
         </Box>
         <Collapse
