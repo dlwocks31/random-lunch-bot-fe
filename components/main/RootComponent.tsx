@@ -170,13 +170,21 @@ const DisplayMemberPartitionComponent = ({
   const groupSizeStatLabel = groupSizeStat
     .map((stat) => `${stat.size}인조 ${stat.numberOfGroups}개`)
     .join(" / ");
+
+  const isMobile = useMediaQuery("(max-width: 600px)");
   return (
-    <Box sx={{ display: "flex", gap: "10px", flexDirection: "column" }}>
+    <Box
+      sx={{
+        display: "flex",
+        gap: "10px",
+        flexDirection: "column",
+        overflow: "scroll",
+      }}
+    >
       <Box
         sx={{
-          flex: "3 0 0",
           display: "flex",
-          gap: "3px",
+          gap: "2px",
           flexDirection: "column",
         }}
       >
@@ -194,20 +202,25 @@ const DisplayMemberPartitionComponent = ({
         style={{
           display: "flex",
           alignItems: "center",
+          flexDirection: isMobile ? "column" : "row",
           gap: "10px",
           justifyContent: "flex-start",
         }}
       >
-        <div>총 조 개수:</div>
-        <StepInput
-          count={memberPartition.groupCount()}
-          setCount={setGroupCount}
-        />
-        <div>개</div>
-        <Alert severity="info">{groupSizeStatLabel}를 만듭니다.</Alert>
-        <Button variant="outlined" onClick={onShuffle}>
-          재추첨
-        </Button>
+        <Box display="flex" alignItems="center" gap={1}>
+          <div>총 조 개수:</div>
+          <StepInput
+            count={memberPartition.groupCount()}
+            setCount={setGroupCount}
+          />
+          <div>개</div>
+        </Box>
+        <Box display="flex" gap={1}>
+          <Alert severity="info">{groupSizeStatLabel}를 만듭니다.</Alert>
+          <Button variant="outlined" onClick={onShuffle}>
+            재추첨
+          </Button>
+        </Box>
       </div>
     </Box>
   );
@@ -221,7 +234,7 @@ const SingleGroupComponent = ({
   users: NormalUser[];
 }) => {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
       <div style={{ minWidth: "40px" }}>{groupIndex}조: </div>
       {users.map((user) => (
         <Chip

@@ -1,4 +1,4 @@
-import { Box, Button, Collapse } from "@mui/material";
+import { Box, Button, Collapse, useMediaQuery } from "@mui/material";
 import { useCallback, useState } from "react";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
@@ -98,6 +98,7 @@ export const MainGroupComopnent = ({
   const [isExtraSettingOpened, setIsExtraSettingOpened] =
     useState<boolean>(false);
 
+  const isMobile = useMediaQuery("(max-width:600px)");
   return (
     <div>
       <h2>조원 설정</h2>
@@ -108,11 +109,22 @@ export const MainGroupComopnent = ({
         tagMap={tagMap}
       />
       <div>
-        <Box display="flex" alignItems="center" gap={1} paddingTop={1}>
+        <Box
+          display="flex"
+          alignItems="center"
+          gap={1}
+          flexDirection={isMobile ? "column" : "row"}
+          paddingTop={1}
+        >
           <div>추가 설정:</div>
           {extraSettingsDisplayed.map((setting) => (
             <Button
-              sx={{ flexGrow: 1, maxWidth: "200px" }}
+              sx={{
+                flexGrow: 1,
+                maxWidth: "200px",
+                flexBasis: 0,
+                wordBreak: "keep-all",
+              }}
               key={setting.name}
               variant={
                 setting.name === extraSettingName && isExtraSettingOpened

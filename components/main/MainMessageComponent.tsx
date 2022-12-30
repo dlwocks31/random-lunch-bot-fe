@@ -6,6 +6,7 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
+  useMediaQuery,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { useSession } from "@supabase/auth-helpers-react";
@@ -49,8 +50,10 @@ export const MainMessageComponent = ({
     }
   }, [slackInstalled]);
 
+  const isMobile = useMediaQuery("(max-width: 600px)");
+
   return (
-    <Box display="flex" gap={1}>
+    <Box display="flex" gap={1} flexDirection={isMobile ? "column" : "row"}>
       <Box flexGrow={2} flexBasis={0}>
         <MessageDisplayer
           slackInstalled={slackInstalled}
