@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { SupabaseSlackAuthBar } from "../components/auth/SupabaseSlackAuthBar";
 import { MainGroupComopnent } from "../components/main/MainGroupComponent";
 import { MemberConfig } from "../utils/domain/MemberConfig";
@@ -11,16 +11,16 @@ import { NormalUser } from "../utils/slack/NormalUser";
 import { generateTags } from "../utils/tag/GenerateTags";
 const DEFAULT_EACH_GROUP_USER = 4;
 export default function V2() {
+  const queryClient = useQueryClient();
   const { slackTeamName } = useSlackOauthStatus();
 
   const [conversations, setConversations] = useState<SlackConversation[]>([]);
-  const [members, setMembers] = useState<MemberConfig>(
-    new MemberConfig(
-      new MemberPartition([], DEFAULT_EACH_GROUP_USER),
-      new MemberPartition([], DEFAULT_EACH_GROUP_USER),
-      [],
-    ),
+  const emptyMemberConfig = new MemberConfig(
+    new MemberPartition([], DEFAULT_EACH_GROUP_USER),
+    new MemberPartition([], DEFAULT_EACH_GROUP_USER),
+    [],
   );
+  const [members, setMembers] = useState<MemberConfig>(emptyMemberConfig);
   const [tagMap, setTagMap] = useState<TagMap>(new TagMap([]));
 
   const { data: usersData } = useQuery(
@@ -70,7 +70,14 @@ export default function V2() {
 
   return (
     <>
-      <SupabaseSlackAuthBar />
+      <SupabaseSlackAuthBar
+        onSignOut={() => {
+          setMembers(emptyMemberConfig);
+          setTagMap(new TagMap([]));
+          setConversations([]);
+          queryClient.invalidateQueries("oauth-status-response");
+        }}
+      />
       <div className="content-container">
         <MainGroupComopnent
           initialUsers={initialUsers}

@@ -5,7 +5,7 @@ import { AddToSlackButton } from "./AddToSlackButton";
 import { LoginDialog } from "./LoginDialog";
 import { SlackAppInstallDialog } from "./SlackAppInstallDialog";
 
-export function SupabaseSlackAuthBar() {
+export function SupabaseSlackAuthBar({ onSignOut }: { onSignOut: () => void }) {
   const user = useUser();
 
   const { slackTeamName, isLoading } = useSlackOauthStatus();
@@ -23,7 +23,7 @@ export function SupabaseSlackAuthBar() {
               <Button
                 color="inherit"
                 variant="outlined"
-                onClick={() => supabaseClient.auth.signOut()}
+                onClick={() => supabaseClient.auth.signOut().then(onSignOut)}
               >
                 로그아웃
               </Button>
