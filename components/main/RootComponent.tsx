@@ -171,7 +171,7 @@ const DisplayMemberPartitionComponent = ({
   isMobile: boolean;
 }) => {
   const { slackTeamName } = useSlackOauthStatus();
-  const { data: usersData, isLoading: isLoadingUsers } = useQuery(
+  const { isLoading: isLoadingUsers } = useQuery(
     ["slack", "users"],
     async () => fetch("/api/slack/users").then((res) => res.json()),
     {
