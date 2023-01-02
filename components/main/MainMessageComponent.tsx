@@ -8,6 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 import { Box } from "@mui/system";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
@@ -30,7 +31,8 @@ export const MainMessageComponent = ({
     slackConversations: SlackConversation[];
   };
 }) => {
-  const messageConfigRepository = new MessageConfigRepository();
+  const supabaseClient = useSupabaseClient();
+  const messageConfigRepository = new MessageConfigRepository(supabaseClient);
   const [prefixMessage, setPrefixMessage] = useState<string>(
     DEFAULT_TEMPLATE_MESSAGE,
   );
@@ -91,6 +93,7 @@ export const MainMessageComponent = ({
               slackConversations={slackConversations}
               prefixMessage={prefixMessage}
               defaultChannel={defaultChannel}
+              messageConfigRepository={messageConfigRepository}
             />
           </div>
         </Box>
@@ -161,17 +164,19 @@ const MessageSender = ({
   prefixMessage,
   slackConversations,
   defaultChannel,
+  messageConfigRepository,
 }: {
   message: string;
   prefixMessage: string;
   slackConversations: SlackConversation[];
   defaultChannel?: string;
+  messageConfigRepository: MessageConfigRepository;
 }) => {
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false);
   const [channel, setChannel] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
   useEffect(() => {
-    if (defaultChannel && channel === "") {
+    if (defaultChannel) {
       setChannel(defaultChannel);
     }
   }, [defaultChannel]);
@@ -197,6 +202,16 @@ const MessageSender = ({
     }
     return "";
   };
+  const makeValueFromChannel = (channel: string) => {
+    const conv = slackConversations.find((c) => c.id === channel);
+    if (conv) {
+      return {
+        value: conv.id,
+        label: conv.name,
+      };
+    }
+    return undefined;
+  };
   return (
     <>
       <div
@@ -216,6 +231,7 @@ const MessageSender = ({
               }))}
               onChange={(e) => setChannel(e?.value || "")}
               menuPlacement="auto"
+              value={makeValueFromChannel(channel)}
             />{" "}
           </div>
 
@@ -255,7 +271,7 @@ const MessageSender = ({
               onClick={() => {
                 sendSlackMessage().then(() => {
                   setIsConfirmDialogOpened(false);
-                  new MessageConfigRepository().save({
+                  messageConfigRepository.save({
                     template: prefixMessage,
                     channel,
                   });

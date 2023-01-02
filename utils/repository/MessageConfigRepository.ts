@@ -1,21 +1,26 @@
-export class MessageConfigRepository {
-  private static readonly LOCALSTORAGE_KEY = "message_config";
+import { SupabaseClient } from "@supabase/supabase-js";
 
-  save(config: { template: string; channel: string }) {
-    if (typeof window === "undefined") return;
-    localStorage.setItem(
-      MessageConfigRepository.LOCALSTORAGE_KEY,
-      JSON.stringify(config),
-    );
+export class MessageConfigRepository {
+  constructor(private supabaseClient: SupabaseClient) {}
+
+  async save(config: { template: string; channel: string }) {
+    await this.supabaseClient
+      .from("message_config")
+      .upsert(config, { onConflict: "user_id" });
   }
 
   async load(): Promise<{ template?: string; channel?: string }> {
-    if (typeof window === "undefined") return {};
-    const config = localStorage.getItem(
-      MessageConfigRepository.LOCALSTORAGE_KEY,
-    );
-    if (config) {
-      return JSON.parse(config);
+    const result = await this.supabaseClient.from("message_config").select("*");
+    if (result.error) {
+      console.error(result.error);
+      return {};
+    }
+    if (result.data.length > 0) {
+      const elem = result.data[0];
+      return {
+        template: elem.template,
+        channel: elem.channel,
+      };
     }
     return {};
   }
