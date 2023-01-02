@@ -3,16 +3,19 @@ import {
   Button,
   Chip,
   Divider,
+  LinearProgress,
   ToggleButton,
   ToggleButtonGroup,
   useMediaQuery,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { useState } from "react";
+import { useQuery } from "react-query";
 import CreatableSelect from "react-select/creatable";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
 import { TagMap } from "../../utils/domain/TagMap";
+import { useSlackOauthStatus } from "../../utils/hooks/UseSlackOauthStatus";
 import { NormalUser } from "../../utils/slack/NormalUser";
 import { BorderedBox } from "../util/BorderedBox";
 import { StepInput } from "../util/StepInput";
@@ -167,6 +170,23 @@ const DisplayMemberPartitionComponent = ({
   indexOffset: number;
   isMobile: boolean;
 }) => {
+  const { slackTeamName } = useSlackOauthStatus();
+  const { data: usersData, isLoading: isLoadingUsers } = useQuery(
+    ["slack", "users"],
+    async () => fetch("/api/slack/users").then((res) => res.json()),
+    {
+      enabled: !!slackTeamName,
+      staleTime: Infinity,
+    },
+  );
+  if (isLoadingUsers) {
+    return (
+      <div style={{ textAlign: "center" }}>
+        <div>유저 정보를 불러오는 중입니다...</div>
+        <LinearProgress sx={{ marginTop: 1 }} />
+      </div>
+    );
+  }
   if (memberPartition.userCount() === 0) {
     return <div>유저가 없습니다.</div>;
   }
