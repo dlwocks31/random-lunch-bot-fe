@@ -55,13 +55,15 @@ export const MainMessageComponent = ({
   }, [slackInstalled]);
 
   useEffect(() => {
-    const config = messageConfigRepository.load();
-    if (config.template && prefixMessage === DEFAULT_TEMPLATE_MESSAGE) {
-      setPrefixMessage(prefixMessage);
-    }
-    if (config.channel) {
-      setDefaultChannel(config.channel);
-    }
+    (async () => {
+      const config = await messageConfigRepository.load();
+      if (config.template && prefixMessage === DEFAULT_TEMPLATE_MESSAGE) {
+        setPrefixMessage(prefixMessage);
+      }
+      if (config.channel) {
+        setDefaultChannel(config.channel);
+      }
+    })();
   });
 
   return (

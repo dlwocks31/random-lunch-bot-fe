@@ -9,7 +9,7 @@ export class MessageConfigRepository {
     );
   }
 
-  load(): { template?: string; channel?: string } {
+  async load(): Promise<{ template?: string; channel?: string }> {
     if (typeof window === "undefined") return {};
     const config = localStorage.getItem(
       MessageConfigRepository.LOCALSTORAGE_KEY,
