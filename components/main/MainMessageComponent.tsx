@@ -95,7 +95,6 @@ const MessageDisplayer = ({
   setPrefixMessage: (prefixMessage: string) => void;
   members: MemberConfig;
 }) => {
-  const [viewRawMessage, setViewRawMessage] = useState(false);
   const mergedMembers = mergeMemberConfigGroups(members);
   return (
     <>
@@ -131,6 +130,7 @@ const MessageDisplayer = ({
                   borderRadius: "4px",
                   whiteSpace: "nowrap",
                 }}
+                key={user.name}
               >
                 @{user.name}
               </div>

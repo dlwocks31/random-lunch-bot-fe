@@ -118,7 +118,11 @@ export const MainGroupComopnent = ({
         >
           <div>추가 설정:</div>
           {extraSettingsDisplayed.map((setting) => (
-            <Box flexGrow={1} width={isMobile ? "100%" : undefined}>
+            <Box
+              flexGrow={1}
+              width={isMobile ? "100%" : undefined}
+              key={setting.name}
+            >
               <Button
                 sx={{
                   wordBreak: "keep-all",
