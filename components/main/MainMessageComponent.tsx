@@ -6,7 +6,6 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
-  useMediaQuery,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
@@ -49,16 +48,15 @@ export const MainMessageComponent = ({
     }
   }, [slackInstalled]);
 
-  const isMobile = useMediaQuery("(max-width: 600px)");
-
   return (
-    <Box display="flex" gap={1} flexDirection={isMobile ? "column" : "row"}>
+    <Box display="flex" gap={1} flexDirection="column">
       <Box flexGrow={2} flexBasis={0}>
         <MessageDisplayer
           slackInstalled={slackInstalled}
           prefixMessage={prefixMessage}
           setPrefixMessage={setPrefixMessage}
           mainMessage={membersSlackMessage}
+          members={members}
         />
       </Box>
 
@@ -87,14 +85,18 @@ const MessageDisplayer = ({
   prefixMessage,
   setPrefixMessage,
   mainMessage,
+  members,
 }: {
   slackInstalled: boolean;
   prefixMessage: string;
   setPrefixMessage: (prefixMessage: string) => void;
   mainMessage: string;
+  members: MemberConfig;
 }) => {
+  const [viewRawMessage, setViewRawMessage] = useState(false);
+  const mergedMembers = mergeMemberConfigGroups(members);
   return (
-    <div>
+    <>
       {slackInstalled && (
         <TextField
           label="메세지 템플릿"
@@ -104,26 +106,37 @@ const MessageDisplayer = ({
           onChange={(e) => setPrefixMessage(e.target.value)}
         />
       )}
-      <TextField
-        focused={false}
-        disabled
-        multiline
-        fullWidth
-        value={mainMessage ? mainMessage : "조원을 추가해 보세요."}
-        InputProps={{
-          endAdornment: (
-            <Button
-              disabled={!mainMessage}
-              onClick={() => {
-                navigator.clipboard.writeText(mainMessage);
-              }}
-            >
-              Copy
-            </Button>
-          ),
-        }}
-      />
-    </div>
+
+      <Box
+        width="100%"
+        border="1px solid #ccc"
+        borderRadius="4px"
+        padding="14.5px 14px"
+        overflow="auto"
+      >
+        {mergedMembers.map((memberGroup) => (
+          <Box display="flex" alignItems="center" key={memberGroup.groupLabel}>
+            <div style={{ whiteSpace: "nowrap" }}>
+              {memberGroup.groupLabel}:
+            </div>
+            {memberGroup.users.map((user) => (
+              <div
+                style={{
+                  background: "rgba(29,155,209,.1)",
+                  color: "rgba(18,100,163,1)",
+                  margin: "0 2px",
+                  padding: "2px",
+                  borderRadius: "4px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                @{user.name}
+              </div>
+            ))}
+          </Box>
+        ))}
+      </Box>
+    </>
   );
 };
 const MessageSender = ({
@@ -228,6 +241,28 @@ const MessageSender = ({
   );
 };
 
+const mergeMemberConfigGroups = (
+  members: MemberConfig,
+): { groupLabel: string; users: NormalUser[] }[] => {
+  const groups: { groupLabel: string; users: NormalUser[] }[] = [];
+  let groupNum = 1;
+  for (const users of members.office.groups) {
+    groups.push({
+      groupLabel: `${groupNum}조`,
+      users,
+    });
+    groupNum++;
+  }
+  for (const users of members.remote.groups) {
+    groups.push({
+      groupLabel: `${groupNum}조`,
+      users,
+    });
+    groupNum++;
+  }
+  return groups;
+};
+
 const customBuildSlackMessage = (
   members: MemberConfig,
   shouldDisableMention: boolean,
@@ -235,16 +270,10 @@ const customBuildSlackMessage = (
   const userToStr = (u: NormalUser) =>
     shouldDisableMention ? u.name : `<@${u.id}>`;
   const messageList = [];
-  let groupNum = 1;
-  for (const users of members.office.groups) {
-    const names = users.map(userToStr).join(" ");
-    messageList.push(`${groupNum}조: ${names}`);
-    groupNum++;
-  }
-  for (const users of members.remote.groups) {
-    const names = users.map(userToStr).join(" ");
-    messageList.push(`${groupNum}조: ${names}`);
-    groupNum++;
+  const groups = mergeMemberConfigGroups(members);
+  for (const group of groups) {
+    const groupMessage = group.users.map((u) => userToStr(u)).join(" ");
+    messageList.push(`${group.groupLabel}: ${groupMessage}`);
   }
   return messageList.join("\n");
 };
