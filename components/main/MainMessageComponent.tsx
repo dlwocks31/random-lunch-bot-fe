@@ -10,6 +10,7 @@ import {
 import { Box } from "@mui/system";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
@@ -37,9 +38,6 @@ export const MainMessageComponent = ({
     DEFAULT_TEMPLATE_MESSAGE,
   );
 
-  const [defaultChannel, setDefaultChannel] = useState<string | undefined>(
-    undefined,
-  );
   const [shouldDisableMention, setShouldDisableMention] = useState<boolean>(
     !slackInstalled,
   );
@@ -50,23 +48,27 @@ export const MainMessageComponent = ({
   );
   const message = [prefixMessage, membersSlackMessage].join("\n");
 
+  const { data: messageConfig } = useQuery(
+    "message-config",
+    async () => messageConfigRepository.load(),
+    {
+      staleTime: Infinity,
+    },
+  );
+
+  useEffect(() => {
+    if (messageConfig?.template) {
+      setPrefixMessage(messageConfig.template);
+    }
+  }, [messageConfig]);
+
+  console.log("messageConfig", messageConfig);
+
   useEffect(() => {
     if (slackInstalled) {
       setShouldDisableMention(false);
     }
   }, [slackInstalled]);
-
-  useEffect(() => {
-    (async () => {
-      const config = await messageConfigRepository.load();
-      if (config.template && prefixMessage === DEFAULT_TEMPLATE_MESSAGE) {
-        setPrefixMessage(config.template);
-      }
-      if (config.channel) {
-        setDefaultChannel(config.channel);
-      }
-    })();
-  });
 
   return (
     <Box display="flex" gap={1} flexDirection="column">
@@ -92,7 +94,7 @@ export const MainMessageComponent = ({
               message={message}
               slackConversations={slackConversations}
               prefixMessage={prefixMessage}
-              defaultChannel={defaultChannel}
+              defaultChannel={messageConfig?.channel}
               messageConfigRepository={messageConfigRepository}
             />
           </div>
