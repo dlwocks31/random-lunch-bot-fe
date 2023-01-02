@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
+import { MessageConfigRepository } from "../../utils/repository/MessageConfigRepository";
 import { NormalUser } from "../../utils/slack/NormalUser";
 
 const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:orange_heart: 조를 발표합니다!
@@ -29,8 +30,10 @@ export const MainMessageComponent = ({
     slackConversations: SlackConversation[];
   };
 }) => {
+  const messageConfigRepository = new MessageConfigRepository();
+  const config = messageConfigRepository.load();
   const [prefixMessage, setPrefixMessage] = useState<string>(
-    DEFAULT_TEMPLATE_MESSAGE,
+    config.template || DEFAULT_TEMPLATE_MESSAGE,
   );
   const [shouldDisableMention, setShouldDisableMention] = useState<boolean>(
     !slackInstalled,
@@ -55,7 +58,6 @@ export const MainMessageComponent = ({
           slackInstalled={slackInstalled}
           prefixMessage={prefixMessage}
           setPrefixMessage={setPrefixMessage}
-          mainMessage={membersSlackMessage}
           members={members}
         />
       </Box>
@@ -72,6 +74,8 @@ export const MainMessageComponent = ({
             <MessageSender
               message={message}
               slackConversations={slackConversations}
+              prefixMessage={prefixMessage}
+              defaultChannel={config.channel}
             />
           </div>
         </Box>
@@ -84,13 +88,11 @@ const MessageDisplayer = ({
   slackInstalled,
   prefixMessage,
   setPrefixMessage,
-  mainMessage,
   members,
 }: {
   slackInstalled: boolean;
   prefixMessage: string;
   setPrefixMessage: (prefixMessage: string) => void;
-  mainMessage: string;
   members: MemberConfig;
 }) => {
   const [viewRawMessage, setViewRawMessage] = useState(false);
@@ -141,13 +143,18 @@ const MessageDisplayer = ({
 };
 const MessageSender = ({
   message,
+  prefixMessage,
   slackConversations,
+  defaultChannel,
 }: {
   message: string;
+  prefixMessage: string;
   slackConversations: SlackConversation[];
+  defaultChannel?: string;
 }) => {
+  const messageConfigRepository = new MessageConfigRepository();
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false);
-  const [channel, setChannel] = useState<string>("");
+  const [channel, setChannel] = useState<string>(defaultChannel || "");
   const [isSending, setIsSending] = useState(false);
   const sendSlackMessage = async () => {
     setIsSending(true);
@@ -227,7 +234,13 @@ const MessageSender = ({
             </Button>
             <Button
               onClick={() => {
-                sendSlackMessage().then(() => setIsConfirmDialogOpened(false));
+                sendSlackMessage().then(() => {
+                  setIsConfirmDialogOpened(false);
+                  messageConfigRepository.save({
+                    template: prefixMessage,
+                    channel,
+                  });
+                });
               }}
               variant="contained"
               disabled={isSending}
