@@ -11,6 +11,7 @@ import {
 import { Box } from "@mui/system";
 import { useState } from "react";
 import { useQuery } from "react-query";
+import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
@@ -39,6 +40,8 @@ export const RootComponent = ({
       ? members.remote.users()
       : members.excluded;
   const allUsers = members.allUsers();
+
+  const { slackTeamName } = useSlackOauthStatus();
 
   const onShuffle = () => {
     setMembers(members.shuffleByTagMap(tagMap));
@@ -117,39 +120,65 @@ export const RootComponent = ({
 
         <Box flex="2 0 0" display="flex" alignItems="center" gap={1}>
           <Box>그룹에 추가:</Box>
-          <CreatableSelect
-            placeholder="유저 이름을 검색하거나 추가하세요"
-            options={allUsers
-              .filter((u) => !currentVisibleUsers.includes(u))
-              .map(({ id, name }) => ({
-                value: id,
-                label: name,
-              }))}
-            value={null}
-            onChange={(selectedOption) => {
-              const selectedUser = allUsers.find(
-                (u) => u.id === selectedOption?.value,
-              );
-              if (selectedUser === undefined) return;
-              if (currentPartitionLabel === "office") {
-                setMembers(members.moveMemberToOffice(selectedUser));
-              } else if (currentPartitionLabel === "remote") {
-                setMembers(members.moveMemberToRemote(selectedUser));
-              } else {
-                setMembers(members.moveMemberToExcluded(selectedUser));
-              }
-            }}
-            onCreateOption={(name: string) => {
-              const newUser = new NormalUser(name);
-              if (currentPartitionLabel === "office") {
-                setMembers(members.addOfficeUser(newUser));
-              } else if (currentPartitionLabel === "remote") {
-                setMembers(members.addRemoteUser(newUser));
-              } else {
-                setMembers(members.addExcludedUser(newUser));
-              }
-            }}
-          />
+          {slackTeamName ? (
+            <Select
+              placeholder="유저 이름을 검색하세요"
+              options={allUsers
+                .filter((u) => !currentVisibleUsers.includes(u))
+                .map(({ id, name }) => ({
+                  value: id,
+                  label: name,
+                }))}
+              value={null}
+              onChange={(selectedOption) => {
+                const selectedUser = allUsers.find(
+                  (u) => u.id === selectedOption?.value,
+                );
+                if (selectedUser === undefined) return;
+                if (currentPartitionLabel === "office") {
+                  setMembers(members.moveMemberToOffice(selectedUser));
+                } else if (currentPartitionLabel === "remote") {
+                  setMembers(members.moveMemberToRemote(selectedUser));
+                } else {
+                  setMembers(members.moveMemberToExcluded(selectedUser));
+                }
+              }}
+            />
+          ) : (
+            <CreatableSelect
+              placeholder="유저 이름을 검색하거나 추가하세요"
+              options={allUsers
+                .filter((u) => !currentVisibleUsers.includes(u))
+                .map(({ id, name }) => ({
+                  value: id,
+                  label: name,
+                }))}
+              value={null}
+              onChange={(selectedOption) => {
+                const selectedUser = allUsers.find(
+                  (u) => u.id === selectedOption?.value,
+                );
+                if (selectedUser === undefined) return;
+                if (currentPartitionLabel === "office") {
+                  setMembers(members.moveMemberToOffice(selectedUser));
+                } else if (currentPartitionLabel === "remote") {
+                  setMembers(members.moveMemberToRemote(selectedUser));
+                } else {
+                  setMembers(members.moveMemberToExcluded(selectedUser));
+                }
+              }}
+              onCreateOption={(name: string) => {
+                const newUser = new NormalUser(name);
+                if (currentPartitionLabel === "office") {
+                  setMembers(members.addOfficeUser(newUser));
+                } else if (currentPartitionLabel === "remote") {
+                  setMembers(members.addRemoteUser(newUser));
+                } else {
+                  setMembers(members.addExcludedUser(newUser));
+                }
+              }}
+            />
+          )}
         </Box>
       </div>
       <BorderedBox>{currentDisplayComponent}</BorderedBox>
