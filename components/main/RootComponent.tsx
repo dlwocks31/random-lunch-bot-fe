@@ -115,7 +115,7 @@ export const RootComponent = ({
         <Box flex="2 0 0" display="flex" alignItems="center" gap={1}>
           <Box>그룹에 추가:</Box>
           <CreatableSelect
-            placeholder="유저 이름을 검색하세요"
+            placeholder="유저 이름을 검색하거나 추가하세요"
             options={allUsers
               .filter((u) => !currentVisibleUsers.includes(u))
               .map(({ id, name }) => ({
