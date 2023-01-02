@@ -58,7 +58,7 @@ export const MainMessageComponent = ({
     (async () => {
       const config = await messageConfigRepository.load();
       if (config.template && prefixMessage === DEFAULT_TEMPLATE_MESSAGE) {
-        setPrefixMessage(prefixMessage);
+        setPrefixMessage(config.template);
       }
       if (config.channel) {
         setDefaultChannel(config.channel);
@@ -168,8 +168,13 @@ const MessageSender = ({
   defaultChannel?: string;
 }) => {
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false);
-  const [channel, setChannel] = useState<string>(defaultChannel || "");
+  const [channel, setChannel] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
+  useEffect(() => {
+    if (defaultChannel && channel === "") {
+      setChannel(defaultChannel);
+    }
+  }, [defaultChannel]);
   const sendSlackMessage = async () => {
     setIsSending(true);
 
