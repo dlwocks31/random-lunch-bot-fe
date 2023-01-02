@@ -248,6 +248,10 @@ const MessageSender = ({
               onClick={() => {
                 sendSlackMessage().then(() => {
                   setIsConfirmDialogOpened(false);
+                  new MessageConfigRepository().save({
+                    template: prefixMessage,
+                    channel,
+                  });
                 });
               }}
               variant="contained"
