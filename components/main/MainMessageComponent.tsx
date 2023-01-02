@@ -12,7 +12,6 @@ import { useEffect, useState } from "react";
 import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
-import { MessageConfigRepository } from "../../utils/repository/MessageConfigRepository";
 import { NormalUser } from "../../utils/slack/NormalUser";
 
 const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:orange_heart: 조를 발표합니다!
@@ -30,10 +29,8 @@ export const MainMessageComponent = ({
     slackConversations: SlackConversation[];
   };
 }) => {
-  const messageConfigRepository = new MessageConfigRepository();
-  const config = messageConfigRepository.load();
   const [prefixMessage, setPrefixMessage] = useState<string>(
-    config.template || DEFAULT_TEMPLATE_MESSAGE,
+    DEFAULT_TEMPLATE_MESSAGE,
   );
   const [shouldDisableMention, setShouldDisableMention] = useState<boolean>(
     !slackInstalled,
@@ -75,7 +72,6 @@ export const MainMessageComponent = ({
               message={message}
               slackConversations={slackConversations}
               prefixMessage={prefixMessage}
-              defaultChannel={config.channel}
             />
           </div>
         </Box>
@@ -152,9 +148,8 @@ const MessageSender = ({
   slackConversations: SlackConversation[];
   defaultChannel?: string;
 }) => {
-  const messageConfigRepository = new MessageConfigRepository();
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false);
-  const [channel, setChannel] = useState<string>(defaultChannel || "");
+  const [channel, setChannel] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
   const sendSlackMessage = async () => {
     setIsSending(true);
@@ -236,10 +231,6 @@ const MessageSender = ({
               onClick={() => {
                 sendSlackMessage().then(() => {
                   setIsConfirmDialogOpened(false);
-                  messageConfigRepository.save({
-                    template: prefixMessage,
-                    channel,
-                  });
                 });
               }}
               variant="contained"
