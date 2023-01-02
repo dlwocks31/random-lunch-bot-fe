@@ -181,7 +181,6 @@ const DisplayMemberPartitionComponent = ({
         display: "flex",
         gap: "10px",
         flexDirection: "column",
-        overflow: "scroll",
       }}
     >
       <Box
@@ -189,6 +188,7 @@ const DisplayMemberPartitionComponent = ({
           display: "flex",
           gap: "2px",
           flexDirection: "column",
+          overflowX: "auto",
         }}
       >
         {memberPartition.groups.map((users, index) => (
