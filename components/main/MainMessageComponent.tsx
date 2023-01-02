@@ -197,16 +197,6 @@ const MessageSender = ({
     }
     return "";
   };
-  const makeValueFromChannel = (channel: string) => {
-    const conv = slackConversations.find((c) => c.id === channel);
-    if (conv) {
-      return {
-        value: conv.id,
-        label: conv.name,
-      };
-    }
-    return undefined;
-  };
   return (
     <>
       <div
@@ -224,16 +214,8 @@ const MessageSender = ({
                 value: id,
                 label: name,
               }))}
-              onChange={(e) => {
-                const newChannel = e?.value || "";
-                setChannel(newChannel);
-                new MessageConfigRepository().save({
-                  template: prefixMessage,
-                  channel: newChannel,
-                });
-              }}
+              onChange={(e) => setChannel(e?.value || "")}
               menuPlacement="auto"
-              value={makeValueFromChannel(channel)}
             />{" "}
           </div>
 
