@@ -111,7 +111,6 @@ export class MemberPartition {
 
   changeGroupCount(newGroupCount: number): MemberPartition {
     if (newGroupCount > this.userCount() || newGroupCount < 1) {
-      console.log("ERROR");
       return this;
     }
     const minGroupSize = Math.floor(this.userCount() / newGroupCount);

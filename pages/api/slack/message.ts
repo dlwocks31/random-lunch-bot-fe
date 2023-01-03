@@ -21,8 +21,6 @@ export default async function handler(
   const slackService = await SlackServiceFactory(supabase);
   const message = req.body.message;
   const channel = req.body.channel;
-  console.log(`Sending message to channel ${channel}: ${message}`);
   const response = await slackService.send(message, channel);
-  console.log(JSON.stringify(response));
   res.status(200).json(response);
 }

@@ -63,8 +63,6 @@ export const MainMessageComponent = ({
     }
   }, [messageConfig]);
 
-  console.log("messageConfig", messageConfig);
-
   useEffect(() => {
     if (slackInstalled) {
       setShouldDisableMention(false);

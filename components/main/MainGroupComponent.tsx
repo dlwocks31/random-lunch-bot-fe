@@ -31,7 +31,6 @@ export const MainGroupComopnent = ({
   const allUsers = members.allUsers();
 
   const initializeFromNewUsers = useCallback((users: NormalUser[]) => {
-    console.log("initializeFromNewUsers", users);
     const newTagMap = new TagMap(generateTags(users));
     setTagMap(newTagMap);
     setMembers(

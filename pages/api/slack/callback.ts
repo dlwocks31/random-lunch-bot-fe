@@ -11,8 +11,6 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
     data: { user },
   } = await supabase.auth.getUser();
 
-  console.log(user);
-
   const code = req.query.code as string;
 
   const oauthResponseData = (
@@ -25,7 +23,6 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
       )}`,
     )
   ).data;
-  console.log(oauthResponseData);
   const botAccessToken = oauthResponseData.access_token;
 
   await supabase

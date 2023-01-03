@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { isMatching, match, P } from "ts-pattern";
+import { P, isMatching, match } from "ts-pattern";
 import { notEmpty } from "../ts/NotEmpty";
 import { FlexTimeSlotType } from "./FlexTimeSlotType";
 
