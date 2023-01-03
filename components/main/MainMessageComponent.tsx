@@ -14,6 +14,7 @@ import { useQuery } from "react-query";
 import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
+import { mergeMemberConfigGroups } from "../../utils/group/MergeMemberConfigGroups";
 import { MessageConfigRepository } from "../../utils/repository/MessageConfigRepository";
 import { NormalUser } from "../../utils/slack/NormalUser";
 
@@ -289,28 +290,6 @@ const MessageSender = ({
       </Dialog>
     </>
   );
-};
-
-const mergeMemberConfigGroups = (
-  members: MemberConfig,
-): { groupLabel: string; users: NormalUser[] }[] => {
-  const groups: { groupLabel: string; users: NormalUser[] }[] = [];
-  let groupNum = 1;
-  for (const users of members.office.groups) {
-    groups.push({
-      groupLabel: `${groupNum}조`,
-      users,
-    });
-    groupNum++;
-  }
-  for (const users of members.remote.groups) {
-    groups.push({
-      groupLabel: `${groupNum}조`,
-      users,
-    });
-    groupNum++;
-  }
-  return groups;
 };
 
 const customBuildSlackMessage = (
