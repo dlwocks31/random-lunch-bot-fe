@@ -22,15 +22,11 @@ export function SupabaseSlackAuthBar() {
               <LoginStatusPopper />
             </>
           ) : (
-            <>
-              <div>
-                <LoginDialog
-                  handleLogin={(email, password) => {
-                    supabaseClient.auth.signInWithPassword({ email, password });
-                  }}
-                />
-              </div>
-            </>
+            <LoginDialog
+              handleLogin={(email, password) => {
+                supabaseClient.auth.signInWithPassword({ email, password });
+              }}
+            />
           )}
         </div>
       </Toolbar>
