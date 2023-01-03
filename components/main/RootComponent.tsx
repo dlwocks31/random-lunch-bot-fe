@@ -164,21 +164,8 @@ const DisplayMemberPartitionComponent = ({
     .join(" / ");
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        gap: "10px",
-        flexDirection: "column",
-      }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          gap: "2px",
-          flexDirection: "column",
-          overflowX: "auto",
-        }}
-      >
+    <Box display="flex" gap="10px" flexDirection="column">
+      <Box display="flex" gap="2px" flexDirection="column" overflow="auto">
         {memberPartition.groups.map((users, index) => (
           <SingleGroupComponent
             groupIndex={index + indexOffset}
@@ -189,14 +176,12 @@ const DisplayMemberPartitionComponent = ({
       </Box>
       <Divider flexItem />
 
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          flexDirection: isMobile ? "column" : "row",
-          gap: "10px",
-          justifyContent: "flex-start",
-        }}
+      <Box
+        display="flex"
+        alignItems="center"
+        flexDirection={isMobile ? "column" : "row"}
+        gap="10px"
+        justifyContent="flex-start"
       >
         <Box display="flex" alignItems="center" gap={1}>
           <div>총 조 개수:</div>
@@ -212,7 +197,7 @@ const DisplayMemberPartitionComponent = ({
             재추첨
           </Button>
         </Box>
-      </div>
+      </Box>
     </Box>
   );
 };
@@ -225,8 +210,8 @@ const SingleGroupComponent = ({
   users: NormalUser[];
 }) => {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
-      <div style={{ minWidth: "40px" }}>{groupIndex}조: </div>
+    <Box display="flex" alignItems="center" gap="2px">
+      <Box minWidth="40px">{groupIndex}조: </Box>
       {users.map((user) => (
         <Chip
           style={{ maxWidth: "200px", flexGrow: 1 }}
@@ -234,7 +219,7 @@ const SingleGroupComponent = ({
           key={user.id}
         />
       ))}
-    </div>
+    </Box>
   );
 };
 
