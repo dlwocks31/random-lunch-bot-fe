@@ -1,4 +1,5 @@
 import { Box, Button, Collapse, useMediaQuery } from "@mui/material";
+import { useUser } from "@supabase/auth-helpers-react";
 import { useCallback, useState } from "react";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
@@ -28,6 +29,7 @@ export const MainGroupComopnent = ({
   setTagMap: (tagMap: TagMap) => void;
   initialUsers: NormalUser[];
 }) => {
+  const user = useUser();
   const allUsers = members.allUsers();
 
   const initializeFromNewUsers = useCallback((users: NormalUser[]) => {
@@ -38,11 +40,23 @@ export const MainGroupComopnent = ({
     );
   }, []);
 
+  const shouldShowHiddenSetting =
+    user?.email === "test@test.com" || user?.email?.endsWith("@mfort.co.kr");
+
   const extraSettings: {
     name: string;
     component: JSX.Element;
     onlyOnSlackInstalled: boolean;
+    hidden: boolean;
   }[] = [
+    {
+      name: "같은 조 피하기 설정",
+      component: (
+        <TagEditor users={allUsers} tagMap={tagMap} setTagMap={setTagMap} />
+      ),
+      onlyOnSlackInstalled: false,
+      hidden: false,
+    },
     {
       name: "유저 가져오는 채널 설정",
       component: (
@@ -53,6 +67,7 @@ export const MainGroupComopnent = ({
         />
       ),
       onlyOnSlackInstalled: true,
+      hidden: false,
     },
     {
       name: "flex 연동 설정",
@@ -69,18 +84,13 @@ export const MainGroupComopnent = ({
         />
       ),
       onlyOnSlackInstalled: true,
-    },
-    {
-      name: "같은 조 피하기 설정",
-      component: (
-        <TagEditor users={allUsers} tagMap={tagMap} setTagMap={setTagMap} />
-      ),
-      onlyOnSlackInstalled: false,
+      hidden: true,
     },
     {
       name: "유저 이모지 확인",
       component: <CheckSlackUserEmoji members={members} />,
       onlyOnSlackInstalled: true,
+      hidden: true,
     },
   ];
 
@@ -116,36 +126,38 @@ export const MainGroupComopnent = ({
           paddingTop={1}
         >
           <div>추가 설정:</div>
-          {extraSettingsDisplayed.map((setting) => (
-            <Box
-              flexGrow={1}
-              width={isMobile ? "100%" : undefined}
-              key={setting.name}
-            >
-              <Button
-                sx={{
-                  wordBreak: "keep-all",
-                }}
-                fullWidth
+          {extraSettingsDisplayed
+            .filter((setting) => !setting.hidden || shouldShowHiddenSetting)
+            .map((setting) => (
+              <Box
+                flexGrow={1}
+                width={isMobile ? "100%" : undefined}
                 key={setting.name}
-                variant={
-                  setting.name === extraSettingName && isExtraSettingOpened
-                    ? "contained"
-                    : "outlined"
-                }
-                onClick={() => {
-                  if (setting.name === extraSettingName) {
-                    setIsExtraSettingOpened(!isExtraSettingOpened);
-                  } else {
-                    setExtraSettingName(setting.name);
-                    setIsExtraSettingOpened(true);
-                  }
-                }}
               >
-                {setting.name}
-              </Button>
-            </Box>
-          ))}
+                <Button
+                  sx={{
+                    wordBreak: "keep-all",
+                  }}
+                  fullWidth
+                  key={setting.name}
+                  variant={
+                    setting.name === extraSettingName && isExtraSettingOpened
+                      ? "contained"
+                      : "outlined"
+                  }
+                  onClick={() => {
+                    if (setting.name === extraSettingName) {
+                      setIsExtraSettingOpened(!isExtraSettingOpened);
+                    } else {
+                      setExtraSettingName(setting.name);
+                      setIsExtraSettingOpened(true);
+                    }
+                  }}
+                >
+                  {setting.name}
+                </Button>
+              </Box>
+            ))}
         </Box>
         <Collapse
           in={isExtraSettingOpened}
