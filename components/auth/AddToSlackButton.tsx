@@ -53,7 +53,7 @@ export function AddToSlackButton() {
             fill="#ecb22e"
           ></path>
         </svg>
-        Add to Slack
+        슬랙 앱 추가
       </a>
       <style jsx>{`
         .slack-a-button {
