@@ -1,18 +1,17 @@
+import { useSession } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import { SupabaseSlackAuthBar } from "../components/auth/SupabaseSlackAuthBar";
 import { MainGroupComopnent } from "../components/main/MainGroupComponent";
 import { MemberConfig } from "../utils/domain/MemberConfig";
 import { MemberPartition } from "../utils/domain/MemberPartition";
 import { SlackConversation } from "../utils/domain/SlackConversation";
 import { TagMap } from "../utils/domain/TagMap";
-import { useSlackOauthStatus } from "../utils/hooks/UseSlackOauthStatus";
 import { NormalUser } from "../utils/slack/NormalUser";
 import { generateTags } from "../utils/tag/GenerateTags";
 const DEFAULT_EACH_GROUP_USER = 4;
 export default function V2() {
-  const queryClient = useQueryClient();
-  const { slackTeamName } = useSlackOauthStatus();
+  const session = useSession();
 
   const [conversations, setConversations] = useState<SlackConversation[]>([]);
   const emptyMemberConfig = new MemberConfig(
@@ -24,10 +23,10 @@ export default function V2() {
   const [tagMap, setTagMap] = useState<TagMap>(new TagMap([]));
 
   const { data: usersData } = useQuery(
-    ["slack", "users"],
+    ["slack", "users", session?.access_token],
     async () => fetch("/api/slack/users").then((res) => res.json()),
     {
-      enabled: !!slackTeamName,
+      enabled: !!session,
       staleTime: Infinity,
     },
   );
@@ -48,10 +47,10 @@ export default function V2() {
   }, [usersData]);
 
   const { data: conversationData } = useQuery(
-    ["slack", "conversations"],
+    ["slack", "conversations", session?.access_token],
     async () => fetch("/api/slack/conversations").then((res) => res.json()),
     {
-      enabled: !!slackTeamName,
+      enabled: !!session,
       staleTime: Infinity,
     },
   );
@@ -75,7 +74,6 @@ export default function V2() {
           setMembers(emptyMemberConfig);
           setTagMap(new TagMap([]));
           setConversations([]);
-          queryClient.invalidateQueries("oauth-status-response");
         }}
       />
       <div className="content-container">

@@ -9,6 +9,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { Box } from "@mui/system";
+import { useSession } from "@supabase/auth-helpers-react";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
@@ -137,8 +138,9 @@ const DisplayMemberPartitionComponent = ({
   isMobile: boolean;
 }) => {
   const { slackTeamName } = useSlackOauthStatus();
+  const session = useSession();
   const { isLoading: isLoadingUsers } = useQuery(
-    ["slack", "users"],
+    ["slack", "users", session?.access_token],
     async () => fetch("/api/slack/users").then((res) => res.json()),
     {
       enabled: !!slackTeamName,
