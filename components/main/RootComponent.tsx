@@ -68,15 +68,13 @@ export const RootComponent = ({
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          gap: "10px",
-          justifyContent: "center",
-          marginBottom: "1rem",
-          maxWidth: "1200px",
-        }}
+      <Box
+        display="flex"
+        flexDirection={isMobile ? "column" : "row"}
+        gap="10px"
+        justifyContent="center"
+        marginBottom="1rem"
+        maxWidth="1200px"
       >
         <ToggleButtonGroup
           color="primary"
@@ -119,7 +117,7 @@ export const RootComponent = ({
             creatable={!slackTeamName}
           />
         </Box>
-      </div>
+      </Box>
       <BorderedBox>{currentDisplayComponent}</BorderedBox>
     </>
   );
@@ -149,10 +147,10 @@ const DisplayMemberPartitionComponent = ({
   );
   if (isLoadingUsers) {
     return (
-      <div style={{ textAlign: "center" }}>
+      <Box textAlign="center">
         <div>유저 정보를 불러오는 중입니다...</div>
         <LinearProgress sx={{ marginTop: 1 }} />
-      </div>
+      </Box>
     );
   }
   if (memberPartition.userCount() === 0) {
@@ -228,7 +226,7 @@ const DisplayExcludedComponent = ({ users }: { users: NormalUser[] }) => {
   return (
     <Box>
       <div>제외된 유저:</div>
-      <Box sx={{ display: "flex" }}>
+      <Box display="flex">
         {users.map((user) => (
           <Chip label={user.nameWithStatus} key={user.id} />
         ))}
