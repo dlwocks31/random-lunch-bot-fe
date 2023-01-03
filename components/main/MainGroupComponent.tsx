@@ -98,7 +98,8 @@ export const MainGroupComopnent = ({
     if (e.onlyOnSlackInstalled) {
       return conversations.length > 0;
     }
-    return true;
+
+    return !e.hidden || shouldShowHiddenSetting;
   });
 
   const [extraSettingName, setExtraSettingName] = useState<string>(
@@ -126,38 +127,36 @@ export const MainGroupComopnent = ({
           paddingTop={1}
         >
           <div>추가 설정:</div>
-          {extraSettingsDisplayed
-            .filter((setting) => !setting.hidden || shouldShowHiddenSetting)
-            .map((setting) => (
-              <Box
-                flexGrow={1}
-                width={isMobile ? "100%" : undefined}
+          {extraSettingsDisplayed.map((setting) => (
+            <Box
+              flexGrow={1}
+              width={isMobile ? "100%" : undefined}
+              key={setting.name}
+            >
+              <Button
+                sx={{
+                  wordBreak: "keep-all",
+                }}
+                fullWidth
                 key={setting.name}
-              >
-                <Button
-                  sx={{
-                    wordBreak: "keep-all",
-                  }}
-                  fullWidth
-                  key={setting.name}
-                  variant={
-                    setting.name === extraSettingName && isExtraSettingOpened
-                      ? "contained"
-                      : "outlined"
+                variant={
+                  setting.name === extraSettingName && isExtraSettingOpened
+                    ? "contained"
+                    : "outlined"
+                }
+                onClick={() => {
+                  if (setting.name === extraSettingName) {
+                    setIsExtraSettingOpened(!isExtraSettingOpened);
+                  } else {
+                    setExtraSettingName(setting.name);
+                    setIsExtraSettingOpened(true);
                   }
-                  onClick={() => {
-                    if (setting.name === extraSettingName) {
-                      setIsExtraSettingOpened(!isExtraSettingOpened);
-                    } else {
-                      setExtraSettingName(setting.name);
-                      setIsExtraSettingOpened(true);
-                    }
-                  }}
-                >
-                  {setting.name}
-                </Button>
-              </Box>
-            ))}
+                }}
+              >
+                {setting.name}
+              </Button>
+            </Box>
+          ))}
         </Box>
         <Collapse
           in={isExtraSettingOpened}
