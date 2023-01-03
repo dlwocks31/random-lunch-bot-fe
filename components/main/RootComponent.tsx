@@ -11,8 +11,6 @@ import {
 import { Box } from "@mui/system";
 import { useState } from "react";
 import { useQuery } from "react-query";
-import Select from "react-select";
-import CreatableSelect from "react-select/creatable";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
 import { TagMap } from "../../utils/domain/TagMap";
@@ -20,6 +18,7 @@ import { useSlackOauthStatus } from "../../utils/hooks/UseSlackOauthStatus";
 import { NormalUser } from "../../utils/slack/NormalUser";
 import { BorderedBox } from "../util/BorderedBox";
 import { StepInput } from "../util/StepInput";
+import { UserSelector } from "../util/UserSelector";
 
 type PartitionType = "office" | "remote" | "excluded";
 export const RootComponent = ({
@@ -33,13 +32,6 @@ export const RootComponent = ({
 }) => {
   const [currentPartitionLabel, setCurrentPartitionLabel] =
     useState<PartitionType>("office");
-  const currentVisibleUsers =
-    currentPartitionLabel === "office"
-      ? members.office.users()
-      : currentPartitionLabel === "remote"
-      ? members.remote.users()
-      : members.excluded;
-  const allUsers = members.allUsers();
 
   const { slackTeamName } = useSlackOauthStatus();
 
@@ -120,65 +112,12 @@ export const RootComponent = ({
 
         <Box flex="2 0 0" display="flex" alignItems="center" gap={1}>
           <Box>그룹에 추가:</Box>
-          {slackTeamName ? (
-            <Select
-              placeholder="유저 이름을 검색하세요"
-              options={allUsers
-                .filter((u) => !currentVisibleUsers.includes(u))
-                .map(({ id, name }) => ({
-                  value: id,
-                  label: name,
-                }))}
-              value={null}
-              onChange={(selectedOption) => {
-                const selectedUser = allUsers.find(
-                  (u) => u.id === selectedOption?.value,
-                );
-                if (selectedUser === undefined) return;
-                if (currentPartitionLabel === "office") {
-                  setMembers(members.moveMemberToOffice(selectedUser));
-                } else if (currentPartitionLabel === "remote") {
-                  setMembers(members.moveMemberToRemote(selectedUser));
-                } else {
-                  setMembers(members.moveMemberToExcluded(selectedUser));
-                }
-              }}
-            />
-          ) : (
-            <CreatableSelect
-              placeholder="유저 이름을 검색하거나 추가하세요"
-              options={allUsers
-                .filter((u) => !currentVisibleUsers.includes(u))
-                .map(({ id, name }) => ({
-                  value: id,
-                  label: name,
-                }))}
-              value={null}
-              onChange={(selectedOption) => {
-                const selectedUser = allUsers.find(
-                  (u) => u.id === selectedOption?.value,
-                );
-                if (selectedUser === undefined) return;
-                if (currentPartitionLabel === "office") {
-                  setMembers(members.moveMemberToOffice(selectedUser));
-                } else if (currentPartitionLabel === "remote") {
-                  setMembers(members.moveMemberToRemote(selectedUser));
-                } else {
-                  setMembers(members.moveMemberToExcluded(selectedUser));
-                }
-              }}
-              onCreateOption={(name: string) => {
-                const newUser = new NormalUser(name);
-                if (currentPartitionLabel === "office") {
-                  setMembers(members.addOfficeUser(newUser));
-                } else if (currentPartitionLabel === "remote") {
-                  setMembers(members.addRemoteUser(newUser));
-                } else {
-                  setMembers(members.addExcludedUser(newUser));
-                }
-              }}
-            />
-          )}
+          <UserSelector
+            members={members}
+            setMembers={setMembers}
+            currentPartitionLabel={currentPartitionLabel}
+            creatable={!slackTeamName}
+          />
         </Box>
       </div>
       <BorderedBox>{currentDisplayComponent}</BorderedBox>
