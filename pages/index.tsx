@@ -67,15 +67,17 @@ export default function V2() {
     }
   }, [conversationData]);
 
+  useEffect(() => {
+    if (!session) {
+      setMembers(emptyMemberConfig);
+      setTagMap(new TagMap([]));
+      setConversations([]);
+    }
+  }, [session]);
+
   return (
     <>
-      <SupabaseSlackAuthBar
-        onSignOut={() => {
-          setMembers(emptyMemberConfig);
-          setTagMap(new TagMap([]));
-          setConversations([]);
-        }}
-      />
+      <SupabaseSlackAuthBar />
       <div className="content-container">
         <MainGroupComopnent
           initialUsers={initialUsers}
