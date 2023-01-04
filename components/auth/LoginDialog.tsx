@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -8,7 +9,6 @@ import {
 } from "@mui/material";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useState } from "react";
-
 export function LoginDialog({
   handleLogin,
 }: {
@@ -19,6 +19,16 @@ export function LoginDialog({
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
 
   const supabaseClient = useSupabaseClient();
+  const signInCallback = (provider: "slack" | "google") => {
+    return () => {
+      supabaseClient.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: process.env.NEXT_PUBLIC_REDIRECT_BACK_HOST,
+        },
+      });
+    };
+  };
   return (
     <>
       <Button
@@ -33,34 +43,15 @@ export function LoginDialog({
         onClose={() => setIsLoginDialogOpen(false)}
       >
         <DialogTitle>로그인</DialogTitle>
-        <Button
-          variant="contained"
-          sx={{ margin: "4px 24px" }}
-          onClick={() => {
-            supabaseClient.auth.signInWithOAuth({
-              provider: "slack",
-              options: {
-                redirectTo: process.env.NEXT_PUBLIC_REDIRECT_BACK_HOST,
-              },
-            });
-          }}
-        >
-          슬랙으로 로그인
-        </Button>
-        <Button
-          variant="contained"
-          sx={{ margin: "4px 24px" }}
-          onClick={() => {
-            supabaseClient.auth.signInWithOAuth({
-              provider: "google",
-              options: {
-                redirectTo: process.env.NEXT_PUBLIC_REDIRECT_BACK_HOST,
-              },
-            });
-          }}
-        >
-          구글로 로그인
-        </Button>
+        <Box display="flex" flexDirection="column" pl={3} pr={3} gap={1}>
+          <Button variant="outlined" onClick={signInCallback("slack")}>
+            슬랙으로 로그인
+          </Button>
+          <Button variant="outlined" onClick={signInCallback("google")}>
+            구글로 로그인
+          </Button>
+        </Box>
+
         <DialogContent>
           <TextField
             label="이메일"
