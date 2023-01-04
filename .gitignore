@@ -5,12 +5,6 @@
 /.pnp
 .pnp.js
 
-# yarn related (https://github.com/yarnpkg/berry/issues/454#issuecomment-530312089 )
-.yarn/*
-!.yarn/releases
-!.yarn/plugins
-.pnp.*
-
 # testing
 /coverage
 
