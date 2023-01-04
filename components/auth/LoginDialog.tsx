@@ -35,7 +35,7 @@ export function LoginDialog({
         <DialogTitle>로그인</DialogTitle>
         <Button
           variant="contained"
-          sx={{ margin: "0 24px" }}
+          sx={{ margin: "4px 24px" }}
           onClick={() => {
             supabaseClient.auth.signInWithOAuth({
               provider: "slack",
@@ -46,6 +46,20 @@ export function LoginDialog({
           }}
         >
           슬랙으로 로그인
+        </Button>
+        <Button
+          variant="contained"
+          sx={{ margin: "4px 24px" }}
+          onClick={() => {
+            supabaseClient.auth.signInWithOAuth({
+              provider: "google",
+              options: {
+                redirectTo: process.env.NEXT_PUBLIC_REDIRECT_BACK_HOST,
+              },
+            });
+          }}
+        >
+          구글로 로그인
         </Button>
         <DialogContent>
           <TextField
