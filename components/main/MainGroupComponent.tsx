@@ -95,11 +95,15 @@ export const MainGroupComopnent = ({
   ];
 
   const extraSettingsDisplayed = extraSettings.filter((e) => {
-    if (e.onlyOnSlackInstalled) {
-      return conversations.length > 0;
+    if (e.onlyOnSlackInstalled && conversations.length === 0) {
+      return false;
     }
 
-    return !e.hidden || shouldShowHiddenSetting;
+    if (e.hidden && !shouldShowHiddenSetting) {
+      return false;
+    }
+
+    return true;
   });
 
   const [extraSettingName, setExtraSettingName] = useState<string>(
