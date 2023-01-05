@@ -8,6 +8,7 @@ import { MemberConfig } from "../utils/domain/MemberConfig";
 import { MemberPartition } from "../utils/domain/MemberPartition";
 import { SlackConversation } from "../utils/domain/SlackConversation";
 import { TagMap } from "../utils/domain/TagMap";
+import { useSlackUsers } from "../utils/hooks/UseSlackUsers";
 import { isMomsitterEmail } from "../utils/momsitter/isMomsitterEmail";
 import { NormalUser } from "../utils/slack/NormalUser";
 import { generateTags } from "../utils/tag/GenerateTags";
@@ -24,20 +25,13 @@ export default function V2() {
   const [members, setMembers] = useState<MemberConfig>(emptyMemberConfig);
   const [tagMap, setTagMap] = useState<TagMap>(new TagMap([]));
 
-  const { data: usersData } = useQuery(
-    ["slack", "users", session?.access_token],
-    async () => fetch("/api/slack/users").then((res) => res.json()),
-    {
-      enabled: !!session,
-      staleTime: Infinity,
-    },
-  );
+  const { slackUsers } = useSlackUsers();
 
-  const initialUsers = usersData?.map(NormalUser.fromSlackUser);
+  const initialUsers = slackUsers?.map(NormalUser.fromSlackUser);
 
   useEffect(() => {
-    if (usersData) {
-      const normalUsers = usersData.map(NormalUser.fromSlackUser);
+    if (slackUsers) {
+      const normalUsers = slackUsers.map(NormalUser.fromSlackUser);
       const newTagMap = new TagMap(generateTags(normalUsers));
       setTagMap(newTagMap);
       setMembers(
@@ -46,7 +40,7 @@ export default function V2() {
         ),
       );
     }
-  }, [usersData]);
+  }, [slackUsers]);
 
   const { data: conversationData } = useQuery(
     ["slack", "conversations", session?.access_token],

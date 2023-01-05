@@ -9,13 +9,12 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { useSession } from "@supabase/auth-helpers-react";
 import { useState } from "react";
-import { useQuery } from "react-query";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
 import { TagMap } from "../../utils/domain/TagMap";
 import { useSlackOauthStatus } from "../../utils/hooks/UseSlackOauthStatus";
+import { useSlackUsers } from "../../utils/hooks/UseSlackUsers";
 import { NormalUser } from "../../utils/slack/NormalUser";
 import { AddToSlackButton } from "../auth/AddToSlackButton";
 import { BorderedBox } from "../util/BorderedBox";
@@ -138,17 +137,8 @@ const DisplayMemberPartitionComponent = ({
   indexOffset: number;
   isMobile: boolean;
 }) => {
-  const { slackTeamName } = useSlackOauthStatus();
-  const session = useSession();
-  const { isLoading: isLoadingUsers } = useQuery(
-    ["slack", "users", session?.access_token],
-    async () => fetch("/api/slack/users").then((res) => res.json()),
-    {
-      enabled: !!slackTeamName,
-      staleTime: Infinity,
-    },
-  );
-  if (isLoadingUsers) {
+  const { isLoadingSlackUsers } = useSlackUsers();
+  if (isLoadingSlackUsers) {
     return (
       <Box textAlign="center">
         <div>유저 정보를 불러오는 중입니다...</div>
