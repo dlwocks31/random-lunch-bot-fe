@@ -128,7 +128,7 @@ const MessageDisplayer = ({
 }) => {
   const mergedMembers = mergeMemberConfigGroups(members);
   return (
-    <>
+    <Box display="flex" flexDirection="column" gap={1}>
       {slackInstalled && (
         <TextField
           label="메세지 템플릿"
@@ -138,7 +138,12 @@ const MessageDisplayer = ({
           onChange={(e) => setPrefixMessage(e.target.value)}
         />
       )}
-
+      {!slackInstalled && (
+        <div>
+          아래 메세지를 복사해서 사용할 수 있습니다. 또는, 로그인과 슬랙 앱 연동
+          후에, 아래 메세지를 슬랙에 전송할 수 있습니다.
+        </div>
+      )}
       <Box
         width="100%"
         border="1px solid #ccc"
@@ -146,18 +151,33 @@ const MessageDisplayer = ({
         padding="14.5px 14px"
         overflow="auto"
       >
-        {mergedMembers.map((memberGroup) => (
-          <Box display="flex" alignItems="center" key={memberGroup.groupLabel}>
-            <div style={{ whiteSpace: "nowrap" }}>
-              {memberGroup.groupLabel}:
-            </div>
-            {memberGroup.users.map((user) => (
-              <MentionedUser name={user.name} key={user.name} />
+        {slackInstalled
+          ? mergedMembers.map((memberGroup) => (
+              <Box
+                display="flex"
+                alignItems="center"
+                key={memberGroup.groupLabel}
+              >
+                <span style={{ whiteSpace: "nowrap" }}>
+                  {memberGroup.groupLabel}:
+                </span>
+                {memberGroup.users.map((user) => (
+                  <MentionedUser name={user.name} key={user.name} />
+                ))}
+              </Box>
+            ))
+          : mergedMembers.map((memberGroup) => (
+              <Box
+                display="flex"
+                alignItems="center"
+                key={memberGroup.groupLabel}
+              >
+                {memberGroup.groupLabel}:{" "}
+                {memberGroup.users.map((u) => u.name).join(" ")}
+              </Box>
             ))}
-          </Box>
-        ))}
       </Box>
-    </>
+    </Box>
   );
 };
 const MessageSender = ({

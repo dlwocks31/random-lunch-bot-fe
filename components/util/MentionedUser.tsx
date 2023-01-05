@@ -1,6 +1,6 @@
 export const MentionedUser = ({ name }: { name: string }) => {
   return (
-    <div
+    <span
       style={{
         background: "rgba(29,155,209,.1)",
         color: "rgba(18,100,163,1)",
@@ -11,6 +11,6 @@ export const MentionedUser = ({ name }: { name: string }) => {
       }}
     >
       @{name}
-    </div>
+    </span>
   );
 };
