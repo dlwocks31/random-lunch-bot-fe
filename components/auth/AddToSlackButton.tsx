@@ -1,3 +1,4 @@
+import { Box } from "@mui/material";
 import { useSession } from "@supabase/auth-helpers-react";
 import { SlackSvg } from "../util/SlackSvg";
 
@@ -33,7 +34,7 @@ export function AddToSlackButton() {
     <>
       <a href={getCallbackUrl()} className="slack-a-button">
         <SlackSvg />
-        슬랙 앱 추가
+        <Box marginLeft={1}>슬랙 앱 추가</Box>
       </a>
       <style jsx>
         {`

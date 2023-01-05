@@ -2,6 +2,8 @@ export const SlackSvg = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     className="slack-svg"
+    height="16"
+    width="16"
     viewBox="0 0 122.8 122.8"
   >
     <path
@@ -20,12 +22,5 @@ export const SlackSvg = () => (
       d="M77.6 97c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9-12.9-5.8-12.9-12.9V97h12.9zm0-6.5c-7.1 0-12.9-5.8-12.9-12.9s5.8-12.9 12.9-12.9h32.3c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9H77.6z"
       fill="#ecb22e"
     ></path>
-    <style jsx>{`
-      .slack-svg {
-        height: 16px;
-        width: 16px;
-        margin-right: 12px;
-      }
-    `}</style>
   </svg>
 );
