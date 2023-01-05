@@ -2,6 +2,7 @@ import { shuffle } from "lodash";
 import { createStandardPartition } from "../group/CreateStandardPartition";
 import { optimizePartition } from "../group/OptimizePartition";
 import { NormalUser } from "../slack/NormalUser";
+import { simplePenaltyFunction } from "./SimplePenaltyFunction";
 import { TagMap } from "./TagMap";
 
 export class MemberPartition {
@@ -75,26 +76,17 @@ export class MemberPartition {
     const newGroups = optimizePartition(
       createStandardPartition(shuffledUsers, this.groupCount()),
       1000,
-      (team: NormalUser[]) => {
-        let sumScore = 0;
-        for (let i = 0; i < team.length; i++) {
-          for (let j = i + 1; j < team.length; j++) {
-            const u1 = team[i];
-            const u2 = team[j];
-            const tagsOfU1 = userIdToTagsMap[u1.id] || [];
-            const tagsOfU2 = userIdToTagsMap[u2.id] || [];
-            for (const t1 of tagsOfU1) {
-              for (const t2 of tagsOfU2) {
-                if (t1 === t2) {
-                  // todo: use function call
-                  sumScore += 1;
-                }
-              }
-            }
-          }
-        }
-        return sumScore;
-      },
+      (team: NormalUser[]) => simplePenaltyFunction(team, userIdToTagsMap),
+    );
+    return new MemberPartition(newGroups, this.defaultGroupSize);
+  }
+
+  optimizeByTagMap(tagMap: TagMap): MemberPartition {
+    const userIdToTagsMap = tagMap.userIdToTagsMap();
+    const newGroups = optimizePartition(
+      this.groups,
+      1000,
+      (team: NormalUser[]) => simplePenaltyFunction(team, userIdToTagsMap),
     );
     return new MemberPartition(newGroups, this.defaultGroupSize);
   }

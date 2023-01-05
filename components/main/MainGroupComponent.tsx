@@ -52,7 +52,14 @@ export const MainGroupComopnent = ({
     {
       name: "같은 조 피하기 설정",
       component: (
-        <TagEditor users={allUsers} tagMap={tagMap} setTagMap={setTagMap} />
+        <TagEditor
+          users={allUsers}
+          tagMap={tagMap}
+          setTagMap={(newTagMap) => {
+            setTagMap(newTagMap);
+            setMembers(members.optimizeByTagMap(newTagMap));
+          }}
+        />
       ),
       onlyOnSlackInstalled: false,
       hidden: false,

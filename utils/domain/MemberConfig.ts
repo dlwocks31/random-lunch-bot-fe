@@ -39,6 +39,12 @@ export class MemberConfig {
     return new MemberConfig(office, remote, this.excluded);
   }
 
+  optimizeByTagMap(tagMap: TagMap): MemberConfig {
+    const office = this.office.optimizeByTagMap(tagMap);
+    const remote = this.remote.optimizeByTagMap(tagMap);
+    return new MemberConfig(office, remote, this.excluded);
+  }
+
   moveMemberToOffice(member: NormalUser): MemberConfig {
     return new MemberConfig(
       this.office.add(member),
