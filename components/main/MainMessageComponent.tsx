@@ -52,6 +52,7 @@ export const MainMessageComponent = ({
     }
   }, [user?.email]);
 
+  // 실제로 slackInstalled 되지 않은 상태에서 메세지를 보내지 않기 때문에, 필요하지 않을 수 있음.
   const [shouldDisableMention, setShouldDisableMention] = useState<boolean>(
     !slackInstalled,
   );
