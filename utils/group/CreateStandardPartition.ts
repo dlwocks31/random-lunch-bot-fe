@@ -8,5 +8,5 @@ export function createStandardPartition<T>(
   for (let i = 0; i < users.length; i++) {
     result[i % groupCount].push(users[i]);
   }
-  return result;
+  return result.filter((group) => group.length > 0);
 }
