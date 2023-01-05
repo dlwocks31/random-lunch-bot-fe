@@ -18,6 +18,7 @@ import { mergeMemberConfigGroups } from "../../utils/group/MergeMemberConfigGrou
 import { isMomsitterEmail } from "../../utils/momsitter/IsMomsitterEmail";
 import { MessageConfigRepository } from "../../utils/repository/MessageConfigRepository";
 import { NormalUser } from "../../utils/slack/NormalUser";
+import { MentionedUser } from "../util/MentionedUser";
 
 const MOMSITTER_DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:orange_heart: 조를 발표합니다!
 > 가장 앞에 있는 분이 이 채널에 조원들을 소환해서 스레드로 함께 메뉴를 정해주세요 :simple_smile:
@@ -151,19 +152,7 @@ const MessageDisplayer = ({
               {memberGroup.groupLabel}:
             </div>
             {memberGroup.users.map((user) => (
-              <div
-                style={{
-                  background: "rgba(29,155,209,.1)",
-                  color: "rgba(18,100,163,1)",
-                  margin: "0 2px",
-                  padding: "2px",
-                  borderRadius: "4px",
-                  whiteSpace: "nowrap",
-                }}
-                key={user.name}
-              >
-                @{user.name}
-              </div>
+              <MentionedUser name={user.name} key={user.name} />
             ))}
           </Box>
         ))}
