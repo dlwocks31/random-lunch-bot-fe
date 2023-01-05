@@ -144,7 +144,7 @@ const DisplayMemberPartitionComponent = ({
   if (isLoadingSlackUsers) {
     return (
       <Box textAlign="center">
-        <div>유저 정보를 불러오는 중입니다...</div>
+        <div>조원 정보를 불러오는 중입니다...</div>
         <LinearProgress sx={{ marginTop: 1 }} />
       </Box>
     );
@@ -153,7 +153,7 @@ const DisplayMemberPartitionComponent = ({
     return (
       <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
         <div>
-          유저가 없습니다. 유저를 이름으로 직접 추가하거나,{" "}
+          조원이 없습니다. 조원을 이름으로 직접 추가하거나,{" "}
           {!user && "로그인 후"} 슬랙 앱을 워크스페이스에 추가해 유저를
           불러오세요!
         </div>
