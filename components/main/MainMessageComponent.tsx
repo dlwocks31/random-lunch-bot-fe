@@ -17,7 +17,6 @@ import { SlackConversation } from "../../utils/domain/SlackConversation";
 import { mergeMemberConfigGroups } from "../../utils/group/MergeMemberConfigGroups";
 import { isMomsitterEmail } from "../../utils/momsitter/IsMomsitterEmail";
 import { MessageConfigRepository } from "../../utils/repository/MessageConfigRepository";
-import { NormalUser } from "../../utils/slack/NormalUser";
 import { MentionedUserGroup } from "../util/MentionedUserGroup";
 import { UnmentionedUserGroup } from "../util/UnmentionedUserGroup";
 
@@ -52,15 +51,7 @@ export const MainMessageComponent = ({
     }
   }, [user?.email]);
 
-  // 실제로 slackInstalled 되지 않은 상태에서 메세지를 보내지 않기 때문에, 필요하지 않을 수 있음.
-  const [shouldDisableMention, setShouldDisableMention] = useState<boolean>(
-    !slackInstalled,
-  );
-
-  const membersSlackMessage = customBuildSlackMessage(
-    members,
-    shouldDisableMention,
-  );
+  const membersSlackMessage = customBuildSlackMessage(members);
   const message = [prefixMessage, membersSlackMessage].join("\n");
 
   const { data: messageConfig } = useQuery(
@@ -76,12 +67,6 @@ export const MainMessageComponent = ({
       setPrefixMessage(messageConfig.template);
     }
   }, [messageConfig]);
-
-  useEffect(() => {
-    if (slackInstalled) {
-      setShouldDisableMention(false);
-    }
-  }, [slackInstalled]);
 
   return (
     <Box display="flex" gap={1} flexDirection="column">
@@ -294,16 +279,11 @@ const MessageSender = ({
   );
 };
 
-const customBuildSlackMessage = (
-  members: MemberConfig,
-  shouldDisableMention: boolean,
-) => {
-  const userToStr = (u: NormalUser) =>
-    shouldDisableMention ? u.name : `<@${u.id}>`;
+const customBuildSlackMessage = (members: MemberConfig) => {
   const messageList = [];
   const groups = mergeMemberConfigGroups(members);
   for (const group of groups) {
-    const groupMessage = group.users.map((u) => userToStr(u)).join(" ");
+    const groupMessage = group.users.map((u) => `<@${u.id}>`).join(" ");
     messageList.push(`${group.groupLabel}: ${groupMessage}`);
   }
   return messageList.join("\n");
