@@ -112,13 +112,15 @@ export const RootComponent = ({
         </ToggleButtonGroup>
 
         <Box flex="2 0 0" display="flex" alignItems="center" gap={1}>
-          <Box>그룹에 추가:</Box>
-          <UserSelector
-            members={members}
-            setMembers={setMembers}
-            currentPartitionLabel={currentPartitionLabel}
-            creatable={!slackTeamName}
-          />
+          <Box flex="0 0 auto">그룹에 추가:</Box>
+          <Box flex="1 0 auto">
+            <UserSelector
+              members={members}
+              setMembers={setMembers}
+              currentPartitionLabel={currentPartitionLabel}
+              creatable={!slackTeamName}
+            />
+          </Box>
         </Box>
       </Box>
       <BorderedBox>{currentDisplayComponent}</BorderedBox>
