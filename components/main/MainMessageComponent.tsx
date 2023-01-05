@@ -8,20 +8,23 @@ import {
   TextField,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import Select from "react-select";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
 import { mergeMemberConfigGroups } from "../../utils/group/MergeMemberConfigGroups";
+import { isMomsitterEmail } from "../../utils/momsitter/IsMomsitterEmail";
 import { MessageConfigRepository } from "../../utils/repository/MessageConfigRepository";
 import { NormalUser } from "../../utils/slack/NormalUser";
 
-const DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:orange_heart: 조를 발표합니다!
+const MOMSITTER_DEFAULT_TEMPLATE_MESSAGE = `오늘의 :orange_heart:*두런두런치*:orange_heart: 조를 발표합니다!
 > 가장 앞에 있는 분이 이 채널에 조원들을 소환해서 스레드로 함께 메뉴를 정해주세요 :simple_smile:
 > 맛있게 먹고 사진 찍고 <#C01BUJFGM4G> 방에 공유하는 것 잊지 마세요 :camera_with_flash:
 `;
+
+const DEFAULT_TEMPLATE_MESSAGE = `랜덤런치 조를 발표합니다!`;
 
 export const MainMessageComponent = ({
   members,
@@ -38,6 +41,14 @@ export const MainMessageComponent = ({
   const [prefixMessage, setPrefixMessage] = useState<string>(
     DEFAULT_TEMPLATE_MESSAGE,
   );
+
+  const user = useUser();
+
+  useEffect(() => {
+    if (isMomsitterEmail(user?.email)) {
+      setPrefixMessage(MOMSITTER_DEFAULT_TEMPLATE_MESSAGE);
+    }
+  }, [user?.email]);
 
   const [shouldDisableMention, setShouldDisableMention] = useState<boolean>(
     !slackInstalled,
@@ -225,7 +236,7 @@ const MessageSender = ({
         <div style={{ display: "flex", gap: "10px", flexDirection: "column" }}>
           <div style={{ flex: "1 0 0" }}>
             <Select
-              placeholder={`메세지를 전송할 채널을 선택하세요 (총 ${slackConversations.length}개)`}
+              placeholder={`메세지를 전송할 슬랙 채널을 선택하세요 (총 ${slackConversations.length}개)`}
               options={slackConversations.map(({ id, name }) => ({
                 value: id,
                 label: name,
