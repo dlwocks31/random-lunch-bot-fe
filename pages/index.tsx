@@ -1,4 +1,5 @@
-import { useSession } from "@supabase/auth-helpers-react";
+import { ThemeProvider, createTheme } from "@mui/material";
+import { useSession, useUser } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { SupabaseSlackAuthBar } from "../components/auth/SupabaseSlackAuthBar";
@@ -7,6 +8,7 @@ import { MemberConfig } from "../utils/domain/MemberConfig";
 import { MemberPartition } from "../utils/domain/MemberPartition";
 import { SlackConversation } from "../utils/domain/SlackConversation";
 import { TagMap } from "../utils/domain/TagMap";
+import { isMomsitterEmail } from "../utils/momsitter/isMomsitterEmail";
 import { NormalUser } from "../utils/slack/NormalUser";
 import { generateTags } from "../utils/tag/GenerateTags";
 const DEFAULT_EACH_GROUP_USER = 4;
@@ -75,8 +77,21 @@ export default function V2() {
     }
   }, [session]);
 
+  const momsitterTheme = createTheme({
+    palette: {
+      primary: {
+        main: "#FF7000",
+        contrastText: "#fff",
+      },
+    },
+  });
+
+  const defaultTheme = createTheme();
+  const user = useUser();
   return (
-    <>
+    <ThemeProvider
+      theme={isMomsitterEmail(user?.email) ? momsitterTheme : defaultTheme}
+    >
       <SupabaseSlackAuthBar />
       <div className="content-container">
         <MainGroupComopnent
@@ -93,6 +108,6 @@ export default function V2() {
           margin: 8px 12px;
         }
       `}</style>
-    </>
+    </ThemeProvider>
   );
 }

@@ -1,6 +1,8 @@
 import { AppBar, Toolbar, Typography } from "@mui/material";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import Head from "next/head";
 import { useSlackOauthStatus } from "../../utils/hooks/UseSlackOauthStatus";
+import { isMomsitterEmail } from "../../utils/momsitter/isMomsitterEmail";
 import { AddToSlackButton } from "./AddToSlackButton";
 import { LoginDialog } from "./LoginDialog";
 import { LoginStatusPopper } from "./LoginStatusPopper";
@@ -11,10 +13,16 @@ export function SupabaseSlackAuthBar() {
   const { slackTeamName, isLoading } = useSlackOauthStatus();
 
   const supabaseClient = useSupabaseClient();
+  const documentTitle = isMomsitterEmail(user?.email)
+    ? "두런두런치 봇"
+    : "랜덤런치봇";
   return (
     <AppBar position="static">
+      <Head>
+        <title>{documentTitle}</title>
+      </Head>
       <Toolbar>
-        <Typography sx={{ flexGrow: 1 }}>두런두런치 봇</Typography>
+        <Typography sx={{ flexGrow: 1 }}>{documentTitle}</Typography>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           {user ? (
             <>

@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
 import { TagMap } from "../../utils/domain/TagMap";
+import { isMomsitterEmail } from "../../utils/momsitter/isMomsitterEmail";
 import { NormalUser } from "../../utils/slack/NormalUser";
 import { generateTags } from "../../utils/tag/GenerateTags";
 import { CheckSlackUserEmoji } from "../extra-settings/CheckSlackUserEmoji";
@@ -40,8 +41,7 @@ export const MainGroupComopnent = ({
     );
   }, []);
 
-  const shouldShowHiddenSetting =
-    user?.email === "test@test.com" || user?.email?.endsWith("@mfort.co.kr");
+  const shouldShowHiddenSetting = isMomsitterEmail(user?.email);
 
   const extraSettings: {
     name: string;
