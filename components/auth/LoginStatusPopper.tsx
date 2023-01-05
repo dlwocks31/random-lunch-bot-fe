@@ -53,7 +53,7 @@ export const LoginStatusPopper = ({}) => {
           >
             <ButtonGroup variant="text" orientation="vertical" fullWidth>
               <Button sx={{ textTransform: "none" }}>
-                슬랙 워크스페이스: {slackTeamName}
+                슬랙 워크스페이스: {slackTeamName ? slackTeamName : "미연동"}
               </Button>
               <Button onClick={() => supabaseClient.auth.signOut()}>
                 로그아웃

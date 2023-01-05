@@ -118,68 +118,70 @@ export const MainGroupComopnent = ({
         setMembers={setMembers}
         tagMap={tagMap}
       />
-      <div>
-        <Box
-          display="flex"
-          alignItems="center"
-          gap={1}
-          flexDirection={isMobile ? "column" : "row"}
-          paddingTop={1}
-        >
-          <div>추가 설정:</div>
-          {extraSettingsDisplayed.map((setting) => (
-            <Box
-              flexGrow={1}
-              width={isMobile ? "100%" : undefined}
-              key={setting.name}
-            >
-              <Button
-                sx={{
-                  wordBreak: "keep-all",
-                }}
-                fullWidth
+      {members.allUsers().length > 0 && (
+        <>
+          <Box
+            display="flex"
+            alignItems="center"
+            gap={1}
+            flexDirection={isMobile ? "column" : "row"}
+            paddingTop={1}
+          >
+            <div>추가 설정:</div>
+            {extraSettingsDisplayed.map((setting) => (
+              <Box
+                flexGrow={1}
+                width={isMobile ? "100%" : undefined}
                 key={setting.name}
-                variant={
-                  setting.name === extraSettingName && isExtraSettingOpened
-                    ? "contained"
-                    : "outlined"
-                }
-                onClick={() => {
-                  if (setting.name === extraSettingName) {
-                    setIsExtraSettingOpened(!isExtraSettingOpened);
-                  } else {
-                    setExtraSettingName(setting.name);
-                    setIsExtraSettingOpened(true);
-                  }
-                }}
               >
-                {setting.name}
-              </Button>
-            </Box>
-          ))}
-        </Box>
-        <Collapse
-          in={isExtraSettingOpened}
-          sx={{ marginTop: "8px", marginBottom: "16px" }}
-        >
-          <BorderedBox>
-            {
-              extraSettings.find((setting) => setting.name === extraSettingName)
-                ?.component
-            }
-          </BorderedBox>
-        </Collapse>
-      </div>
-
-      <h2>메세지 전송하기</h2>
-      <hr />
-      <MainMessageComponent
-        members={members}
-        slackConfig={{
-          slackInstalled: conversations.length > 0,
-          slackConversations: conversations,
-        }}
-      />
+                <Button
+                  sx={{
+                    wordBreak: "keep-all",
+                  }}
+                  fullWidth
+                  key={setting.name}
+                  variant={
+                    setting.name === extraSettingName && isExtraSettingOpened
+                      ? "contained"
+                      : "outlined"
+                  }
+                  onClick={() => {
+                    if (setting.name === extraSettingName) {
+                      setIsExtraSettingOpened(!isExtraSettingOpened);
+                    } else {
+                      setExtraSettingName(setting.name);
+                      setIsExtraSettingOpened(true);
+                    }
+                  }}
+                >
+                  {setting.name}
+                </Button>
+              </Box>
+            ))}
+          </Box>
+          <Collapse
+            in={isExtraSettingOpened}
+            sx={{ marginTop: "8px", marginBottom: "16px" }}
+          >
+            <BorderedBox>
+              {
+                extraSettings.find(
+                  (setting) => setting.name === extraSettingName,
+                )?.component
+              }
+            </BorderedBox>
+          </Collapse>
+          <h2>메세지 전송하기</h2>
+          <hr />
+          <MainMessageComponent
+            members={members}
+            slackConfig={{
+              slackInstalled: conversations.length > 0,
+              slackConversations: conversations,
+            }}
+          />
+        </>
+      )}
     </div>
   );
 };

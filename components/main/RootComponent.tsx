@@ -17,6 +17,7 @@ import { MemberPartition } from "../../utils/domain/MemberPartition";
 import { TagMap } from "../../utils/domain/TagMap";
 import { useSlackOauthStatus } from "../../utils/hooks/UseSlackOauthStatus";
 import { NormalUser } from "../../utils/slack/NormalUser";
+import { AddToSlackButton } from "../auth/AddToSlackButton";
 import { BorderedBox } from "../util/BorderedBox";
 import { StepInput } from "../util/StepInput";
 import { UserSelector } from "../util/UserSelector";
@@ -156,7 +157,15 @@ const DisplayMemberPartitionComponent = ({
     );
   }
   if (memberPartition.userCount() === 0) {
-    return <div>유저가 없습니다.</div>;
+    return (
+      <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
+        <div>
+          유저가 없습니다. 유저를 이름으로 직접 추가하거나, 슬랙봇을
+          워크스페이스에 추가해서 유저를 불러오세요!
+        </div>
+        <AddToSlackButton />
+      </Box>
+    );
   }
   const groupSizeStat = memberPartition.groupSizeStat();
   const groupSizeStatLabel = groupSizeStat
