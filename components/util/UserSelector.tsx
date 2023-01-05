@@ -36,7 +36,7 @@ export const UserSelector = ({
       : members.excluded;
   return creatable ? (
     <CreatableSelect
-      placeholder="유저 이름을 검색하거나 추가하세요"
+      placeholder="조원을 검색하거나 추가하세요"
       options={allUsers
         .filter((u) => !currentVisibleUsers.includes(u))
         .map(({ id, name }) => ({
@@ -58,7 +58,7 @@ export const UserSelector = ({
     />
   ) : (
     <Select
-      placeholder="유저 이름을 검색하세요"
+      placeholder="조원을 검색하세요"
       options={allUsers
         .filter((u) => !currentVisibleUsers.includes(u))
         .map(({ id, name }) => ({
