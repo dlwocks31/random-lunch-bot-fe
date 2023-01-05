@@ -6,6 +6,7 @@ import {
   ButtonGroup,
   ClickAwayListener,
   Popper,
+  useMediaQuery,
 } from "@mui/material";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useRef, useState } from "react";
@@ -31,18 +32,20 @@ export const LoginStatusPopper = ({}) => {
 
     setOpen(false);
   };
+
+  const isMobile = useMediaQuery("(max-width: 600px)");
   return (
     <div>
       <ButtonGroup variant="outlined" color="inherit" ref={anchorRef}>
         <Button onClick={toggleOpen} sx={{ textTransform: "none" }}>
-          <AccountCircleIcon sx={{ marginRight: 1 }} />
-          <div>{user?.email}</div>
+          <AccountCircleIcon />
+          {!isMobile && <Box marginLeft={1}>{user?.email}</Box>}
         </Button>
         <Button size="small" onClick={toggleOpen}>
           <ArrowDropDownIcon />
         </Button>
       </ButtonGroup>
-      <Popper open={open} anchorEl={anchorRef.current}>
+      <Popper open={open} anchorEl={anchorRef.current} placement="bottom-end">
         <ClickAwayListener onClickAway={handleClose}>
           <Box
             boxShadow="rgb(0 0 0 / 10%) 0px 0px 16px"
@@ -52,6 +55,11 @@ export const LoginStatusPopper = ({}) => {
             bgcolor="white"
           >
             <ButtonGroup variant="text" orientation="vertical" fullWidth>
+              {isMobile && (
+                <Button sx={{ textTransform: "none" }}>
+                  계정: {user?.email}
+                </Button>
+              )}
               <Button sx={{ textTransform: "none" }}>
                 슬랙 워크스페이스: {slackTeamName ? slackTeamName : "미연동"}
               </Button>

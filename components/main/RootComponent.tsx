@@ -154,15 +154,15 @@ const DisplayMemberPartitionComponent = ({
   if (memberPartition.userCount() === 0) {
     return (
       <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
-        <div>
-          조원이 없습니다. 조원을 이름으로 직접 추가하거나,{" "}
-          {!user && "로그인 후"} 슬랙 앱을 워크스페이스에 추가해 유저를
-          불러오세요!
-        </div>
+        <div>조원이 없습니다.</div>
+        <Box textAlign="center" sx={{ wordBreak: "keep-all" }}>
+          조원을 이름으로 직접 추가하거나, {!user && "로그인 후"} 슬랙 앱을
+          워크스페이스에 추가해 유저를 불러오세요!
+        </Box>
         {user ? (
           <AddToSlackButton />
         ) : (
-          <Box minWidth="500px">
+          <Box width="min(350px, 100%)">
             <SocialLogin />
           </Box>
         )}

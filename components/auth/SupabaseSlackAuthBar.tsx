@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography } from "@mui/material";
+import { AppBar, Toolbar, Typography, useMediaQuery } from "@mui/material";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import Head from "next/head";
 import { useSlackOauthStatus } from "../../utils/hooks/UseSlackOauthStatus";
@@ -16,6 +16,8 @@ export function SupabaseSlackAuthBar() {
   const documentTitle = isMomsitterEmail(user?.email)
     ? "두런두런치 봇"
     : "랜덤런치봇";
+
+  const isMobile = useMediaQuery("(max-width: 600px)");
   return (
     <AppBar position="static">
       <Head>
@@ -26,7 +28,9 @@ export function SupabaseSlackAuthBar() {
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           {user ? (
             <>
-              {!isLoading && !slackTeamName && <AddToSlackButton />}
+              {!isLoading && !slackTeamName && !isMobile && (
+                <AddToSlackButton />
+              )}
               <LoginStatusPopper />
             </>
           ) : (
