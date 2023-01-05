@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Dialog,
   DialogActions,
@@ -7,10 +6,8 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useState } from "react";
-import { GoogleSvg } from "../util/GoogleSvg";
-import { SlackSvg } from "../util/SlackSvg";
+import { SocialLogin } from "./SocialLogin";
 export function LoginDialog({
   handleLogin,
 }: {
@@ -20,17 +17,6 @@ export function LoginDialog({
   const [password, setPassword] = useState("");
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
 
-  const supabaseClient = useSupabaseClient();
-  const signInCallback = (provider: "slack" | "google") => {
-    return () => {
-      supabaseClient.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: process.env.NEXT_PUBLIC_REDIRECT_BACK_HOST,
-        },
-      });
-    };
-  };
   return (
     <>
       <Button
@@ -45,21 +31,7 @@ export function LoginDialog({
         onClose={() => setIsLoginDialogOpen(false)}
       >
         <DialogTitle>로그인</DialogTitle>
-        <Box display="flex" flexDirection="column" pl={3} pr={3} gap={1}>
-          <Button variant="outlined" onClick={signInCallback("slack")}>
-            <Box display="flex" alignItems="center" gap={1}>
-              <SlackSvg />
-              <div>슬랙으로 로그인</div>
-            </Box>
-          </Button>
-          <Button variant="outlined" onClick={signInCallback("google")}>
-            <Box display="flex" alignItems="center" gap={1}>
-              <GoogleSvg />
-              <div>구글로 로그인</div>
-            </Box>
-          </Button>
-        </Box>
-
+        <SocialLogin />
         <DialogContent>
           <TextField
             label="이메일"

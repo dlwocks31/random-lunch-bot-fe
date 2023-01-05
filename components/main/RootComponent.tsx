@@ -9,6 +9,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { Box } from "@mui/system";
+import { useUser } from "@supabase/auth-helpers-react";
 import { useState } from "react";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
@@ -17,6 +18,7 @@ import { useSlackOauthStatus } from "../../utils/hooks/UseSlackOauthStatus";
 import { useSlackUsers } from "../../utils/hooks/UseSlackUsers";
 import { NormalUser } from "../../utils/slack/NormalUser";
 import { AddToSlackButton } from "../auth/AddToSlackButton";
+import { SocialLogin } from "../auth/SocialLogin";
 import { BorderedBox } from "../util/BorderedBox";
 import { StepInput } from "../util/StepInput";
 import { UserSelector } from "../util/UserSelector";
@@ -138,6 +140,7 @@ const DisplayMemberPartitionComponent = ({
   isMobile: boolean;
 }) => {
   const { isLoadingSlackUsers } = useSlackUsers();
+  const user = useUser();
   if (isLoadingSlackUsers) {
     return (
       <Box textAlign="center">
@@ -150,10 +153,17 @@ const DisplayMemberPartitionComponent = ({
     return (
       <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
         <div>
-          유저가 없습니다. 유저를 이름으로 직접 추가하거나, 슬랙봇을
-          워크스페이스에 추가해서 유저를 불러오세요!
+          유저가 없습니다. 유저를 이름으로 직접 추가하거나,{" "}
+          {!user && "로그인 후"} 슬랙 앱을 워크스페이스에 추가해 유저를
+          불러오세요!
         </div>
-        <AddToSlackButton />
+        {user ? (
+          <AddToSlackButton />
+        ) : (
+          <Box minWidth="500px">
+            <SocialLogin />
+          </Box>
+        )}
       </Box>
     );
   }
