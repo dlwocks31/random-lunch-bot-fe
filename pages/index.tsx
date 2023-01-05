@@ -9,7 +9,7 @@ import { MemberPartition } from "../utils/domain/MemberPartition";
 import { SlackConversation } from "../utils/domain/SlackConversation";
 import { TagMap } from "../utils/domain/TagMap";
 import { useSlackUsers } from "../utils/hooks/UseSlackUsers";
-import { isMomsitterEmail } from "../utils/momsitter/isMomsitterEmail";
+import { isMomsitterEmail } from "../utils/momsitter/IsMomsitterEmail";
 import { NormalUser } from "../utils/slack/NormalUser";
 import { generateTags } from "../utils/tag/GenerateTags";
 const DEFAULT_EACH_GROUP_USER = 4;

@@ -2,7 +2,7 @@ import { AppBar, Toolbar, Typography } from "@mui/material";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import Head from "next/head";
 import { useSlackOauthStatus } from "../../utils/hooks/UseSlackOauthStatus";
-import { isMomsitterEmail } from "../../utils/momsitter/isMomsitterEmail";
+import { isMomsitterEmail } from "../../utils/momsitter/IsMomsitterEmail";
 import { AddToSlackButton } from "./AddToSlackButton";
 import { LoginDialog } from "./LoginDialog";
 import { LoginStatusPopper } from "./LoginStatusPopper";

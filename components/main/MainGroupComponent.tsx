@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { SlackConversation } from "../../utils/domain/SlackConversation";
 import { TagMap } from "../../utils/domain/TagMap";
-import { isMomsitterEmail } from "../../utils/momsitter/isMomsitterEmail";
+import { isMomsitterEmail } from "../../utils/momsitter/IsMomsitterEmail";
 import { NormalUser } from "../../utils/slack/NormalUser";
 import { generateTags } from "../../utils/tag/GenerateTags";
 import { CheckSlackUserEmoji } from "../extra-settings/CheckSlackUserEmoji";
