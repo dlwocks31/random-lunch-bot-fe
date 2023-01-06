@@ -15,7 +15,6 @@ import { MemberConfig } from "../../utils/domain/MemberConfig";
 import { MemberPartition } from "../../utils/domain/MemberPartition";
 import { TagMap } from "../../utils/domain/TagMap";
 import { useSlackOauthStatus } from "../../utils/hooks/UseSlackOauthStatus";
-import { useSlackUsers } from "../../utils/hooks/UseSlackUsers";
 import { NormalUser } from "../../utils/slack/NormalUser";
 import { AddToSlackButton } from "../auth/AddToSlackButton";
 import { SocialLogin } from "../auth/SocialLogin";
@@ -141,18 +140,23 @@ const DisplayMemberPartitionComponent = ({
   indexOffset: number;
   isMobile: boolean;
 }) => {
-  const { isLoadingSlackUsers } = useSlackUsers();
+  const { slackTeamName, isLoading } = useSlackOauthStatus();
   const user = useUser();
-  if (isLoadingSlackUsers) {
+  if (isLoading) {
     return (
       <Box textAlign="center">
-        <div>조원 정보를 불러오는 중입니다...</div>
+        <div>슬랙 연동 정보를 불러오는 중입니다...</div>
         <LinearProgress sx={{ marginTop: 1 }} />
       </Box>
     );
   }
   if (memberPartition.userCount() === 0) {
-    return (
+    return slackTeamName ? (
+      <Box textAlign="center">
+        <div>슬랙 유저를 가져오는 중입니다..</div>
+        <LinearProgress sx={{ marginTop: 1 }} />
+      </Box>
+    ) : (
       <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
         <div>조원이 없습니다.</div>
         <Box textAlign="center" sx={{ wordBreak: "keep-all" }}>
@@ -169,6 +173,7 @@ const DisplayMemberPartitionComponent = ({
       </Box>
     );
   }
+
   const groupSizeStat = memberPartition.groupSizeStat();
   const groupSizeStatLabel = groupSizeStat
     .map((stat) => `${stat.size}인조 ${stat.numberOfGroups}개`)
