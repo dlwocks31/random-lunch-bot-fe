@@ -18,7 +18,7 @@ export const FooterComponent = () => (
       </Link>{" "}
       /{" "}
       <Link href="https://forms.gle/naUSrL2n7Rues5P88" color="inherit">
-        피드백 주기
+        피드백 전달
       </Link>
     </Typography>
   </Box>
