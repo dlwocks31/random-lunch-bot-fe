@@ -1,4 +1,4 @@
-import { ThemeProvider, createTheme } from "@mui/material";
+import { Box, ThemeProvider, createTheme } from "@mui/material";
 import { useSession, useUser } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -87,7 +87,7 @@ export default function V2() {
       theme={isMomsitterEmail(user?.email) ? momsitterTheme : defaultTheme}
     >
       <SupabaseSlackAuthBar />
-      <div className="content-container">
+      <Box margin="8px 12px">
         <MainGroupComopnent
           initialUsers={initialUsers}
           members={members}
@@ -96,12 +96,7 @@ export default function V2() {
           tagMap={tagMap}
           setTagMap={setTagMap}
         />
-      </div>
-      <style jsx>{`
-        .content-container {
-          margin: 8px 12px;
-        }
-      `}</style>
+      </Box>
     </ThemeProvider>
   );
 }
