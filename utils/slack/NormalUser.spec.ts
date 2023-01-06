@@ -13,7 +13,7 @@ describe("NormalUser", () => {
         "모시깽이",
         new SlackUser("U01", "모시깽이", "모시깽이", ":palm_tree:", "모시깽이"),
       );
-      expect(user.nameWithStatus).toEqual("모시깽이 🌴");
+      expect(user.nameWithStatus).toEqual("🌴 모시깽이");
     });
   });
 });
