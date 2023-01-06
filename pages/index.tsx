@@ -1,3 +1,4 @@
+import { Identify, identify, track } from "@amplitude/analytics-browser";
 import { Box, ThemeProvider, createTheme } from "@mui/material";
 import { useSession, useUser } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
@@ -15,6 +16,16 @@ import { generateTags } from "../utils/tag/GenerateTags";
 const DEFAULT_EACH_GROUP_USER = 4;
 export default function V2() {
   const session = useSession();
+  const user = useUser();
+
+  useEffect(() => {
+    if (user) {
+      const event = new Identify();
+      event.set("email", user.email || "");
+      event.set("id", user.id);
+      identify(event);
+    }
+  }, [user]);
 
   const [conversations, setConversations] = useState<SlackConversation[]>([]);
   const emptyMemberConfig = new MemberConfig(
@@ -39,6 +50,8 @@ export default function V2() {
           newTagMap,
         ),
       );
+
+      track("slackUsersLoaded", { length: slackUsers.length });
     }
   }, [slackUsers]);
 
@@ -81,7 +94,6 @@ export default function V2() {
   });
 
   const defaultTheme = createTheme();
-  const user = useUser();
   return (
     <ThemeProvider
       theme={isMomsitterEmail(user?.email) ? momsitterTheme : defaultTheme}

@@ -1,3 +1,4 @@
+import { track } from "@amplitude/analytics-browser";
 import {
   Button,
   Dialog,
@@ -183,6 +184,8 @@ const MessageSender = ({
         channel,
       }),
     });
+
+    track("messageSendDone");
     setIsSending(false);
   };
   const channelDescription = () => {
